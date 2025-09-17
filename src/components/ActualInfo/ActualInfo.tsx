@@ -1,13 +1,10 @@
-import clsx from 'clsx';
-import styles from './ActualInfo.module.css';
-
 export const ActualInfo = () => {
     return (
-        <div className={styles.imageBlock}>
-            <p className={styles.imageBlock__element}>Актуальное</p>
-            <p className={clsx(styles.imageBlock__element, styles.imageBlock__element__heading)}>НОВАЯ КОЛЛЕКЦИЯ</p>
-            <div className={clsx(styles.divider, styles.imageBlock__element)} />
-            <p className={styles.imageBlock__element}>СМОТРЕТЬ</p>
+        <div className="w-full flex flex-col items-center justify-end text-white h-[920px] bg-[url('@/assets/HomePageImage.png')] bg-center bg-cover bg-no-repeat">
+            <p className="mb-5">Актуальное</p>
+            <p className="mb-[60px] text-[62px] leading-[64px]">НОВАЯ КОЛЛЕКЦИЯ</p>
+            <div className="w-[600px] border-t-2 border-white mb-5" />
+            <p className="mb-[60px]">СМОТРЕТЬ</p>
         </div>
     );
 };

@@ -1,0 +1,25 @@
+import { useEffect, useRef, useState } from 'react';
+
+export function useIsTruncated<T extends HTMLElement>() {
+    const ref = useRef<T | null>(null);
+    const [isTruncated, setIsTruncated] = useState(false);
+
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        const check = () => {
+            setIsTruncated(el.scrollWidth > el.clientWidth);
+        };
+
+        check(); // первый запуск
+
+        // проверка при ресайзе
+        window.addEventListener('resize', check);
+        return () => {
+            window.removeEventListener('resize', check);
+        };
+    }, []);
+
+    return { ref, isTruncated };
+}

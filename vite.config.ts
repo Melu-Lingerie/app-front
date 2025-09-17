@@ -14,19 +14,30 @@ export default defineConfig({
         host: true,
         proxy: {
             '/api': {
-                target: 'http://51.250.69.176:8080', // адрес вашего бэкенда
+                target: 'http://51.250.69.176:8082', // адрес вашего бэкенда
                 changeOrigin: true,
                 secure: false,
             }
         }
     },
-    build: {
-        outDir: 'dist', // директория для сборки
-        assetsDir: 'assets', // директория для статических файлов
-    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'src'),
+        },
+    },
+    build: {
+        outDir: 'dist', // директория для сборки
+        assetsDir: 'assets', // директория для статических файлов,
+        rollupOptions: {
+            output: {
+                // Чуть аккуратнее с ассетами, чтобы шрифты не "терялись"
+                assetFileNames: (assetInfo) => {
+                    if (/\.woff2?$/.test(assetInfo.name ?? '')) {
+                        return 'assets/fonts/[name][extname]';
+                    }
+                    return 'assets/[name]-[hash][extname]';
+                },
+            },
         },
     }
 });
