@@ -30,7 +30,7 @@ export type { WishlistGetFacadeResponseDto } from './models/WishlistGetFacadeRes
 export type { WishlistItemGetResponseDto } from './models/WishlistItemGetResponseDto';
 
 export { CartService } from './services/CartService';
-export { MediaControllerService } from './services/MediaControllerService';
+export { MediaService } from './services/MediaService';
 export { ProductsService } from './services/ProductsService';
-export { UserControllerService } from './services/UserControllerService';
-export { WishlistControllerService } from './services/WishlistControllerService';
+export { UsersService } from './services/UsersService';
+export { WishlistService } from './services/WishlistService';

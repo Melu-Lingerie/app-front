@@ -3,8 +3,14 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { WishlistItemGetResponseDto } from './WishlistItemGetResponseDto';
+/**
+ * Ответ на получение списка желаний: элементы и их количество
+ */
 export type WishlistGetFacadeResponseDto = {
-    items?: Array<WishlistItemGetResponseDto>;
-    itemsCount?: number;
+    items: Array<WishlistItemGetResponseDto>;
+    /**
+     * Общее количество элементов в списке
+     */
+    itemsCount: number;
 };
 

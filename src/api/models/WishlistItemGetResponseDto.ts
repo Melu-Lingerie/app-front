@@ -5,7 +5,6 @@
 export type WishlistItemGetResponseDto = {
     id?: number;
     productId?: number;
-    variantId?: number;
     addedAt?: string;
 };
 

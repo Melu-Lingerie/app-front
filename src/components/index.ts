@@ -11,3 +11,4 @@ export {DoubleSlider} from './DoubleSlider';
 export {Spinner} from './Spinner';
 export {ScrollRestoration} from './ScrollRestoration';
 export {CookieNotice} from './CookieNotice';
+export {DotsLoader} from './DotsLoader';

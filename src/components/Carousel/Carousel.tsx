@@ -5,7 +5,7 @@ import {
     useState,
     type RefObject,
     type CSSProperties,
-    type ReactNode
+    type ReactNode,
 } from 'react';
 import { CarouselButton } from './CarouselButton.tsx';
 
@@ -29,70 +29,26 @@ export const Carousel = <T,>({
                                  visibleCount,
                                  renderItem,
                              }: CarouselProps<T>) => {
-
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const imageRef = useRef<HTMLDivElement | null>(null);
 
     const [index, setIndex] = useState(0);
-    const [imageHeight, setImageHeight] = useState(0);
     const [containerWidth, setContainerWidth] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(false);
-    const [withTransition, setWithTransition] = useState(true);
 
-    const transitionMs = 400; // время анимации
+    const transitionMs = 400;
 
     const itemWidth =
         (containerWidth - gap * (visibleCount - 1)) / visibleCount;
 
-    const headClones = items.slice(0, visibleCount);
-    const tailClones = items.slice(-visibleCount);
-    const slides = [...tailClones, ...items, ...headClones];
-
-    const offsetIndex = index + visibleCount;
     const stepSize = itemWidth + gap;
-    const translateX = -(offsetIndex * stepSize);
+    const translateX = -(index * stepSize);
 
     const handleNext = useCallback(() => {
-        if (isTransitioning) return; // блокируем до завершения анимации
-        setIsTransitioning(true);
-        setIndex((i) => i + 1);
-    }, [isTransitioning]);
+        setIndex((i) => Math.min(i + 1, items.length - visibleCount));
+    }, [items.length, visibleCount]);
 
     const handlePrev = useCallback(() => {
-        if (isTransitioning) return;
-        setIsTransitioning(true);
-        setIndex((i) => i - 1);
-    }, [isTransitioning]);
-
-    const onTransitionEnd = useCallback(() => {
-        let newIndex = index;
-        if (index >= items.length) {
-            newIndex = 0;
-        } else if (index < 0) {
-            newIndex = items.length - 1;
-        }
-
-        if (newIndex !== index) {
-            // отключаем transition для «бесшовного» прыжка
-            setWithTransition(false);
-            setIndex(newIndex);
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setWithTransition(true);
-                });
-            });
-        }
-
-        // снимаем блокировку строго после завершения transition
-        setIsTransitioning(false);
-    }, [index, items.length]);
-
-    // снимаем блокировку, если transition отключён для бесшовного прыжка
-    useEffect(() => {
-        if (!withTransition) {
-            requestAnimationFrame(() => setIsTransitioning(false));
-        }
-    }, [withTransition]);
+        setIndex((i) => Math.max(i - 1, 0));
+    }, []);
 
     useEffect(() => {
         const el = containerRef.current;
@@ -105,45 +61,45 @@ export const Carousel = <T,>({
         return () => ro.disconnect();
     }, []);
 
-    useEffect(() => {
-        if (imageRef.current) {
-            setImageHeight(imageRef.current.clientHeight);
-        }
-    }, [containerWidth]);
+    const isScrollable = items.length > visibleCount;
+    const atStart = index === 0;
+    const atEnd = index >= items.length - visibleCount;
 
     return (
         <div ref={containerRef} className="relative my-[60px] mb-10">
             <div className="w-full overflow-hidden">
                 <div
-                    className="flex"
+                    className="flex transition-transform ease"
                     style={{
                         gap,
                         transform: `translateX(${translateX}px)`,
-                        transition: withTransition
-                            ? `transform ${transitionMs}ms ease`
-                            : 'none',
+                        transitionDuration: `${transitionMs}ms`,
                     }}
-                    onTransitionEnd={onTransitionEnd}
                 >
-                    {slides.map((item, idx) =>
+                    {items.map((item, idx) =>
                         renderItem(item, {
                             idx,
                             widthStyle: { flex: `0 0 ${itemWidth}px` },
-                            imageRef: idx === offsetIndex ? imageRef : undefined,
                         })
                     )}
                 </div>
             </div>
-            <CarouselButton
-                direction="left"
-                onClick={handlePrev}
-                top={imageHeight / 2}
-            />
-            <CarouselButton
-                direction="right"
-                onClick={handleNext}
-                top={imageHeight / 2}
-            />
+
+            {/* стрелки */}
+            {isScrollable && (
+                <>
+                    <CarouselButton
+                        direction="left"
+                        onClick={handlePrev}
+                        disabled={atStart}
+                    />
+                    <CarouselButton
+                        direction="right"
+                        onClick={handleNext}
+                        disabled={atEnd}
+                    />
+                </>
+            )}
         </div>
     );
 };

@@ -16,7 +16,7 @@ export const MainPage = () => {
                     visibleCount={4}
                     renderItem={(card, {widthStyle, imageRef, idx}) => (
                         <Card
-                            key={`${card.id}-${idx}`}
+                            key={`${card.productId}-${idx}`}
                             card={card}
                             widthStyle={widthStyle}
                             imageRef={imageRef}

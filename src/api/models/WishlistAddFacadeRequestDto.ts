@@ -2,8 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * Данные добавляемого товара
+ */
 export type WishlistAddFacadeRequestDto = {
-    productId?: number;
-    variantId?: number;
+    /**
+     * Идентификатор товара
+     */
+    productId: number;
 };
 

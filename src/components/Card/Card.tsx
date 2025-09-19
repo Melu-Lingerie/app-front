@@ -41,7 +41,7 @@ export const Card = ({
             className="cursor-pointer transition-transform hover:scale-[1.01]"
         >
             {/* Image block */}
-            <div className="relative mb-5 h-[666px]" ref={imageRef}>
+            <div className="relative h-[666px]" ref={imageRef}>
                 {!isLoaded && (
                     <div className="w-full h-full bg-gray-200 animate-pulse rounded-md" />
                 )}

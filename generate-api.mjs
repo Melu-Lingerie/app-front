@@ -16,7 +16,7 @@ async function main() {
 
     // 2. Генерация SDK
     await OpenAPI.generate({
-        input: 'http://51.250.69.176:8080/v3/api-docs',
+        input: 'http://51.250.69.176:8082/v3/api-docs',
         output,
         httpClient: 'axios',
         useUnionTypes: true,

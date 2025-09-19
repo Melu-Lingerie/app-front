@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '@/axios/api.ts';
-import {useNotifications} from '@/hooks/useNotifications.ts';
+import { useNotifications } from '@/hooks/useNotifications.ts';
+import { useDispatch } from 'react-redux';
+import { setCartId } from '@/store/cartSlice';
 
 interface DeviceInfo {
-    deviceType: string
-    ipAddress?: string
-    deviceName: string
-    osVersion: string
-    browserName: string
-    browserVersion: string
-    screenWidth: number
-    screenHeight: number
-    screenDensity: number
+    deviceType: string;
+    ipAddress?: string;
+    deviceName: string;
+    osVersion: string;
+    browserName: string;
+    browserVersion: string;
+    screenWidth: number;
+    screenHeight: number;
+    screenDensity: number;
 }
 
 const CONFIG = {
@@ -85,7 +87,7 @@ const detectDeviceInfo = async (): Promise<DeviceInfo> => {
     else if (ua.includes('Android')) osVersion = 'Android';
     else if (ua.includes('iPhone') || ua.includes('iPad')) osVersion = 'iOS';
 
-    const ipAddress = undefined;// определяйте на бэкенде
+    const ipAddress = undefined; // определяем на бэке
 
     return {
         deviceType,
@@ -109,7 +111,7 @@ const sendSessionToServer = async () => {
 
 // ---- UI: Notice Banner ----
 interface NoticeBannerProps {
-    onClose: () => void
+    onClose: () => void;
 }
 
 const NoticeBanner: React.FC<NoticeBannerProps> = ({ onClose }) => (
@@ -118,19 +120,19 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ onClose }) => (
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className='fixed inset-x-0 bottom-0 z-50 p-4'
+        className="fixed inset-x-0 bottom-0 z-50 p-4"
     >
-        <div className='mx-auto max-w-4xl rounded-xl bg-white/95 backdrop-blur shadow-lg ring-1 ring-black/10'>
-            <div className='p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
-                <p className='text-sm text-gray-700'>
+        <div className="mx-auto max-w-4xl rounded-xl bg-white/95 backdrop-blur shadow-lg ring-1 ring-black/10">
+            <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-sm text-gray-700">
                     Мы используем файлы cookie, чтобы улучшить работу сайта и ваш
                     пользовательский опыт. Продолжая использовать наш сайт, вы соглашаетесь
                     с нашей{' '}
                     <a
-                        href='/privacy.html'
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='underline text-blue-600'
+                        href="/privacy.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline text-blue-600"
                     >
                         политикой использования cookie
                     </a>
@@ -138,7 +140,7 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ onClose }) => (
                 </p>
                 <button
                     onClick={onClose}
-                    className='shrink-0 px-4 py-2 rounded-xl text-black uppercase bg-[#F8C6D7] hover:bg-[#f5b6ca] transition cursor-pointer'
+                    className="shrink-0 px-4 py-2 rounded-xl text-black uppercase bg-[#F8C6D7] hover:bg-[#f5b6ca] transition cursor-pointer"
                 >
                     Ок
                 </button>
@@ -152,7 +154,8 @@ export const CookieNotice = () => {
     const [showNotice, setShowNotice] = useState<boolean>(
         !getCookie(CONFIG.noticeCookie)
     );
-    const {addNotification} = useNotifications();
+    const { addNotification } = useNotifications();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const init = async () => {
@@ -164,11 +167,20 @@ export const CookieNotice = () => {
             }
 
             try {
-                await sendSessionToServer();
+                const res = await sendSessionToServer();
+
+                // ✅ сохраняем cartId в Redux
+                if (res.data?.cartId) {
+                    dispatch(setCartId(res.data.cartId));
+                }
             } catch (error: any) {
-                addNotification(error?.message || 'Не удалось загрузить каталог', 'error');
+                addNotification(
+                    error?.message || 'Не удалось инициализировать сессию',
+                    'error'
+                );
             }
         };
+
         init();
 
         const iv = setInterval(() => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/Spinner';
 import {
     ProductsService,
@@ -11,21 +11,57 @@ import { useNotifications } from '@/hooks/useNotifications.ts';
 import { numberFormat } from '@/utils/utils.ts';
 import WishListInCard from '@/assets/WishListInCard.svg';
 import ArrowRightInCard from '@/assets/ArrowRightInCard.svg';
-import { FilterAccordion } from '../../pages/Catalog/FilterSidebar/FilterAccordion';
+import ArrowRightSmallIcon from '@/assets/ArrowRightSmallIcon.svg';
+import { FilterAccordion } from '@/pages/Catalog/FilterSidebar/FilterAccordion.tsx';
+import { Card } from '@/components';
+import { Carousel } from '@/components/Carousel/Carousel';
+import { DotsLoader } from '@/components/DotsLoader';
+
+// redux
+import { useDispatch, useSelector } from 'react-redux';
+import { type RootState, type AppDispatch } from '@/store';
+import { addItemToCart, fetchCart } from '@/store/cartSlice';
+import api from '@/axios/api.ts';
 
 export function ProductPage() {
     const { id } = useParams<{ id: string }>();
     const { addNotification } = useNotifications();
+    const navigate = useNavigate();
+
+    const dispatch = useDispatch<AppDispatch>();
+    const cartId = useSelector((state: RootState) => state.cart.cartId);
+    const items = useSelector((state: RootState) => state.cart.items);
+    const loadingCart = useSelector((state: RootState) => state.cart.loading);
+
     const [product, setProduct] = useState<ProductCardResponse | null>(null);
     const [loading, setLoading] = useState(true);
 
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
-    const [activeVariant, setActiveVariant] = useState<ProductVariantCardDto | null>(null);
+    const [activeVariant, setActiveVariant] =
+        useState<ProductVariantCardDto | null>(null);
 
     const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
     const [isStructureOpen, setIsStructureOpen] = useState(false);
     const [isReviewsOpen, setIsReviewsOpen] = useState(false);
 
+    // похожие товары
+    const [relatedGoods, setRelatedGoods] = useState<any[]>([]);
+    const [relatedLoading, setRelatedLoading] = useState(false);
+
+    // загрузка корзины при заходе на страницу
+    useEffect(() => {
+        if (cartId) {
+            dispatch(fetchCart(cartId));
+        }
+    }, [cartId, dispatch]);
+
+    // проверка — есть ли этот товар в корзине
+    const inCart = items.some(
+        (i) =>
+            i.productId === product?.productId && i.variantId === activeVariant?.id
+    );
+
+    // загрузка товара
     useEffect(() => {
         if (!id) return;
 
@@ -53,6 +89,57 @@ export function ProductPage() {
         fetchProduct();
     }, [id]);
 
+    // загрузка похожих товаров по categoryId
+    useEffect(() => {
+        const fetchRelated = async () => {
+            if (!product?.categoryId) return;
+            try {
+                setRelatedLoading(true);
+                const res = await api.get('/products/catalog', {
+                    params: {
+                        categories: [product.categoryId],
+                    },
+                    paramsSerializer: { indexes: null },
+                });
+                setRelatedGoods(res.data.content || []);
+            } catch {
+                addNotification('Не удалось загрузить похожие товары', 'error');
+            } finally {
+                setRelatedLoading(false);
+            }
+        };
+
+        fetchRelated();
+    }, [product?.categoryId]);
+
+    // добавление в корзину
+    const handleAddToCart = async () => {
+        if (!cartId || !product || !activeVariant) {
+            addNotification('Ошибка: корзина или товар не найдены', 'error');
+            return;
+        }
+
+        try {
+            await dispatch(
+                addItemToCart({
+                    cartId,
+                    productId: product.productId,
+                    variantId: activeVariant.id,
+                })
+            ).unwrap();
+
+            // 🔄 сразу обновляем корзину
+            await dispatch(fetchCart(cartId));
+
+            addNotification('Товар добавлен в корзину', 'success');
+        } catch (e: any) {
+            addNotification(
+                e?.message || 'Ошибка при добавлении в корзину',
+                'error'
+            );
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center w-full min-h-[300px]">
@@ -72,15 +159,13 @@ export function ProductPage() {
     const colors = Array.from(
         new Set(product.productVariants?.map((v) => v.colorName))
     );
-
     const sizes =
         product.productVariants?.filter((v) => v.colorName === selectedColor) ?? [];
-
     const images = activeVariant?.productVariantMedia.slice(0, 4) ?? [];
 
     return (
         <div className="w-full">
-            <div className="flex w-full gap-5">
+            <div className="flex w-full gap-5 mb-20">
                 {/* Картинки */}
                 <div className="flex-1">
                     <ProductImages images={images} />
@@ -109,8 +194,9 @@ export function ProductPage() {
                         <div className="flex flex-wrap gap-2">
                             {colors.map((color) => {
                                 const variantsForColor =
-                                    product.productVariants?.filter((v) => v.colorName === color) ??
-                                    [];
+                                    product.productVariants?.filter(
+                                        (v) => v.colorName === color
+                                    ) ?? [];
                                 const hasAvailable = variantsForColor.some((v) => v.isAvailable);
 
                                 return (
@@ -186,16 +272,39 @@ export function ProductPage() {
                         </div>
                     </div>
 
-                    {/* Кнопка Добавить в корзину */}
+                    {/* Кнопка Добавить в корзину / Перейти в корзину */}
                     <div className="mt-[30px]">
-                        <button
-                            className="w-full h-[56px] rounded-[8px] border border-[#2A2A2B]
-                         text-[14px] leading-[18px] uppercase
-                         cursor-pointer transition
-                         hover:bg-gray-100 active:scale-95"
-                        >
-                            Добавить в корзину
-                        </button>
+                        {inCart ? (
+                            <button
+                                onClick={() => navigate('/cart')}
+                                className="w-full h-[56px] rounded-[8px] border bg-[#F8C6D7] border-[#F8C6D7]
+                           text-[14px] leading-[18px] uppercase
+                           cursor-pointer transition active:scale-95
+                           flex items-center justify-center"
+                            >
+                                <span>Перейти в корзину</span>
+                                <img
+                                    src={ArrowRightSmallIcon}
+                                    alt="Перейти в корзину"
+                                    className="w-5 h-5 ml-1"
+                                />
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={loadingCart}
+                                className="w-full h-[56px] rounded-[8px] border border-[#2A2A2B]
+                           text-[14px] leading-[18px] uppercase
+                           cursor-pointer transition active:scale-95
+                           hover:bg-gray-100 flex items-center justify-center"
+                            >
+                                {loadingCart ? (
+                                    <DotsLoader color="#2A2A2B" size={6} />
+                                ) : (
+                                    'Добавить в корзину'
+                                )}
+                            </button>
+                        )}
                     </div>
 
                     {/* Кнопка Добавить в избранное */}
@@ -217,7 +326,14 @@ export function ProductPage() {
                             <img src={ArrowRightInCard} alt="Коллекция" className="w-2 h-2" />
                         </button>
 
-                        <button className="flex items-center justify-between w-full h-[45px] rounded-[8px] border border-[#999] px-[20px] cursor-pointer transition hover:bg-gray-50">
+                        <button
+                            onClick={() => {
+                                if (product?.categoryId) {
+                                    navigate(`/catalog?types=${product.categoryId}`);
+                                }
+                            }}
+                            className="flex items-center justify-between w-full h-[45px] rounded-[8px] border border-[#999] px-[20px] cursor-pointer transition hover:bg-gray-50"
+                        >
               <span className="text-[#999] text-[12px] leading-[18px]">
                 Все товары из категории
               </span>
@@ -251,69 +367,43 @@ export function ProductPage() {
                             title="ОТЗЫВЫ"
                             isOpen={isReviewsOpen}
                             onToggle={() => setIsReviewsOpen(!isReviewsOpen)}
-                            rightContent={
-                                <div className="flex items-center ml-[40px]">
-      <span className="text-[#999] text-[14px] mr-2">
-        {product.score?.toFixed(1) ?? '0.0'}
-      </span>
-                                    <div className="flex">
-                                        {[1, 2, 3, 4, 5].map((star) => {
-                                            const diff = (product.score ?? 0) - star + 1;
-                                            let fill = '#E5E7EB'; // по умолчанию пустая
-
-                                            if (diff >= 1) {
-                                                fill = '#F8C6D7'; // полная
-                                            }
-
-                                            // если звезда частично закрашена
-                                            if (diff > 0 && diff < 1) {
-                                                const percent = Math.round(diff * 100); // % закрашивания
-                                                return (
-                                                    <svg
-                                                        key={star}
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 20 20"
-                                                        className="w-4 h-4"
-                                                    >
-                                                        <defs>
-                                                            <linearGradient id={`grad-${star}`}>
-                                                                <stop offset={`${percent}%`} stopColor="#F8C6D7" />
-                                                                <stop offset={`${percent}%`} stopColor="#E5E7EB" />
-                                                            </linearGradient>
-                                                        </defs>
-                                                        <path
-                                                            fill={`url(#grad-${star})`}
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                                        />
-                                                    </svg>
-                                                );
-                                            }
-
-                                            // полная или пустая
-                                            return (
-                                                <svg
-                                                    key={star}
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill={fill}
-                                                    className="w-4 h-4"
-                                                >
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                </svg>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            }
                         >
                             <p className="text-[#999] leading-[22px] text-[14px] mt-[22px]">
                                 Здесь будут отзывы покупателей.
                             </p>
                         </FilterAccordion>
-
                     </div>
                 </div>
             </div>
+
+            {/* Возможно вам понравится */}
+            {relatedGoods.length > 0 && (
+                <div className="px-10 mt-[60px]">
+                    <h1 className="text-[24px] leading-[26px] uppercase mb-6">
+                        Возможно вам понравится
+                    </h1>
+
+                    {relatedLoading ? (
+                        <div className="flex justify-center py-10">
+                            <Spinner className="text-gray-500" size={36} />
+                        </div>
+                    ) : (
+                        <Carousel
+                            items={relatedGoods}
+                            gap={20}
+                            visibleCount={6}
+                            renderItem={(item, { widthStyle, idx }) => (
+                                <div key={idx} style={widthStyle}>
+                                    <Card card={item} />
+                                </div>
+                            )}
+                        />
+                    )}
+                </div>
+            )}
+
+            {/* Divider */}
+            <div className="w-full h-[1px] bg-[#CCC] mt-[90px]" />
         </div>
     );
 }
