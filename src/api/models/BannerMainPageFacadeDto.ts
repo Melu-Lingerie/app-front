@@ -2,9 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type SortObject = {
-    unsorted?: boolean;
-    sorted?: boolean;
-    empty?: boolean;
+export type BannerMainPageFacadeDto = {
+    id?: number;
+    title?: string;
+    url?: string;
+    mediaId?: number;
+    order?: number;
 };
 

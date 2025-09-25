@@ -1,11 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState, type AppDispatch } from '@/store';
-import { fetchCart, clearCartApi, removeItemFromCart, updateItemQuantity } from '@/store/cartSlice';
+import {
+    clearCartApi,
+    removeItemFromCart,
+    updateItemQuantity,
+} from '@/store/cartSlice';
 import { Spinner } from '@/components/Spinner';
 import { CartItem } from './CartItem';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { Carousel } from '@/components/Carousel';
+import api from '@/axios/api.ts';
+import { useNotifications } from '@/hooks/useNotifications.ts';
+import { Card } from '@/components';
 
 const getTovarWord = (count: number) => {
     const mod10 = count % 10;
@@ -18,14 +26,51 @@ const getTovarWord = (count: number) => {
 export function CartPage() {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { cartId, items, itemsCount, totalAmount, loading, removingItemIds, updatingItemIds } =
-        useSelector((state: RootState) => state.cart);
+    const {
+        cartId,
+        items,
+        itemsCount,
+        totalAmount,
+        loading,
+        removingItemIds,
+        updatingItemIds,
+    } = useSelector((state: RootState) => state.cart);
+    const { addNotification } = useNotifications();
 
+    const [relatedGoods, setRelatedGoods] = useState<any[]>([]);
+    const [relatedLoading, setRelatedLoading] = useState(false);
+
+    const categoryIds = useMemo(() => {
+        const ids = items.map((i) => i.categoryId).filter(Boolean);
+        return Array.from(new Set(ids));
+    }, [items]);
+
+    // загрузка товаров для "Дополните образ"
     useEffect(() => {
-        if (cartId) {
-            dispatch(fetchCart(cartId));
-        }
-    }, [cartId, dispatch]);
+        if (!cartId) return;
+        if (!items.length) return;       // ждём пока в корзине появятся товары
+        if (!categoryIds.length) return; // если нет категорий, не идём в API
+
+        const fetchRelated = async () => {
+            try {
+                setRelatedLoading(true);
+                const res = await api.get('/products/catalog', {
+                    params: {
+                        categories: categoryIds,
+                        limit: 20, // можно добавить ограничение
+                    },
+                    paramsSerializer: { indexes: null },
+                });
+                setRelatedGoods(res.data.content || []);
+            } catch {
+                addNotification('Не удалось загрузить подборку товаров', 'error');
+            } finally {
+                setRelatedLoading(false);
+            }
+        };
+
+        fetchRelated();
+    }, [cartId, items, categoryIds, addNotification]);
 
     if (!cartId || loading) {
         return (
@@ -45,8 +90,8 @@ export function CartPage() {
     }
 
     return (
-        <div className="pt-[60px] px-[195px] pb-[120px]">
-            <div className="flex justify-between items-start gap-10">
+        <div className="pt-[60px] pb-[90px]">
+            <div className="px-[195px] flex justify-between items-start gap-10">
                 {/* Левая колонка */}
                 <div className="flex-1">
                     <div className="flex items-baseline justify-between mb-[30px]">
@@ -54,25 +99,25 @@ export function CartPage() {
                             <h1 className="text-[36px] leading-[38px] uppercase">Корзина</h1>
                             {itemsCount > 0 && (
                                 <span className="text-[#999] text-[16px] font-normal leading-[22px]">
-                  {itemsCount} {getTovarWord(itemsCount)}
-                </span>
+                                    {itemsCount} {getTovarWord(itemsCount)}
+                                </span>
                             )}
                         </div>
                         <div className="flex gap-6">
-              <span
-                  className="text-[#999] text-[16px] font-normal leading-[22px] cursor-pointer"
-                  onClick={() => navigate('/catalog')}
-              >
-                Продолжить покупки
-              </span>
+                            <span
+                                className="text-[#999] text-[16px] font-normal leading-[22px] cursor-pointer"
+                                onClick={() => navigate('/catalog')}
+                            >
+                                Продолжить покупки
+                            </span>
                             <span
                                 className="text-[#999] text-[16px] font-normal leading-[22px] cursor-pointer"
                                 onClick={() => {
                                     if (cartId) dispatch(clearCartApi(cartId));
                                 }}
                             >
-                Очистить корзину
-              </span>
+                                Очистить корзину
+                            </span>
                         </div>
                     </div>
 
@@ -102,7 +147,9 @@ export function CartPage() {
                                         isRemoving={removingItemIds.includes(item.itemId!)}
                                         isUpdating={updatingItemIds.includes(item.itemId!)}
                                         onRemove={(itemId) =>
-                                            dispatch(removeItemFromCart({ cartId: cartId!, itemId }))
+                                            dispatch(
+                                                removeItemFromCart({ cartId: cartId!, itemId })
+                                            )
                                         }
                                         onIncrease={(itemId) =>
                                             dispatch(
@@ -114,7 +161,8 @@ export function CartPage() {
                                             )
                                         }
                                         onDecrease={(itemId) =>
-                                            item.quantity && item.quantity > 1 &&
+                                            item.quantity &&
+                                            item.quantity > 1 &&
                                             dispatch(
                                                 updateItemQuantity({
                                                     cartId: cartId!,
@@ -140,16 +188,16 @@ export function CartPage() {
                     <div className="flex items-center justify-between mb-[12px]">
                         <span className="font-medium leading-[18px] uppercase">Цена</span>
                         <span className="font-medium leading-[18px] uppercase">
-              {totalAmount?.toLocaleString()} ₽
-            </span>
+                            {totalAmount?.toLocaleString()} ₽
+                        </span>
                     </div>
                     <div className="flex items-center justify-between mb-[35px]">
-            <span className="text-[#999] text-[12px] font-medium leading-[18px]">
-              Доставка
-            </span>
                         <span className="text-[#999] text-[12px] font-medium leading-[18px]">
-              Рассчитывается при оформлении
-            </span>
+                            Доставка
+                        </span>
+                        <span className="text-[#999] text-[12px] font-medium leading-[18px]">
+                            Рассчитывается при оформлении
+                        </span>
                     </div>
                     <button className="w-[405px] h-[56px] rounded-[8px] border border-[#FFFBF5] bg-[#F8C6D7] text-[14px] leading-[18px] uppercase font-medium cursor-pointer hover:opacity-90 transition">
                         Оформить заказ
@@ -160,6 +208,33 @@ export function CartPage() {
                         покупку.
                     </p>
                 </motion.div>
+            </div>
+
+            {/* Divider */}
+            <div className="relative left-1/2 ml-[-50vw] w-screen h-[1px] bg-[#CCC] mt-[60px]" />
+
+            {/* Дополните образ */}
+            <div className="px-[195px] mt-[60px]">
+                <h2 className="text-[24px] font-medium leading-[26px] uppercase mb-[60px]">
+                    Дополните образ
+                </h2>
+
+                {relatedLoading ? (
+                    <div className="flex justify-center">
+                        <Spinner className="text-gray-500" size={32} />
+                    </div>
+                ) : (
+                    <Carousel
+                        items={relatedGoods}
+                        visibleCount={5}
+                        gap={20}
+                        renderItem={(item, { widthStyle, idx }) => (
+                            <div key={idx} style={widthStyle}>
+                                <Card card={item} />
+                            </div>
+                        )}
+                    />
+                )}
             </div>
         </div>
     );

@@ -7,6 +7,7 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export type { BannerMainPageFacadeDto } from './models/BannerMainPageFacadeDto';
 export type { CartAddFacadeRequestDto } from './models/CartAddFacadeRequestDto';
 export type { CartAddFacadeResponseDto } from './models/CartAddFacadeResponseDto';
 export type { CartGetFacadeResponseDto } from './models/CartGetFacadeResponseDto';
@@ -30,7 +31,8 @@ export type { WishlistGetFacadeResponseDto } from './models/WishlistGetFacadeRes
 export type { WishlistItemGetResponseDto } from './models/WishlistItemGetResponseDto';
 
 export { CartService } from './services/CartService';
+export { MainPageControllerService } from './services/MainPageControllerService';
 export { MediaService } from './services/MediaService';
 export { ProductsService } from './services/ProductsService';
-export { UsersService } from './services/UsersService';
+export { UserControllerService } from './services/UserControllerService';
 export { WishlistService } from './services/WishlistService';

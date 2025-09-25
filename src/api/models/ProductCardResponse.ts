@@ -32,6 +32,10 @@ export type ProductCardResponse = {
      */
     score: number;
     /**
+     * Описания способов ухода за изделием
+     */
+    care: string;
+    /**
      * ID категории товара
      */
     categoryId: number;

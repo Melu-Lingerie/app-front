@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import { CartService, type CartGetFacadeResponseDto } from '@/api';
-import { type RootState } from './index';
+import {CartService, type CartGetFacadeResponseDto, type CartItemDetailsFacadeResponseDto} from '@/api';
 
 // ---- Thunks ----
 
@@ -53,8 +52,8 @@ export const updateItemQuantity = createAsyncThunk<
 // ---- Slice ----
 type CartState = {
     cartId: number | null;
-    items: any[];
-    itemsCount: number;
+    items: Array<CartItemDetailsFacadeResponseDto>;
+    itemsCount: number; // ✅ количество разных товаров
     totalAmount: number;
     loading: boolean;
     removingItemIds: number[];
@@ -88,7 +87,7 @@ const cartSlice = createSlice({
             .addCase(fetchCart.fulfilled, (state, action) => {
                 state.loading = false;
                 state.items = action.payload.items || [];
-                state.itemsCount = action.payload.itemsCount || 0;
+                state.itemsCount = state.items.length; // ✅ только количество позиций
                 state.totalAmount = action.payload.totalAmount || 0;
             })
             .addCase(fetchCart.rejected, (state) => {
@@ -102,7 +101,7 @@ const cartSlice = createSlice({
             .addCase(removeItemFromCart.fulfilled, (state, action) => {
                 const itemId = action.payload;
                 state.items = state.items.filter((i) => i.itemId !== itemId);
-                state.itemsCount = state.items.length;
+                state.itemsCount = state.items.length; // ✅ позиции
                 state.totalAmount = state.items.reduce(
                     (sum, i) => sum + (i.totalPrice ?? 0),
                     0
@@ -133,7 +132,7 @@ const cartSlice = createSlice({
                     item.quantity = quantity;
                     item.totalPrice = (item.unitPrice ?? 0) * quantity;
                 }
-                state.itemsCount = state.items.reduce((sum, i) => sum + (i.quantity ?? 0), 0);
+                state.itemsCount = state.items.length; // ✅ позиции остаются
                 state.totalAmount = state.items.reduce(
                     (sum, i) => sum + (i.totalPrice ?? 0),
                     0
@@ -150,6 +149,3 @@ const cartSlice = createSlice({
 
 export const { setCartId } = cartSlice.actions;
 export default cartSlice.reducer;
-
-// Selectors
-export const selectCart = (state: RootState) => state.cart;

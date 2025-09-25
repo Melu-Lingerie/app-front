@@ -8,8 +8,7 @@ import {
     ScrollRestoration,
     CookieNotice,
 } from '@/components';
-import { MainPage, ProductPage } from './pages';
-import { CartPage } from './pages/CartPage'; // 🔥 импортируем новую страницу
+import { CartPage, MainPage, ProductPage } from '@/pages';
 
 function App() {
     return (
@@ -24,6 +23,7 @@ function App() {
                     <Route path="*" element={<NotFound />} />
                 </Route>
             </Routes>
+            {/* ✅ CookieNotice отвечает за guest-запрос и initApp */}
             <CookieNotice />
         </Provider>
     );

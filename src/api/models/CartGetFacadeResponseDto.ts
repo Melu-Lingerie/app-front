@@ -3,9 +3,18 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CartItemDetailsFacadeResponseDto } from './CartItemDetailsFacadeResponseDto';
+/**
+ * Содержимое корзины и агрегированные значения
+ */
 export type CartGetFacadeResponseDto = {
     items?: Array<CartItemDetailsFacadeResponseDto>;
-    itemsCount?: number;
-    totalAmount?: number;
+    /**
+     * Общее количество позиций в корзине
+     */
+    itemsCount: number;
+    /**
+     * Итоговая сумма по корзине
+     */
+    totalAmount: number;
 };
 

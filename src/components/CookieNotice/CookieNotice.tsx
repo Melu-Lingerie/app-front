@@ -4,6 +4,8 @@ import api from '@/axios/api.ts';
 import { useNotifications } from '@/hooks/useNotifications.ts';
 import { useDispatch } from 'react-redux';
 import { setCartId } from '@/store/cartSlice';
+import { setWishlistId } from '@/store/wishlistSlice';
+import {type AppDispatch, initApp} from '@/store'; // импортируем initApp
 
 interface DeviceInfo {
     deviceType: string;
@@ -87,11 +89,9 @@ const detectDeviceInfo = async (): Promise<DeviceInfo> => {
     else if (ua.includes('Android')) osVersion = 'Android';
     else if (ua.includes('iPhone') || ua.includes('iPad')) osVersion = 'iOS';
 
-    const ipAddress = undefined; // определяем на бэке
-
     return {
         deviceType,
-        ipAddress,
+        ipAddress: undefined, // определяем на бэке
         deviceName,
         osVersion,
         browserName,
@@ -155,7 +155,7 @@ export const CookieNotice = () => {
         !getCookie(CONFIG.noticeCookie)
     );
     const { addNotification } = useNotifications();
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
         const init = async () => {
@@ -169,9 +169,21 @@ export const CookieNotice = () => {
             try {
                 const res = await sendSessionToServer();
 
-                // ✅ сохраняем cartId в Redux
+                let hasUpdates = false;
+
                 if (res.data?.cartId) {
                     dispatch(setCartId(res.data.cartId));
+                    hasUpdates = true;
+                }
+
+                if (res.data?.wishlistId) {
+                    dispatch(setWishlistId(res.data.wishlistId));
+                    hasUpdates = true;
+                }
+
+                // ✅ загружаем корзину и wishlist только после того, как получили ID
+                if (hasUpdates) {
+                    dispatch(initApp());
                 }
             } catch (error: any) {
                 addNotification(
@@ -193,7 +205,7 @@ export const CookieNotice = () => {
         }, 60 * 60 * 1000);
 
         return () => clearInterval(iv);
-    }, []);
+    }, [dispatch, addNotification]);
 
     const closeNotice = () => {
         setCookie(CONFIG.noticeCookie, '1', CONFIG.cookieMaxAgeDays);
