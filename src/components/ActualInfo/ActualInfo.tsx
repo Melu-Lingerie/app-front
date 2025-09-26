@@ -73,8 +73,7 @@ export const ActualInfo = () => {
 
             {/* Контент поверх */}
             <div className="relative z-10 flex flex-col items-center justify-end text-white h-full bg-black/30">
-                <p className="mb-5">{banners[currentIndex].title}</p>
-                <p className="mb-[60px] text-[62px] leading-[64px]">НОВАЯ КОЛЛЕКЦИЯ</p>
+                <p className="mb-[60px] text-[62px] leading-[64px]">{banners[currentIndex].title}</p>
                 <div className="w-[600px] border-t-2 border-white mb-5" />
                 <button
                     onClick={() => navigate(banners[currentIndex].url)}
