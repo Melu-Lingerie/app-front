@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Spinner } from '@/components/Spinner';
 import { MainPageControllerService, type BannerMainPageFacadeDto } from '@/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -37,10 +36,15 @@ export const ActualInfo = () => {
         return () => clearInterval(timer);
     }, [banners.length]);
 
+    // ⏳ Скелетон пока грузим баннеры
     if (loading) {
         return (
-            <div className="flex items-center justify-center w-full h-[920px] bg-gray-100">
-                <Spinner className="text-gray-500" size={48} />
+            <div className="w-full h-[920px] relative bg-gray-200 animate-pulse flex flex-col items-center justify-end">
+                {/* заглушка для текста */}
+                <div className="mb-5 h-4 w-40 bg-gray-300 rounded" />
+                <div className="mb-[60px] h-10 w-80 bg-gray-300 rounded" />
+                <div className="w-[600px] h-[2px] bg-gray-300 mb-5" />
+                <div className="mb-[60px] h-10 w-32 bg-gray-300 rounded-full" />
             </div>
         );
     }
@@ -69,11 +73,12 @@ export const ActualInfo = () => {
 
             {/* Контент поверх */}
             <div className="relative z-10 flex flex-col items-center justify-end text-white h-full bg-black/30">
-                <p className="mb-[60px] text-[62px] leading-[64px] uppercase">{banners[currentIndex].title}</p>
+                <p className="mb-5">{banners[currentIndex].title}</p>
+                <p className="mb-[60px] text-[62px] leading-[64px]">НОВАЯ КОЛЛЕКЦИЯ</p>
                 <div className="w-[600px] border-t-2 border-white mb-5" />
                 <button
                     onClick={() => navigate(banners[currentIndex].url)}
-                    className="cursor-pointer mb-[60px] px-6 py-2 rounded-xl bg-[#F8C6D7] text-black uppercase hover:bg-[#f5b6ca] transition active:scale-95"
+                    className="mb-[60px] px-6 py-2 rounded-xl bg-[#F8C6D7] text-black uppercase hover:bg-[#f5b6ca] transition active:scale-95"
                 >
                     Смотреть
                 </button>
