@@ -73,11 +73,11 @@ export const ActualInfo = () => {
 
             {/* Контент поверх */}
             <div className="relative z-10 flex flex-col items-center justify-end text-white h-full bg-black/30">
-                <p className="mb-[60px] text-[62px] leading-[64px]">{banners[currentIndex].title}</p>
+                <p className="mb-[60px] text-[62px] leading-[64px] uppercase">{banners[currentIndex].title}</p>
                 <div className="w-[600px] border-t-2 border-white mb-5" />
                 <button
                     onClick={() => navigate(banners[currentIndex].url)}
-                    className="mb-[60px] px-6 py-2 rounded-xl bg-[#F8C6D7] text-black uppercase hover:bg-[#f5b6ca] transition active:scale-95"
+                    className="mb-[60px] cursor-pointer px-6 py-2 rounded-xl bg-[#F8C6D7] text-black uppercase hover:bg-[#f5b6ca] transition active:scale-95"
                 >
                     Смотреть
                 </button>
