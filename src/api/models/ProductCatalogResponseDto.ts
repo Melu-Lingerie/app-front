@@ -9,23 +9,26 @@ export type ProductCatalogResponseDto = {
     /**
      * ID продукта
      */
-    productId?: number;
+    productId: number;
     /**
      * Название продукта
      */
-    name?: string;
+    name: string;
     /**
      * Итоговая цена
      */
-    price?: number;
+    price: number;
     /**
      * ссылка на медиа
      */
-    s3url?: string;
+    s3url: string;
     /**
      * Доступные цвета
      */
-    colors?: Array<string>;
-    productStatus?: 'NOT_AVAILABLE' | 'AVAILABLE' | 'NEW' | 'SOON';
+    colors: Array<string>;
+    /**
+     * Статус товара
+     */
+    productStatus: 'NOT_AVAILABLE' | 'AVAILABLE' | 'NEW' | 'SOON';
 };
 

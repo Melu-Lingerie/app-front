@@ -3,11 +3,13 @@ import {
     useEffect,
     useRef,
     useState,
-    type RefObject,
     type CSSProperties,
     type ReactNode,
 } from 'react';
 import { CarouselButton } from './CarouselButton.tsx';
+import { ProductSkeleton } from '@/pages/Catalog/ProductSkeleton';
+import {useSelector} from 'react-redux';
+import {selectAppInitialized} from '@/store/appSlice.ts';
 
 type CarouselProps<T> = {
     items: T[];
@@ -18,9 +20,9 @@ type CarouselProps<T> = {
         params: {
             idx: number;
             widthStyle: CSSProperties;
-            imageRef?: RefObject<HTMLDivElement | null>;
         }
     ) => ReactNode;
+    loading?: boolean;       // ⬅️ новый проп
 };
 
 export const Carousel = <T,>({
@@ -28,8 +30,10 @@ export const Carousel = <T,>({
                                  gap,
                                  visibleCount,
                                  renderItem,
+                                 loading = false,
                              }: CarouselProps<T>) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const initialized = useSelector(selectAppInitialized);
 
     const [index, setIndex] = useState(0);
     const [containerWidth, setContainerWidth] = useState(0);
@@ -65,6 +69,26 @@ export const Carousel = <T,>({
     const atStart = index === 0;
     const atEnd = index >= items.length - visibleCount;
 
+    const renderContent = () => {
+        if (loading || !initialized) {
+            return Array.from({ length: visibleCount }).map((_, idx) => (
+                <div
+                    key={`skeleton-${idx}`}
+                    style={{ width: `${itemWidth}px`, flex: '0 0 auto' }}
+                >
+                    <ProductSkeleton />
+                </div>
+            ));
+        }
+
+        return items.map((item, idx) =>
+            renderItem(item, {
+                idx,
+                widthStyle: { width: `${itemWidth}px`, flex: '0 0 auto' },
+            })
+        );
+    };
+
     return (
         <div ref={containerRef} className="relative my-[60px] mb-10">
             <div className="w-full overflow-hidden">
@@ -76,17 +100,12 @@ export const Carousel = <T,>({
                         transitionDuration: `${transitionMs}ms`,
                     }}
                 >
-                    {items.map((item, idx) =>
-                        renderItem(item, {
-                            idx,
-                            widthStyle: { flex: `0 0 ${itemWidth}px` },
-                        })
-                    )}
+                    {renderContent()}
                 </div>
             </div>
 
             {/* стрелки */}
-            {isScrollable && (
+            {isScrollable && !loading && (
                 <>
                     <CarouselButton
                         direction="left"

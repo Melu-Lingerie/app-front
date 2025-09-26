@@ -420,14 +420,10 @@ export function ProductPage() {
                         Возможно вам понравится
                     </h1>
 
-                    {relatedLoading ? (
-                        <div className="flex justify-center py-10">
-                            <Spinner className="text-gray-500" size={36} />
-                        </div>
-                    ) : (
                         <Carousel
                             items={relatedGoods}
                             gap={20}
+                            loading={relatedLoading}
                             visibleCount={6}
                             renderItem={(item, { widthStyle, idx }) => (
                                 <div key={idx} style={widthStyle}>
@@ -435,7 +431,6 @@ export function ProductPage() {
                                 </div>
                             )}
                         />
-                    )}
                 </div>
             )}
 

@@ -90,7 +90,7 @@ export function CartPage() {
     }
 
     return (
-        <div className="pt-[60px] pb-[90px]">
+        <div className="pt-[60px]">
             <div className="px-[195px] flex justify-between items-start gap-10">
                 {/* Левая колонка */}
                 <div className="flex-1">
@@ -219,23 +219,21 @@ export function CartPage() {
                     Дополните образ
                 </h2>
 
-                {relatedLoading ? (
-                    <div className="flex justify-center">
-                        <Spinner className="text-gray-500" size={32} />
-                    </div>
-                ) : (
                     <Carousel
                         items={relatedGoods}
                         visibleCount={5}
                         gap={20}
+                        loading={relatedLoading}
                         renderItem={(item, { widthStyle, idx }) => (
                             <div key={idx} style={widthStyle}>
                                 <Card card={item} />
                             </div>
                         )}
                     />
-                )}
             </div>
+
+            {/* Divider */}
+            <div className="relative left-1/2 ml-[-50vw] w-screen h-[1px] bg-[#CCC] mt-[120px]" />
         </div>
     );
 }

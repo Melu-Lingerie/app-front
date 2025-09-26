@@ -1,4 +1,4 @@
-import { type CSSProperties, type RefObject, useState } from 'react';
+import { type CSSProperties, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { numberFormat } from '@/utils/utils.ts';
 import { useIsTruncated } from '@/hooks/useIsTruncated';
@@ -14,24 +14,16 @@ import {
     selectWishlistItems,
     selectWishlistLoading,
 } from '@/store/wishlistSlice';
+import type {ProductCatalogResponseDto} from '@/api';
 
 type Props = {
-    card: {
-        productId: number;
-        s3url: string;
-        name: string;
-        productStatus: 'AVAILABLE' | 'NEW' | 'SOON';
-        price: string;
-        colors: string[];
-    };
+    card: Required<ProductCatalogResponseDto>;
     widthStyle?: CSSProperties;
-    imageRef?: RefObject<HTMLDivElement | null>;
 };
 
 export const Card = ({
                          card: { s3url, name, productStatus, price, colors, productId },
                          widthStyle,
-                         imageRef,
                      }: Props) => {
     const { ref: textRef, isTruncated } = useIsTruncated<HTMLParagraphElement>();
     const [isLoaded, setIsLoaded] = useState(false);
@@ -61,7 +53,7 @@ export const Card = ({
             className="cursor-pointer transition-transform hover:scale-[1.01]"
         >
             {/* Image block */}
-            <div className="relative h-[666px]" ref={imageRef}>
+            <div className="relative h-[666px]">
                 {!isLoaded && (
                     <div className="w-full h-full bg-gray-200 animate-pulse rounded-md" />
                 )}

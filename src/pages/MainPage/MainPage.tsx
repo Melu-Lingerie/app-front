@@ -1,31 +1,63 @@
-import {Card, Carousel} from '../../components';
-import {ActualInfo} from '../../components';
-import {mockBackStageData, mockCardsData} from './mock.ts';
+import { useEffect, useState } from 'react';
+import { Card, Carousel, ActualInfo } from '@/components';
+import {
+    ProductsService,
+    type ProductCatalogResponseDto
+} from '@/api';
+import { mockBackStageData } from './mock.ts';
 
 export const MainPage = () => {
+    const [newProducts, setNewProducts] = useState<Required<ProductCatalogResponseDto>[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchNewProducts = async () => {
+            try {
+                setLoading(true);
+                const res: any =
+                    await ProductsService.getCatalog(
+                        { page: 0, size: 20},
+                        undefined, // name
+                        undefined, // minPrice
+                        undefined, // maxPrice
+                        undefined, // categories
+                        undefined, // sizes
+                        undefined, // sizesOfBraWithCups
+                        undefined, // colors
+                        'NEW' // productStatus
+                    );
+
+                setNewProducts(res.content || []);
+            } catch (e) {
+                console.error('Ошибка загрузки новых товаров', e);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchNewProducts();
+    }, []);
 
     return (
         <>
             <ActualInfo />
             <div className="px-10 pt-[90px]">
                 <p className="text-2xl leading-6">НОВАЯ КОЛЛЕКЦИЯ</p>
-                {/* TODO: добавить тип carousel */}
+
                 <Carousel
-                    items={mockCardsData}
-                    gap={20}
-                    visibleCount={4}
-                    renderItem={(card, {widthStyle, imageRef, idx}) => (
-                        <Card
-                            key={`${card.productId}-${idx}`}
-                            card={card}
-                            widthStyle={widthStyle}
-                            imageRef={imageRef}
-                        />
-                    )}
+                        items={newProducts}
+                        gap={20}
+                        loading={loading}
+                        visibleCount={4}
+                        renderItem={(item, { widthStyle, idx }) => (
+                            <div key={idx} style={widthStyle}>
+                                <Card card={item} />
+                            </div>
+                        )}
                 />
 
                 {/* горизонтальная линия */}
-                <div className="relative w-screen left-[calc((100%-100vw)/2)] border border-[#CCC]"/>
+                <div className="relative w-screen left-[calc((100%-100vw)/2)] border border-[#CCC]" />
 
                 <div className="my-[40px] mb-[90px]">
                     <p className="text-2xl leading-6">БЭКСТЕЙДЖ</p>
@@ -46,7 +78,7 @@ export const MainPage = () => {
                     </div>
                 </div>
 
-                <div className="relative w-screen left-[calc((100%-100vw)/2)] border border-[#CCC]"/>
+                <div className="relative w-screen left-[calc((100%-100vw)/2)] border border-[#CCC]" />
             </div>
         </>
     );

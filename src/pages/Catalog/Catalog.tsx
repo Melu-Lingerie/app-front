@@ -8,6 +8,8 @@ import { FilterSidebar } from './FilterSidebar';
 import { ProductSkeleton } from './ProductSkeleton';
 import { FilterTopBar } from './FilterTopBar';
 import api from '@/axios/api.ts';
+import {useSelector} from "react-redux";
+import {selectAppInitialized} from "@/store/appSlice.ts";
 
 const MAPPED_SELECTED_TYPES = {
     трусики: 1,
@@ -37,6 +39,8 @@ export const Catalog = () => {
     // локальные значения для UI ползунка
     const [localMinVal, setLocalMinVal] = useState(0);
     const [localMaxVal, setLocalMaxVal] = useState(90000);
+
+    const initialized = useSelector(selectAppInitialized);
 
     const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -233,9 +237,9 @@ export const Catalog = () => {
                     }}
                 />
 
-                {loading
+                {loading || !initialized
                     ? Array.from({ length: 8 }).map((_, i) => (
-                        <ProductSkeleton key={`skeleton-${i}`} />
+                        <ProductSkeleton withBorder key={`skeleton-${i}`} />
                     ))
                     : goods.map((item, index) => (
                         <motion.div

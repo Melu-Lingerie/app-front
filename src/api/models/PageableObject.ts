@@ -5,9 +5,9 @@
 import type { SortObject } from './SortObject';
 export type PageableObject = {
     unpaged?: boolean;
+    pageNumber?: number;
     paged?: boolean;
     pageSize?: number;
-    pageNumber?: number;
     offset?: number;
     sort?: SortObject;
 };
