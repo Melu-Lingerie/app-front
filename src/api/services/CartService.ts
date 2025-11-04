@@ -7,6 +7,7 @@ import type { CartAddFacadeResponseDto } from '../models/CartAddFacadeResponseDt
 import type { CartGetFacadeResponseDto } from '../models/CartGetFacadeResponseDto';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
+import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 import { request as __request } from '../core/request';
 export class CartService {
     /**
@@ -22,8 +23,8 @@ export class CartService {
         cartId: number,
         itemId: number,
         requestBody: number,
-    ): CancelablePromise<void> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<void> {
+        return __request(OpenAPI, { ...options,
             method: 'PUT',
             url: '/cart/{cartId}/items/{itemId}/quantity',
             path: {
@@ -49,8 +50,8 @@ export class CartService {
     public static addItemToCart(
         cartId: number,
         requestBody: CartAddFacadeRequestDto,
-    ): CancelablePromise<CartAddFacadeResponseDto> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<CartAddFacadeResponseDto> {
+        return __request(OpenAPI, { ...options,
             method: 'POST',
             url: '/cart/{cartId}/items',
             path: {
@@ -76,8 +77,8 @@ export class CartService {
     public static removeItemsFromCart(
         cartId: number,
         requestBody: Array<number>,
-    ): CancelablePromise<void> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<void> {
+        return __request(OpenAPI, { ...options,
             method: 'DELETE',
             url: '/cart/{cartId}/items',
             path: {
@@ -100,8 +101,8 @@ export class CartService {
      */
     public static getCart(
         cartId: number,
-    ): CancelablePromise<CartGetFacadeResponseDto> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<CartGetFacadeResponseDto> {
+        return __request(OpenAPI, { ...options,
             method: 'GET',
             url: '/cart/{cartId}',
             path: {
@@ -122,8 +123,8 @@ export class CartService {
      */
     public static clearCart(
         cartId: number,
-    ): CancelablePromise<number> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<number> {
+        return __request(OpenAPI, { ...options,
             method: 'DELETE',
             url: '/cart/{cartId}',
             path: {

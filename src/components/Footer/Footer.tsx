@@ -12,7 +12,7 @@ export const Footer = () => {
             </div>
 
             <div className="flex flex-col text-sm leading-[22px]">
-                <p>ГЛАВНАЯ</p>
+                <Link to="/">ГЛАВНАЯ</Link>
                 <Link to="/catalog">КАТАЛОГ</Link>
                 <p>НОВИНКИ</p>
                 <p>SECRET BOX</p>

@@ -2,11 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Pageable } from '../models/Pageable';
 import type { ProductCardResponse } from '../models/ProductCardResponse';
 import type { ProductCatalogResponseDto } from '../models/ProductCatalogResponseDto';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
+import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 import { request as __request } from '../core/request';
 export class ProductsService {
     /**
@@ -18,8 +18,8 @@ export class ProductsService {
      */
     public static getProductCardInfo(
         productId: number,
-    ): CancelablePromise<ProductCardResponse> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<ProductCardResponse> {
+        return __request(OpenAPI, { ...options,
             method: 'GET',
             url: '/products/{productId}',
             path: {
@@ -34,7 +34,6 @@ export class ProductsService {
     /**
      * Получить каталог товаров
      * Возвращает страницу элементов каталога с фильтрами по цене, категориям, размерам и цветам; поддерживает пагинацию и сортировку.
-     * @param pageable
      * @param name Имя товара
      * @param minPrice Минимальная цена фильтра
      * @param maxPrice Максимальная цена фильтра
@@ -43,11 +42,13 @@ export class ProductsService {
      * @param sizesOfBraWithCups
      * @param colors
      * @param productStatus запрашиваемый статус продукта
+     * @param page Zero-based page index (0..N)
+     * @param size The size of the page to be returned
+     * @param sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
      * @returns ProductCatalogResponseDto Страница элементов каталога
      * @throws ApiError
      */
     public static getCatalog(
-        pageable: Pageable,
         name?: string,
         minPrice?: number,
         maxPrice?: number,
@@ -56,8 +57,11 @@ export class ProductsService {
         sizesOfBraWithCups?: Array<string>,
         colors?: Array<string>,
         productStatus?: 'NOT_AVAILABLE' | 'AVAILABLE' | 'NEW' | 'SOON',
-    ): CancelablePromise<ProductCatalogResponseDto> {
-        return __request(OpenAPI, {
+        page?: number,
+        size: number = 20,
+        sort?: Array<string>,
+     options?: Partial<ApiRequestOptions>): CancelablePromise<ProductCatalogResponseDto> {
+        return __request(OpenAPI, { ...options,
             method: 'GET',
             url: '/products/catalog',
             query: {
@@ -69,7 +73,9 @@ export class ProductsService {
                 'sizesOfBraWithCups': sizesOfBraWithCups,
                 'colors': colors,
                 'productStatus': productStatus,
-                'pageable': pageable,
+                'page': page,
+                'size': size,
+                'sort': sort,
             },
             errors: {
                 400: `Некорректные параметры запроса`,

@@ -18,6 +18,7 @@ export const FilterAccordion = ({
                                 }: FilterAccordionProps) => (
     <div className="w-full mx-auto py-4">
         <button
+            type="button"
             onClick={onToggle}
             className="w-full flex justify-between items-center text-left text-[14px] leading-[18px] uppercase cursor-pointer"
         >

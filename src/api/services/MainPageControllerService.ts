@@ -5,14 +5,15 @@
 import type { BannerMainPageFacadeDto } from '../models/BannerMainPageFacadeDto';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
+import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 import { request as __request } from '../core/request';
 export class MainPageControllerService {
     /**
      * @returns BannerMainPageFacadeDto OK
      * @throws ApiError
      */
-    public static toBannerMainPageFacadeDto(): CancelablePromise<Array<BannerMainPageFacadeDto>> {
-        return __request(OpenAPI, {
+    public static toBannerMainPageFacadeDto( options?: Partial<ApiRequestOptions>): CancelablePromise<Array<BannerMainPageFacadeDto>> {
+        return __request(OpenAPI, { ...options,
             method: 'GET',
             url: '/main-page/banner',
         });

@@ -12,3 +12,4 @@ export {Spinner} from './Spinner';
 export {ScrollRestoration} from './ScrollRestoration';
 export {CookieNotice} from './CookieNotice';
 export {DotsLoader} from './DotsLoader';
+export {FallbackHeroCreative} from './FallbackHeroCreative';

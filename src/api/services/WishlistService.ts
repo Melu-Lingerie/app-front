@@ -7,6 +7,7 @@ import type { WishlistAddFacadeResponseDto } from '../models/WishlistAddFacadeRe
 import type { WishlistGetFacadeResponseDto } from '../models/WishlistGetFacadeResponseDto';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
+import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 import { request as __request } from '../core/request';
 export class WishlistService {
     /**
@@ -20,8 +21,8 @@ export class WishlistService {
     public static addItemToWishlist(
         wishlistId: number,
         requestBody: WishlistAddFacadeRequestDto,
-    ): CancelablePromise<WishlistAddFacadeResponseDto> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<WishlistAddFacadeResponseDto> {
+        return __request(OpenAPI, { ...options,
             method: 'POST',
             url: '/wishlist/{wishlistId}/items',
             path: {
@@ -47,8 +48,8 @@ export class WishlistService {
     public static removeItemsFromWishlist(
         wishlistId: number,
         requestBody: Array<number>,
-    ): CancelablePromise<void> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<void> {
+        return __request(OpenAPI, { ...options,
             method: 'DELETE',
             url: '/wishlist/{wishlistId}/items',
             path: {
@@ -71,8 +72,8 @@ export class WishlistService {
      */
     public static getWishlist(
         wishlistId: number,
-    ): CancelablePromise<WishlistGetFacadeResponseDto> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<WishlistGetFacadeResponseDto> {
+        return __request(OpenAPI, { ...options,
             method: 'GET',
             url: '/wishlist/{wishlistId}',
             path: {
@@ -93,8 +94,8 @@ export class WishlistService {
      */
     public static clearWishlist(
         wishlistId: number,
-    ): CancelablePromise<number> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<number> {
+        return __request(OpenAPI, { ...options,
             method: 'DELETE',
             url: '/wishlist/{wishlistId}',
             path: {

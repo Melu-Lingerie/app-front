@@ -9,12 +9,18 @@ export const initApp = createAsyncThunk<void, void, { state: RootState }>(
     async (_, { getState, dispatch }) => {
         const { cart, wishlist } = getState();
 
+        const tasks: Array<Promise<unknown>> = [];
+
         if (cart.cartId) {
-            await dispatch(fetchCart(cart.cartId));
+            tasks.push(dispatch(fetchCart(cart.cartId)).unwrap());
         }
 
         if (wishlist.wishlistId) {
-            await dispatch(fetchWishlist(Number(wishlist.wishlistId)));
+            tasks.push(dispatch(fetchWishlist(Number(wishlist.wishlistId))).unwrap());
+        }
+
+        if (tasks.length > 0) {
+            await Promise.allSettled(tasks);
         }
     }
 );

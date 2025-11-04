@@ -5,6 +5,7 @@
 import type { UploadMediaResponseDto } from '../models/UploadMediaResponseDto';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
+import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 import { request as __request } from '../core/request';
 export class MediaService {
     /**
@@ -23,8 +24,8 @@ export class MediaService {
              */
             file: Blob;
         },
-    ): CancelablePromise<UploadMediaResponseDto> {
-        return __request(OpenAPI, {
+     options?: Partial<ApiRequestOptions>): CancelablePromise<UploadMediaResponseDto> {
+        return __request(OpenAPI, { ...options,
             method: 'POST',
             url: '/media/upload',
             headers: {

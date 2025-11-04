@@ -11,18 +11,20 @@ interface Props {
     selectedSizes: string[];
     selectedColors: string[];
     toggleFilterValue: (key: 'types' | 'sizes' | 'colors', value: string) => void;
+    onPriceCommit?: (values: { min: number; max: number }) => void; // 👈 добавили
 }
 
 export const FilterSidebar = ({
-    minVal,
-    maxVal,
-    selectedTypes,
-    setMinVal,
-    setMaxVal,
-    toggleFilterValue,
-    selectedSizes,
-    selectedColors,
-}: Props) => {
+                                  minVal,
+                                  maxVal,
+                                  selectedTypes,
+                                  setMinVal,
+                                  setMaxVal,
+                                  toggleFilterValue,
+                                  selectedSizes,
+                                  selectedColors,
+                                  onPriceCommit, // 👈 добавили
+                              }: Props) => {
     const [isPriceOpen, setIsPriceOpen] = useState(false);
     const [isTypeOpen, setIsTypeOpen] = useState(false);
     const [isSizeOpen, setIsSizeOpen] = useState(false);
@@ -47,9 +49,14 @@ export const FilterSidebar = ({
                                 valueMin={minVal}
                                 valueMax={maxVal}
                                 step={100}
-                                onChange={({min, max}) => {
+                                onChange={({ min, max }) => {
+                                    // локальные апдейты (в Catalog эти сеттеры уже могут запускать дебаунс записи в URL)
                                     setMinVal(min);
                                     setMaxVal(max);
+                                }}
+                                onCommit={({ min, max }) => {
+                                    // финальный коммит — Catalog сделает flush в queryString
+                                    onPriceCommit?.({ min, max });
                                 }}
                             />
                         </div>

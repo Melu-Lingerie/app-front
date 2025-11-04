@@ -425,9 +425,9 @@ export function ProductPage() {
                             gap={20}
                             loading={relatedLoading}
                             visibleCount={6}
-                            renderItem={(item, { widthStyle, idx }) => (
+                            renderItem={(item, {widthStyle, idx, reportImageHeight}) => (
                                 <div key={idx} style={widthStyle}>
-                                    <Card card={item} />
+                                    <Card card={item} reportImageHeight={reportImageHeight}/>
                                 </div>
                             )}
                         />

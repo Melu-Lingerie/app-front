@@ -1,18 +1,17 @@
-import {type Dispatch, type SetStateAction, useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Filter from '@/assets/Filter.svg';
 import ArrowDown from '@/assets/ArrowDown.svg';
 import CloseIcon from '@/assets/CloseIcon.svg';
+import type {SortOption} from '@/pages/Catalog/constants';
 
 interface FilterTopBarProps {
     filterChanges: number;
     onReset: () => void;
     selectedTypes: string[];
     toggleFn: (key: 'types' | 'sizes' | 'colors', value: string) => void;
-
-    // новые пропсы для Select
-    options: ('Все' | 'Новинки' | 'Скоро в продаже')[];
-    selectedOption: 'Все' | 'Новинки' | 'Скоро в продаже';
-    onSelectChange: Dispatch<SetStateAction<'Все' | 'Новинки' | 'Скоро в продаже'>>;
+    options: SortOption[];
+    selectedOption: SortOption;
+    onSelectChange: (val: SortOption) => void;
 }
 
 export const FilterTopBar = ({
@@ -25,14 +24,15 @@ export const FilterTopBar = ({
                                  onSelectChange,
                              }: FilterTopBarProps) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isSticky, setIsSticky] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const handleSelect = (option: 'Все' | 'Новинки' | 'Скоро в продаже') => {
-        onSelectChange(option); // уведомляем родителя
+        onSelectChange(option);
         setIsOpen(false);
     };
 
-    // закрытие по клику вне
+    // закрытие по клику вне dropdown
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -43,8 +43,29 @@ export const FilterTopBar = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // следим за скроллом и добавляем тень только после прилипания
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsSticky(window.scrollY > 0);
+        };
+        handleScroll();
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <div className="grid grid-cols-4 border border-[#CCC] relative w-screen left-[calc((100%-100vw)/2)] h-[58px]">
+        <div
+            className={`
+                sticky top-0 z-50
+                grid grid-cols-4
+                border-b border-t border-[#CCC]
+                bg-white
+                relative w-screen left-[calc((100%-100vw)/2)]
+                h-[58px]
+                transition-shadow duration-300
+                ${isSticky ? 'shadow-md' : 'shadow-none'}
+            `}
+        >
             {/* Колонка 1 — фильтры */}
             <div className="col-span-1 flex items-center px-10">
                 <img className="w-[14px] h-[14px] mr-10" src={Filter} alt="Filter" />
@@ -54,7 +75,7 @@ export const FilterTopBar = ({
                 {filterChanges > 0 && (
                     <p
                         onClick={onReset}
-                        className="text-[14px] leading-[18px] mr-5 text-[#F892B5] cursor-pointer"
+                        className="text-[14px] leading-[18px] text-[#F892B5] cursor-pointer hover:underline"
                     >
                         СБРОСИТЬ ВСЕ
                     </p>
@@ -64,7 +85,6 @@ export const FilterTopBar = ({
             {/* Колонка 2 — Select */}
             <div className="col-span-1 relative flex items-center gap-[10px] px-5">
                 <div ref={dropdownRef} className="relative">
-                    {/* кнопка селекта */}
                     <div
                         className="flex items-center gap-[6px] cursor-pointer select-none"
                         onClick={() => setIsOpen((prev) => !prev)}
@@ -80,7 +100,6 @@ export const FilterTopBar = ({
                         />
                     </div>
 
-                    {/* выпадающий список */}
                     {isOpen && (
                         <div
                             className="absolute top-full left-0 mt-2 w-[200px] bg-white border border-[#CCC] shadow-md rounded-md z-10 max-h-[200px] overflow-y-auto"
@@ -107,7 +126,7 @@ export const FilterTopBar = ({
             {/* Колонка 3 — пустая */}
             <div className="col-span-1" />
 
-            {/* Колонка 4 — выбранные фильтры-чипсы */}
+            {/* Колонка 4 — выбранные фильтры */}
             <div className="col-span-1 flex items-center gap-5 px-5 justify-end">
                 {selectedTypes.map((type) => (
                     <div
@@ -115,9 +134,9 @@ export const FilterTopBar = ({
                         className="flex items-center gap-1 cursor-pointer"
                         onClick={() => toggleFn('types', type)}
                     >
-            <span className="mr-2.5 text-[14px] leading-[18px] text-[#999] uppercase">
-              {type}
-            </span>
+                        <span className="mr-2.5 text-[14px] leading-[18px] text-[#999] uppercase">
+                            {type}
+                        </span>
                         <img src={CloseIcon} alt="Сбросить" className="w-3 h-3" />
                     </div>
                 ))}

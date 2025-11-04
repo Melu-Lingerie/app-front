@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="heartGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FDE5EE"/>
+            <stop offset="100%" stop-color="#F8C6D7"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Сердце -->
+    <path
+            d="M256 464s-48-32-112-88C80 320 32 256 32 176 32 112 80 64 144 64c40 0 80 24 112 64 32-40 72-64 112-64 64 0 112 48 112 112 0 80-48 144-112 200-64 56-112 88-112 88z"
+            fill="url(#heartGradient)"
+    />
+
+    <!-- Текст ML -->
+    <text
+            x="50%"
+            y="55%"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            font-family="Brush Script MT, cursive"
+            font-size="140"
+            fill="white"
+    >
+        ML
+    </text>
+</svg>
