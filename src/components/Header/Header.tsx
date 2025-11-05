@@ -1,34 +1,158 @@
-import { Link, useNavigate } from 'react-router-dom';
-import {useState} from 'react';
-import { useSelector } from 'react-redux';
-import SearchIcon from '@/assets/SearchIcon.svg';
-import ShoppingCart from '@/assets/ShoppingCart.svg';
-import MenuIcon from '@/assets/MenuIcon.svg';
-import GuestIcon from '@/assets/GuestIcon.svg';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Menu, Search, ShoppingCart, User, LogOut, Loader2 } from 'lucide-react';
+import Cookies from 'js-cookie';
+import api from '@/axios/api.ts';
 
 // redux
-import { type RootState } from '@/store';
+import { type RootState, type AppDispatch, initApp } from '@/store';
 
 // animation
 import { motion, AnimatePresence } from 'framer-motion';
 import {LoginModal, RegisterModal, VerifyEmailModal} from '@/components';
-import {selectIsAuthenticated} from '@/store/userSlice.ts';
+import { selectIsAuthenticated, clearUser } from '@/store/userSlice.ts';
+import { setCartId } from '@/store/cartSlice';
+import { setWishlistId } from '@/store/wishlistSlice';
+import { Service } from '@/api/services/Service.ts';
+import { setInitialized } from '@/store/appSlice.ts';
+
+// --- device info helpers ---
+const detectDeviceInfo = async () => {
+    const ua = navigator.userAgent;
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const screenDensity = window.devicePixelRatio || 1;
+
+    let deviceType: 'DESKTOP' | 'MOBILE' | 'TABLET' = 'DESKTOP';
+    if (/Mobi|Android/i.test(ua)) deviceType = 'MOBILE';
+    else if (/Tablet|iPad/i.test(ua)) deviceType = 'TABLET';
+
+    let browserName = 'Unknown';
+    let browserVersion = '';
+    if (ua.includes('Chrome')) {
+        browserName = 'Chrome';
+        browserVersion = ua.match(/Chrome\/([0-9.]+)/)?.[1] || '';
+    } else if (ua.includes('Firefox')) {
+        browserName = 'Firefox';
+        browserVersion = ua.match(/Firefox\/([0-9.]+)/)?.[1] || '';
+    } else if (ua.includes('Safari')) {
+        browserName = 'Safari';
+        browserVersion = ua.match(/Version\/([0-9.]+)/)?.[1] || '';
+    }
+
+    let osVersion = 'Unknown';
+    if (ua.includes('Windows')) osVersion = 'Windows';
+    else if (ua.includes('Mac')) osVersion = 'MacOS';
+    else if (ua.includes('Android')) osVersion = 'Android';
+    else if (ua.includes('iPhone') || ua.includes('iPad')) osVersion = 'iOS';
+
+    const deviceName = (navigator as any).userAgentData?.platform
+        ? (navigator as any).userAgentData.platform.slice(0, 100)
+        : (navigator.userAgent || 'Unknown').slice(0, 100);
+
+    return {
+        deviceType,
+        ipAddress: undefined as string | undefined,
+        deviceName,
+        osVersion,
+        browserName,
+        browserVersion,
+        screenWidth,
+        screenHeight,
+        screenDensity,
+    };
+};
+
+// --- session helpers (как в CookieNotice/LoginModal) ---
+const SESSION_COOKIE_NAME = 'sessionId';
+
+const setCookie = (name: string, value: string, days: number) => {
+    const maxAge = days * 24 * 60 * 60;
+    document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; Secure; SameSite=Lax`;
+};
+
+const sendSessionToServer = async () => {
+    const deviceInfo = await detectDeviceInfo();
+    return api.post('/users/guests', { deviceInfo });
+};
 
 export const Header = () => {
-    const textBtn = 'relative mr-4 text-sm last:mr-0 cursor-pointer';
-    const iconBtn = 'relative mr-4 size-4 last:mr-0';
+    const textBtn = 'relative text-sm cursor-pointer';
+    const iconBtn = 'relative size-4 cursor-pointer';
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [showVerify, setShowVerify] = useState(false);
     const [verifyEmail, setVerifyEmail] = useState('');
     const [verifyExpires, setVerifyExpires] = useState(0);
 
+    const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
+    const accountBtnRef = useRef<HTMLButtonElement | null>(null);
+    const accountMenuRef = useRef<HTMLDivElement | null>(null);
+
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
+    const location = useLocation();
+    const isOnAccount = location.pathname.startsWith('/account');
 
     const itemsCount = useSelector((state: RootState) => state.cart.itemsCount);
     const wishlistCount = useSelector((state: RootState) => state.wishlist.itemsCount);
     const initialized = useSelector((state: RootState) => state.app.initialized);
     const isAuthenticated = useSelector(selectIsAuthenticated);
+
+    useEffect(() => {
+        const onDown = (e: MouseEvent) => {
+            const target = e.target as Node | null;
+            if (!target) return;
+            if (accountMenuRef.current && accountMenuRef.current.contains(target)) return;
+            if (accountBtnRef.current && accountBtnRef.current.contains(target)) return;
+            setIsAccountMenuOpen(false);
+        };
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setIsAccountMenuOpen(false);
+        };
+        document.addEventListener('mousedown', onDown);
+        window.addEventListener('keydown', onKey);
+        return () => {
+            document.removeEventListener('mousedown', onDown);
+            window.removeEventListener('keydown', onKey);
+        };
+    }, []);
+
+    const handleLogout = async () => {
+      setLoggingOut(true);
+      try {
+        // 1) Запрос на разлогин (по refreshToken из куки)
+        const refreshToken = Cookies.get('refreshToken') || '';
+        await Service.logout({ refreshToken: refreshToken });
+        dispatch(setInitialized(false));
+        setIsAccountMenuOpen(false);
+
+          // 2) Чистим refreshToken и пользователя (accessToken и др.) из Redux
+        Cookies.remove('refreshToken', { path: '/' });
+        dispatch(clearUser());
+
+        // 3) Генерим новую гостевую сессию как в CookieNotice
+        const newSid = crypto.randomUUID();
+        setCookie(SESSION_COOKIE_NAME, newSid, 30);
+
+        // 4) Отправляем сессию на сервер и обновляем cart/wishlist, затем initApp
+        const res = await sendSessionToServer();
+        if (res.data?.cartId) {
+          dispatch(setCartId(res.data.cartId));
+        }
+        if (res.data?.wishlistId) {
+          dispatch(setWishlistId(res.data.wishlistId));
+        }
+        await dispatch(initApp({ userId: res.data?.userId }));
+
+      } catch {
+        // Ошибку можно показать в toast/alert при необходимости
+      } finally {
+        setLoggingOut(false);
+      }
+    };
 
     return (
         <>
@@ -65,7 +189,7 @@ export const Header = () => {
                 {/* Левая часть */}
                 <div className="flex items-center">
                     <button type="button" className={iconBtn}>
-                        <img src={MenuIcon} alt="Меню" />
+                        <Menu className="w-4 h-4" aria-hidden="true" />
                     </button>
                     {/*<button type="button" className={textBtn}>*/}
                     {/*    MIX’N’MATCH*/}
@@ -106,7 +230,7 @@ export const Header = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.3 }}
-                                className="flex items-center"
+                                className="flex items-center gap-4"
                             >
                                 {/* Wishlist */}
                                 <button type="button" className={textBtn} onClick={() => navigate('/account/favorites')}>
@@ -127,7 +251,7 @@ export const Header = () => {
                                     </AnimatePresence>
                                 </button>
 
-                                {/* Login */}
+                                {/* Login / Account */}
                                 {!isAuthenticated ? (
                                     <button
                                         type="button"
@@ -137,19 +261,71 @@ export const Header = () => {
                                         ВОЙТИ
                                     </button>
                                 ) : (
-                                    // Если залогинен → Иконка аккаунта
-                                    <button
-                                        type="button"
-                                        className={iconBtn}
-                                        onClick={() => navigate('/account')}
-                                    >
-                                        <img src={GuestIcon} alt="Аккаунт" />
-                                    </button>
+                                    <div className="relative flex items-center">
+                                        <button
+                                            ref={accountBtnRef}
+                                            type="button"
+                                            className={iconBtn}
+                                            onClick={() => setIsAccountMenuOpen((v) => !v)}
+                                            aria-haspopup="menu"
+                                            aria-expanded={isAccountMenuOpen}
+                                            aria-controls="account-menu"
+                                        >
+                                            <User className="w-4 h-4" aria-hidden="true" />
+                                        </button>
+
+                                        <AnimatePresence>
+                                          {isAccountMenuOpen && (
+                                            <motion.div
+                                              id="account-menu"
+                                              ref={accountMenuRef}
+                                              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                                              exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                                              transition={{ duration: 0.18, ease: 'easeOut' }}
+                                              className="absolute left-1/2 top-full -translate-x-1/2 mt-2 w-48 rounded-2xl border border-gray-200 bg-white shadow-2xl z-50 overflow-hidden origin-top"
+                                              role="menu"
+                                              aria-busy={loggingOut}
+                                            >
+                                              {/* caret */}
+                                              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white border-l border-t border-gray-200 rotate-45" />
+                                              <button
+                                                type="button"
+                                                className="w-full text-left px-4 py-2 text-sm hover:bg-[#F8C6D7]/10 focus:bg-[#F8C6D7]/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#F8C6D7] flex items-center gap-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:focus:bg-transparent"
+                                                onClick={() => { setIsAccountMenuOpen(false); navigate('/account'); }}
+                                                role="menuitem"
+                                                disabled={loggingOut || isOnAccount}
+                                                aria-disabled={loggingOut || isOnAccount}
+                                              >
+                                                <User className="w-4 h-4" aria-hidden="true" />
+                                                <span>Мой профиль</span>
+                                              </button>
+                                              <div className="h-px bg-gray-100" />
+                                              <button
+                                                type="button"
+                                                className={`w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[#F8C6D7]/10 focus:bg-[#F8C6D7]/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#F8C6D7] flex items-center gap-3 ${loggingOut ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                                onClick={handleLogout}
+                                                role="menuitem"
+                                                disabled={loggingOut}
+                                                aria-busy={loggingOut}
+                                              >
+                                                {loggingOut ? (
+                                                  <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                                                ) : (
+                                                  <LogOut className="w-4 h-4" aria-hidden="true" />
+                                                )}
+                                                <span>{loggingOut ? 'Выходим…' : 'Выход'}</span>
+                                              </button>
+                                            </motion.div>
+                                          )}
+                                        </AnimatePresence>
+                                        <span aria-hidden="true" className="absolute pointer-events-none" />
+                                    </div>
                                 )}
 
                                 {/* Search */}
                                 <button type="button" className={iconBtn}>
-                                    <img src={SearchIcon} alt="Поиск" />
+                                    <Search className="w-4 h-4" aria-hidden="true" />
                                 </button>
 
                                 {/* Cart */}
@@ -158,7 +334,7 @@ export const Header = () => {
                                     className={`${iconBtn} cursor-pointer`}
                                     onClick={() => navigate('/cart')}
                                 >
-                                    <img src={ShoppingCart} alt="Корзина" />
+                                    <ShoppingCart className="w-4 h-4" aria-hidden="true" />
                                     <AnimatePresence>
                                         {itemsCount > 0 && (
                                             <motion.span

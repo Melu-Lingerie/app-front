@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { initApp } from './index'; // твой thunk
 
 interface AppState {
@@ -14,7 +14,12 @@ const initialState: AppState = {
 const appSlice = createSlice({
     name: 'app',
     initialState,
-    reducers: {},
+    reducers: {
+        setInitialized: (state, action: PayloadAction<boolean>) => {
+            state.initialized = action.payload;
+            if (!action.payload) state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(initApp.pending, (state) => {
@@ -32,6 +37,8 @@ const appSlice = createSlice({
 });
 
 export default appSlice.reducer;
+
+export const { setInitialized } = appSlice.actions;
 
 // ✅ Селекторы
 export const selectAppInitialized = (state: { app: AppState }) =>
