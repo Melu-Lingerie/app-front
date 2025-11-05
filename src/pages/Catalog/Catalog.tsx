@@ -22,8 +22,24 @@ import {
 } from '@/pages/Catalog/constants';
 
 export const Catalog = () => {
-    const [_, setSearchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const initialized = useSelector(selectAppInitialized);
+
+    // --- управление стартовой страницей и синхронизацией URL ---
+    const initialPageRef = useRef<number | null>(null);
+    const didInitialScrollRef = useRef(false);
+    const suppressUrlSyncRef = useRef(true); // блокируем обновление ?page до начального скролла
+
+    if (initialPageRef.current === null) {
+        const raw = searchParams.get('page');
+        const p = raw == null ? null : Number(raw);
+        // Не скроллим, если страницы нет или она 0
+        initialPageRef.current = p != null && Number.isFinite(p) && p > 0 ? p : null;
+        if (initialPageRef.current === null) {
+            // если скролла не будет — сразу разрешаем синхронизацию URL
+            suppressUrlSyncRef.current = false;
+        }
+    }
 
     // === фильтры из query ===
     const { filters, updateQuery } = useCatalogFilters(MAPPED_SELECTED_TYPES);
@@ -102,8 +118,11 @@ export const Catalog = () => {
 
     // === обновление ?page при скролле ===
     useEffect(() => {
+        if (!initialized) return;
+
         let ticking = false;
         const handleScroll = () => {
+            if (suppressUrlSyncRef.current) return;
             if (ticking) return;
             ticking = true;
 
@@ -140,7 +159,7 @@ export const Catalog = () => {
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [initialized]);
 
     // === постраничная разбивка текущих goods ===
     const pages = useMemo(() => {
@@ -149,6 +168,38 @@ export const Catalog = () => {
             goods.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
         );
     }, [goods]);
+
+    // === начальная прокрутка к странице из ?page ===
+    useEffect(() => {
+        if (!initialized) return;
+        if (didInitialScrollRef.current) return;
+
+        const desired = initialPageRef.current;
+        // если страницы нет или это 0 — ничего не скроллим
+        if (desired == null) {
+            suppressUrlSyncRef.current = false;
+            didInitialScrollRef.current = true;
+            return;
+        }
+
+        const el = anchorsRef.current[desired];
+
+        // ждём пока появится якорь нужной страницы
+        if (!el) return;
+
+        suppressUrlSyncRef.current = true;
+
+        const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+
+        requestAnimationFrame(() => {
+            window.scrollTo({ top, behavior: 'auto' });
+            // даём браузеру один кадр, чтобы обновить scrollY
+            requestAnimationFrame(() => {
+                didInitialScrollRef.current = true;
+                suppressUrlSyncRef.current = false;
+            });
+        });
+    }, [initialized, pages.length, minPage]);
 
     // === счётчик активных фильтров ===
     const filterChanges =
