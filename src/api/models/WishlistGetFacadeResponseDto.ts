@@ -2,12 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { WishlistItemGetResponseDto } from './WishlistItemGetResponseDto';
+import type { WishlistItemGetFacadeResponseDto } from './WishlistItemGetFacadeResponseDto';
 /**
  * Ответ на получение списка желаний: элементы и их количество
  */
 export type WishlistGetFacadeResponseDto = {
-    items: Array<WishlistItemGetResponseDto>;
+    items: Array<WishlistItemGetFacadeResponseDto>;
     /**
      * Общее количество элементов в списке
      */

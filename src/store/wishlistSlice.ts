@@ -2,13 +2,13 @@ import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/tool
 import {
     WishlistService,
     type WishlistGetFacadeResponseDto,
-    type WishlistItemGetResponseDto,
+    type WishlistItemGetFacadeResponseDto
 } from '@/api';
 import type { RootState } from './index.ts';
 
 interface WishlistState {
     wishlistId: string | null;
-    items: WishlistItemGetResponseDto[];
+    items: WishlistItemGetFacadeResponseDto[];
     itemsCount: number;
     loading: boolean;
     error: string | null;
@@ -43,7 +43,7 @@ export const toggleWishlistItem = createAsyncThunk<
 >('wishlist/toggleWishlistItem', async ({ wishlistId, productId }, { getState, dispatch, rejectWithValue }) => {
     try {
         const state = getState();
-        const existingItem = state.wishlist.items.find((i) => i.productId === productId);
+        const existingItem = state.wishlist.items.find((i) => i.productCatalogResponseDto?.productId === productId);
 
         if (existingItem?.id) {
             // 🔴 удаляем

@@ -376,11 +376,12 @@ export const useCatalogData = (filters: {
         // при reload/navigate — кэш не используем (loadInitial сам почистит/прочитает по navType)
         setMinPage(0);
         setMaxPage(0);
+        if (!initialized) return;
         void (async () => {
             await loadInitial();
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [JSON.stringify(filters)]);
+    }, [JSON.stringify(filters), initialized]);
 
     return {
         goods,

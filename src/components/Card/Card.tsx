@@ -36,7 +36,7 @@ export const Card = ({
     const wishlistItems = useSelector(selectWishlistItems);
     const wishlistLoading = useSelector(selectWishlistLoading);
 
-    const inWishlist = wishlistItems.some((w) => w.productId === productId);
+    const inWishlist = wishlistItems.some((w) => w.productCatalogResponseDto?.productId === productId);
 
     const handleClick = () => {
         navigate(`/catalog/${productId}`);

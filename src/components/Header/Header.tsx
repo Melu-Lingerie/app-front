@@ -1,39 +1,78 @@
 import { Link, useNavigate } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import { useSelector } from 'react-redux';
 import SearchIcon from '@/assets/SearchIcon.svg';
 import ShoppingCart from '@/assets/ShoppingCart.svg';
 import MenuIcon from '@/assets/MenuIcon.svg';
+import GuestIcon from '@/assets/GuestIcon.svg';
 
 // redux
-import { useSelector } from 'react-redux';
 import { type RootState } from '@/store';
 
 // animation
 import { motion, AnimatePresence } from 'framer-motion';
+import {LoginModal, RegisterModal, VerifyEmailModal} from '@/components';
+import {selectIsAuthenticated} from '@/store/userSlice.ts';
 
 export const Header = () => {
-    const textBtn = 'relative mr-4 text-sm last:mr-0';
+    const textBtn = 'relative mr-4 text-sm last:mr-0 cursor-pointer';
     const iconBtn = 'relative mr-4 size-4 last:mr-0';
+    const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+    const [showVerify, setShowVerify] = useState(false);
+    const [verifyEmail, setVerifyEmail] = useState('');
+    const [verifyExpires, setVerifyExpires] = useState(0);
 
     const navigate = useNavigate();
 
     const itemsCount = useSelector((state: RootState) => state.cart.itemsCount);
     const wishlistCount = useSelector((state: RootState) => state.wishlist.itemsCount);
     const initialized = useSelector((state: RootState) => state.app.initialized);
+    const isAuthenticated = useSelector(selectIsAuthenticated);
 
     return (
         <>
+            <LoginModal
+                isOpen={isLoginOpen}
+                onClose={() => setIsLoginOpen(false)}
+                onSwitchToRegister={() => {
+                    setTimeout(() => setIsRegisterOpen(true), 200);
+                }}
+            />
+
+            <RegisterModal
+                isOpen={isRegisterOpen}
+                onClose={() => setIsRegisterOpen(false)}
+                onSwitchToLogin={() => {
+                    setIsRegisterOpen(false);
+                    setTimeout(() => setIsLoginOpen(true), 200);
+                }}
+                onSwitchToVerify={(email, expires) => {
+                    setIsRegisterOpen(false);
+                    setVerifyEmail(email);
+                    setVerifyExpires(expires);
+                    setShowVerify(true);
+                }}
+            />
+
+            <VerifyEmailModal
+                isOpen={showVerify}
+                email={verifyEmail}
+                expiresIn={verifyExpires}
+                onClose={() => setShowVerify(false)}
+            />
             <div className="relative flex items-center justify-between h-[49px] px-10">
                 {/* Левая часть */}
                 <div className="flex items-center">
                     <button type="button" className={iconBtn}>
                         <img src={MenuIcon} alt="Меню" />
                     </button>
-                    <button type="button" className={textBtn}>
-                        MIX’N’MATCH
-                    </button>
-                    <button type="button" className={textBtn}>
-                        SECRET BOX
-                    </button>
+                    {/*<button type="button" className={textBtn}>*/}
+                    {/*    MIX’N’MATCH*/}
+                    {/*</button>*/}
+                    {/*<button type="button" className={textBtn}>*/}
+                    {/*    SECRET BOX*/}
+                    {/*</button>*/}
                 </div>
 
                 {/* Заголовок */}
@@ -70,7 +109,7 @@ export const Header = () => {
                                 className="flex items-center"
                             >
                                 {/* Wishlist */}
-                                <button type="button" className={textBtn}>
+                                <button type="button" className={textBtn} onClick={() => navigate('/account/favorites')}>
                                     ИЗБРАННОЕ
                                     <AnimatePresence>
                                         {wishlistCount > 0 && (
@@ -89,9 +128,24 @@ export const Header = () => {
                                 </button>
 
                                 {/* Login */}
-                                <button type="button" className={textBtn}>
-                                    ВОЙТИ
-                                </button>
+                                {!isAuthenticated ? (
+                                    <button
+                                        type="button"
+                                        className={textBtn}
+                                        onClick={() => setIsLoginOpen(true)}
+                                    >
+                                        ВОЙТИ
+                                    </button>
+                                ) : (
+                                    // Если залогинен → Иконка аккаунта
+                                    <button
+                                        type="button"
+                                        className={iconBtn}
+                                        onClick={() => navigate('/account')}
+                                    >
+                                        <img src={GuestIcon} alt="Аккаунт" />
+                                    </button>
+                                )}
 
                                 {/* Search */}
                                 <button type="button" className={iconBtn}>

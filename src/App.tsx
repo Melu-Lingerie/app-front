@@ -8,7 +8,7 @@ import {
     ScrollRestoration,
     CookieNotice,
 } from '@/components';
-import { CartPage, MainPage, ProductPage } from '@/pages';
+import {AccountPage, CartPage, MainPage, ProductPage} from '@/pages';
 
 function App() {
     return (
@@ -20,6 +20,7 @@ function App() {
                     <Route path="catalog" element={<Catalog />} />
                     <Route path="catalog/:id" element={<ProductPage />} />
                     <Route path="cart" element={<CartPage />} />
+                    <Route path="account/*" element={<AccountPage />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
             </Routes>

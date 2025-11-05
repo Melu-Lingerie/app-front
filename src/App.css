@@ -14,3 +14,22 @@ html, body {
     margin: 0;
     padding: 0;
 }
+
+/* Только для элементов с классом .scroll-custom */
+.scroll-custom::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scroll-custom::-webkit-scrollbar-thumb {
+    background-color: #f8c6d7;
+    border-radius: 4px;
+}
+
+.scroll-custom::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scroll-custom {
+    scrollbar-width: thin;
+    scrollbar-color: #f8c6d7 transparent;
+}

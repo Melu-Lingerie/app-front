@@ -17,6 +17,10 @@ const appSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(initApp.pending, (state) => {
+                state.initialized = false;
+                state.error = null;
+            })
             .addCase(initApp.fulfilled, (state) => {
                 state.initialized = true;
             })

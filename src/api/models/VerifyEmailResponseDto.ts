@@ -2,7 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * Ответ на подтверждение email
+ */
 export type VerifyEmailResponseDto = {
+    /**
+     * ID пользователя
+     */
     userId?: number;
     verified?: boolean;
 };

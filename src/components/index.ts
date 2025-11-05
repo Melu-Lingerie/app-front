@@ -13,3 +13,6 @@ export {ScrollRestoration} from './ScrollRestoration';
 export {CookieNotice} from './CookieNotice';
 export {DotsLoader} from './DotsLoader';
 export {FallbackHeroCreative} from './FallbackHeroCreative';
+export {LoginModal} from './Modals';
+export {RegisterModal} from './Modals';
+export {VerifyEmailModal} from './Modals';

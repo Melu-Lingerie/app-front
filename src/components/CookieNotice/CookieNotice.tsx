@@ -4,6 +4,7 @@ import api from '@/axios/api.ts';
 import { useNotifications } from '@/hooks/useNotifications.ts';
 import { useDispatch } from 'react-redux';
 import { setCartId } from '@/store/cartSlice';
+import { setUserId } from '@/store/userSlice';
 import { setWishlistId } from '@/store/wishlistSlice';
 import {type AppDispatch, initApp} from '@/store'; // импортируем initApp
 
@@ -171,6 +172,10 @@ export const CookieNotice = () => {
 
                 let hasUpdates = false;
 
+                if (res.data?.userId) {
+                    dispatch(setUserId(res.data.userId));
+                }
+
                 if (res.data?.cartId) {
                     dispatch(setCartId(res.data.cartId));
                     hasUpdates = true;
@@ -181,7 +186,6 @@ export const CookieNotice = () => {
                     hasUpdates = true;
                 }
 
-                // ✅ загружаем корзину и wishlist только после того, как получили ID
                 if (hasUpdates) {
                     dispatch(initApp());
                 }

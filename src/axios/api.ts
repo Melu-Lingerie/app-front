@@ -3,6 +3,7 @@ import axios, {
     type InternalAxiosRequestConfig,
     CanceledError,
 } from 'axios';
+import { store } from '@/store';
 import qs from 'qs';
 import {isAbortError} from '@/utils/utils.ts';
 
@@ -107,6 +108,13 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     pendingRequests.set(key, controller);
 
     requestMeta.set(config, { key, controller });
+    const state = store.getState();
+    const token = state.user?.accessToken;
+
+    if (token) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 });
 
