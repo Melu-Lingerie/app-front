@@ -55,7 +55,7 @@ export const initApp = createAsyncThunk<void, void, { state: RootState }>(
                             });
                     }
                 })
-                .catch((err) => {
+                .catch(() => {
                     Cookies.remove('refreshToken');
                     dispatch(clearUser());
                 });

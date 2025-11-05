@@ -53,10 +53,9 @@ export const useCatalogData = (filters: {
     const CACHE_KEY = 'catalog_cache_v1';
 
     // навигация (фикс для reload vs back/forward)
-    const navTypeRef = useRef<NavType>(() => {
-        const entry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-        return (entry?.type as NavType) ?? undefined;
-    }) as React.MutableRefObject<NavType>;
+    const navTypeRef = useRef<NavType>(
+        (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined)?.type as NavType
+    );
 
     // стабильные refs, чтобы не пересоздавать observer
     const loadingDownRef = useRef(false);
@@ -64,8 +63,8 @@ export const useCatalogData = (filters: {
     const hasMoreRef = useRef(true);
     const initializedRef = useRef(initialized);
     const minPageRef = useRef(0);
-    const loadMoreDownRef = useRef<() => Promise<void>>();
-    const loadMoreUpRef = useRef<() => Promise<void>>();
+    const loadMoreDownRef = useRef<() => Promise<void> | null>(null);
+    const loadMoreUpRef = useRef<() => Promise<void> | null>(null);
 
     useEffect(() => {
         loadingDownRef.current = loadingDown;

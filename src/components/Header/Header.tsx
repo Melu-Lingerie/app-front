@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import { useSelector } from 'react-redux';
 import SearchIcon from '@/assets/SearchIcon.svg';
 import ShoppingCart from '@/assets/ShoppingCart.svg';

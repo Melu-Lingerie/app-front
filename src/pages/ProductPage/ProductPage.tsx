@@ -67,7 +67,7 @@ export function ProductPage() {
 
     // есть ли товар в избранном?
     const inWishlist = wishlistItems.some(
-        (w) => w.productId === product?.productId
+        (w) => w.productCatalogResponseDto?.productId === product?.productId
     );
 
     // загрузка товара

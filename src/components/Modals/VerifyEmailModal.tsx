@@ -129,7 +129,9 @@ export const VerifyEmailModal: React.FC<VerifyEmailModalProps> = ({ isOpen, emai
                                 {digits.map((val, idx) => (
                                     <input
                                         key={idx}
-                                        ref={(el) => (inputsRef.current[idx] = el)}
+                                        ref={(el) => {
+                                            inputsRef.current[idx] = el;
+                                        }}
                                         type="text"
                                         inputMode="numeric"
                                         pattern="[0-9]*"

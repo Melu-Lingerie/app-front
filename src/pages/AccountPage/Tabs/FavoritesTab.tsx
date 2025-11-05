@@ -11,8 +11,8 @@ export const FavoritesTab = () => {
     const navigate = useNavigate();
     const wishListItems = useSelector(selectWishlistItems);
     const initialized = useSelector(selectAppInitialized);
-    const items: any = wishListItems.map((wishlistItem) => {
-        return wishlistItem.productCatalogResponseDto;
+    const items = wishListItems.map((wishlistItem) => {
+        return wishlistItem.productCatalogResponseDto!;
     });
 
     // Логика отображения
@@ -74,7 +74,7 @@ export const FavoritesTab = () => {
                                 exit={{ opacity: 0, y: 20 }}
                                 transition={{ duration: 0.3, delay: idx * 0.05 }}
                             >
-                                <Card card={item as any} />
+                                <Card card={item} />
                             </motion.div>
                         ))}
                     </AnimatePresence>

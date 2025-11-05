@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@/store/userSlice.ts';
-import { useNotifications } from '@/hooks/useNotifications';
 import {Service} from '@/api';
 
 interface RegisterModalProps {
@@ -146,7 +145,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
         setErrors({});
 
         try {
-            const res = await Service.register(undefined, {
+            const res = await Service.register('', {
                 email,
                 firstName,
                 middleName: middleName || undefined,
