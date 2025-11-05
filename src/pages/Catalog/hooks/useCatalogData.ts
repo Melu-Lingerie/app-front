@@ -161,7 +161,6 @@ export const useCatalogData = (filters: {
         }
     };
 
-    // === initial load ===
     const loadInitial = useCallback(async () => {
         if (isInitialLoadingRef.current) return;
         isInitialLoadingRef.current = true;
@@ -199,20 +198,20 @@ export const useCatalogData = (filters: {
             blockUpObserverUntilReadyRef.current = true;
             initialLoadingDoneRef.current = false;
 
-            const pagesToLoad = [currentPage];
-            if (currentPage > 0) pagesToLoad.unshift(currentPage - 1);
-
             const results: ProductCatalogResponseDto[] = [];
+            const pagesToLoad = isBackForward && currentPage > 0
+                ? [currentPage - 1, currentPage]
+                : [currentPage];
+
             for (const p of pagesToLoad) {
                 const res = await fetchPage(p);
                 if (res.content?.length) results.push(...res.content);
                 setHasMore(!res.last);
             }
+
             setMinPage(Math.min(...pagesToLoad));
             setMaxPage(Math.max(...pagesToLoad));
             setGoods(results);
-
-            // подготовим кэш (используем только при back/forward)
             saveCache({ scrollY: 0 });
         } catch (e) {
             if (!isAbortError(e)) addNotification('Не удалось загрузить каталог', 'error');
@@ -347,11 +346,11 @@ export const useCatalogData = (filters: {
 
     // === scroll after load ===
     useLayoutEffect(() => {
-        if (!goods.length || currentPageRef.current === null) return;
+        if (!initialized || !goods.length || currentPageRef.current === null) return;
+
         const page = currentPageRef.current;
         const hasPageParam = window.location.search.includes('page=');
 
-        // page=0 / без page — жёстко вверх и мгновенная разблокировка
         if (!hasPageParam || page === 0) {
             currentPageRef.current = null;
             initialLoadingDoneRef.current = true;
@@ -360,16 +359,22 @@ export const useCatalogData = (filters: {
             return;
         }
 
+        // --- Inserted logic for initial loading ---
+        if (!initialized) return;
+        if (!initialLoadingDoneRef.current && goods.length > 0) {
+            initialLoadingDoneRef.current = true;
+            blockUpObserverUntilReadyRef.current = false;
+        }
+
         if (page >= 1 && minPage <= page) {
             scrollToPageAnchor(page);
             currentPageRef.current = null;
-            // короткий таймаут — только чтобы DOM стабилизировался на n-й странице
             setTimeout(() => {
                 initialLoadingDoneRef.current = true;
                 blockUpObserverUntilReadyRef.current = false;
             }, 200);
         }
-    }, [goods, minPage, scrollToPageAnchor]);
+    }, [initialized, goods, minPage, scrollToPageAnchor]);
 
     // === run initial (на маунт и при смене фильтров) ===
     useEffect(() => {
