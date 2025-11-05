@@ -14,11 +14,11 @@ interface RegisterModalProps {
 
 export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVerify }: RegisterModalProps) => {
     const ignoreBlur = useRef(false);
+    const suppressNextBlurRef = useRef(false);
     const [lastName, setLastName] = useState('');
     const [firstName, setFirstName] = useState('');
     const [middleName, setMiddleName] = useState('');
     const [email, setEmail] = useState('');
-    const [emailConfirm, setEmailConfirm] = useState('');
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -72,7 +72,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
             window.removeEventListener('keydown', handleKeyDown);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, loading, lastName, firstName, email, emailConfirm, password, passwordConfirm]);
+    }, [isOpen, loading, lastName, firstName, email, password, passwordConfirm]);
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
 
@@ -81,6 +81,20 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
         if (isOpen) setTimeout(() => lastNameRef.current?.focus(), 50);
     }, [isOpen]);
 
+    // подавляем валидацию при переключении вкладок/окна
+    useEffect(() => {
+      const onWinBlur = () => { suppressNextBlurRef.current = true; };
+      const onVisibility = () => {
+        if (document.visibilityState === 'hidden') suppressNextBlurRef.current = true;
+      };
+      window.addEventListener('blur', onWinBlur);
+      document.addEventListener('visibilitychange', onVisibility);
+      return () => {
+        window.removeEventListener('blur', onWinBlur);
+        document.removeEventListener('visibilitychange', onVisibility);
+      };
+    }, []);
+
     // сброс
     useEffect(() => {
         if (!isOpen) {
@@ -88,7 +102,6 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
             setFirstName('');
             setMiddleName('');
             setEmail('');
-            setEmailConfirm('');
             setPhone('');
             setPassword('');
             setPasswordConfirm('');
@@ -104,7 +117,6 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
         if (!lastName.trim()) newErrors.lastName = 'Введите фамилию';
         if (!firstName.trim()) newErrors.firstName = 'Введите имя';
         if (!emailRegex.test(email)) newErrors.email = 'Введите корректный e-mail';
-        if (email !== emailConfirm) newErrors.emailConfirm = 'E-mail не совпадает';
         if (password.length < 8) newErrors.password = 'Минимум 8 символов';
         if (password !== passwordConfirm) newErrors.passwordConfirm = 'Пароли не совпадают';
 
@@ -119,19 +131,17 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
         if (touched.lastName && !lastName.trim()) newErrors.lastName = 'Введите фамилию';
         if (touched.firstName && !firstName.trim()) newErrors.firstName = 'Введите имя';
         if (touched.email && !emailRegex.test(email)) newErrors.email = 'Введите корректный e-mail';
-        if (touched.emailConfirm && email !== emailConfirm) newErrors.emailConfirm = 'E-mail не совпадает';
         if (touched.password && password.length < 8) newErrors.password = 'Минимум 8 символов';
         if (touched.passwordConfirm && password !== passwordConfirm) newErrors.passwordConfirm = 'Пароли не совпадают';
 
         setErrors(newErrors);
-    }, [lastName, firstName, email, emailConfirm, password, passwordConfirm, touched]);
+    }, [lastName, firstName, email, password, passwordConfirm, touched]);
 
     const isValid = () => {
         return (
             lastName.trim() &&
             firstName.trim() &&
             emailRegex.test(email) &&
-            email === emailConfirm &&
             password.length >= 8 &&
             password === passwordConfirm
         );
@@ -247,6 +257,10 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                     maxLength={50}
                                     onBlur={() => {
                                         if (ignoreBlur.current) return;
+                                        if (document.visibilityState === 'hidden' || !document.hasFocus() || suppressNextBlurRef.current) {
+                                            suppressNextBlurRef.current = false;
+                                            return;
+                                        }
                                         setTouched((prev) => ({ ...prev, lastName: true }));
                                     }}
                                     placeholder="Введите вашу фамилию"
@@ -269,6 +283,10 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                     maxLength={50}
                                     onBlur={() => {
                                         if (ignoreBlur.current) return;
+                                        if (document.visibilityState === 'hidden' || !document.hasFocus() || suppressNextBlurRef.current) {
+                                            suppressNextBlurRef.current = false;
+                                            return;
+                                        }
                                         setTouched((prev) => ({ ...prev, firstName: true }));
                                     }}
                                     placeholder="Введите ваше имя"
@@ -291,6 +309,10 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                     maxLength={50}
                                     onBlur={() => {
                                         if (ignoreBlur.current) return;
+                                        if (document.visibilityState === 'hidden' || !document.hasFocus() || suppressNextBlurRef.current) {
+                                            suppressNextBlurRef.current = false;
+                                            return;
+                                        }
                                         setTouched((prev) => ({ ...prev, middleName: true }));
                                     }}
                                     placeholder="Введите ваше отчество"
@@ -315,6 +337,10 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                     maxLength={50}
                                     onBlur={() => {
                                         if (ignoreBlur.current) return;
+                                        if (document.visibilityState === 'hidden' || !document.hasFocus() || suppressNextBlurRef.current) {
+                                            suppressNextBlurRef.current = false;
+                                            return;
+                                        }
                                         setTouched((prev) => ({ ...prev, email: true }));
                                     }}
                                     placeholder="Введите ваш e-mail"
@@ -326,28 +352,6 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                 {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                             </label>
 
-                            {/* Подтверждение e-mail */}
-                            <label className="block text-[14px] leading-[18px] uppercase mb-[20px]">
-                                подтверждение e-mail<span className="text-red-500">*</span>
-                                <input
-                                    type="email"
-                                    value={emailConfirm}
-                                    onChange={(e) => setEmailConfirm(e.target.value)}
-                                    maxLength={50}
-                                    onBlur={() => {
-                                        if (ignoreBlur.current) return;
-                                        setTouched((prev) => ({ ...prev, emailConfirm: true }));
-                                    }}
-                                    placeholder="Введите ваш e-mail повторно"
-                                    disabled={loading}
-                                    className={`mt-[20px] w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none ${
-                                        errors.emailConfirm ? 'border-red-400' : 'border-[#CCC]'
-                                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                                />
-                                {errors.emailConfirm && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.emailConfirm}</p>
-                                )}
-                            </label>
 
                             {/* Телефон */}
                             <label className="block text-[14px] leading-[18px] uppercase mb-[20px]">
@@ -378,6 +382,10 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                 }}
                                 onBlur={() => {
                                   if (ignoreBlur.current) return;
+                                  if (document.visibilityState === 'hidden' || !document.hasFocus() || suppressNextBlurRef.current) {
+                                    suppressNextBlurRef.current = false;
+                                    return;
+                                  }
                                   if (phone.trim() === '+7' || phone.trim() === '+7 (') {
                                     setPhone('');
                                     setTouched((prev) => ({ ...prev, phone: false }));
@@ -410,6 +418,10 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                         maxLength={50}
                                         onBlur={() => {
                                             if (ignoreBlur.current) return;
+                                            if (document.visibilityState === 'hidden' || !document.hasFocus() || suppressNextBlurRef.current) {
+                                                suppressNextBlurRef.current = false;
+                                                return;
+                                            }
                                             setTouched((prev) => ({ ...prev, password: true }));
                                         }}
                                         placeholder="Введите пароль"
@@ -441,6 +453,10 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                         maxLength={50}
                                         onBlur={() => {
                                             if (ignoreBlur.current) return;
+                                            if (document.visibilityState === 'hidden' || !document.hasFocus() || suppressNextBlurRef.current) {
+                                                suppressNextBlurRef.current = false;
+                                                return;
+                                            }
                                             setTouched((prev) => ({ ...prev, passwordConfirm: true }));
                                         }}
                                         placeholder="Введите пароль ещё раз"

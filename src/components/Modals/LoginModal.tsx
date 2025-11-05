@@ -108,6 +108,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState<string | null>(null);
     const ignoreBlur = useRef(false);
+    const suppressNextBlurRef = useRef(false);
     const dispatch = useDispatch<AppDispatch>();
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -134,6 +135,10 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
 
     const handleBlur = (name: 'email' | 'password') => {
         if (ignoreBlur.current) return;
+        if (document.visibilityState === 'hidden' || !document.hasFocus() || suppressNextBlurRef.current) {
+            suppressNextBlurRef.current = false; // одноразово «съедаем» флаг
+            return; // не валидируем blur, вызванный переключением вкладки/окна
+        }
         setTouched((prev) => ({ ...prev, [name]: true }));
         validateField(name, name === 'email' ? email : password);
     };
@@ -180,15 +185,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             }
 
             // ✅ обновляем данные пользователя (только доступные поля)
-            dispatch(setUserData({
-                userId: response.userId!,
-                email: response.email!,
-                firstName: response.firstName!,
-                lastName: response.lastName!,
-                role: response.role!,
-                status: response.status!,
-                accessToken: response.accessToken!,
-            }));
+            dispatch(setUserData(response));
 
             // ✅ теперь пересылаем новую сессию на сервер, чтобы получить актуальные айди
             const res = await sendSessionToServer();
@@ -202,7 +199,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             }
 
             // ✅ инициализация приложения только после получения cart/wishlist
-            await dispatch(initApp());
+            await dispatch(initApp({userId: res.data?.userId}));
 
             onClose();
         } catch (err: any) {
@@ -232,6 +229,19 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             setTimeout(() => emailRef.current?.focus(), 50);
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        const onWinBlur = () => { suppressNextBlurRef.current = true; };
+        const onVisibility = () => {
+            if (document.visibilityState === 'hidden') suppressNextBlurRef.current = true;
+        };
+        window.addEventListener('blur', onWinBlur);
+        document.addEventListener('visibilitychange', onVisibility);
+        return () => {
+            window.removeEventListener('blur', onWinBlur);
+            document.removeEventListener('visibilitychange', onVisibility);
+        };
+    }, []);
 
 // Закрытие по клику вне модалки
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
