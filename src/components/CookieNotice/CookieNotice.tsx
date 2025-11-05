@@ -172,10 +172,6 @@ export const CookieNotice = () => {
 
                 let hasUpdates = false;
 
-                if (res.data?.userId) {
-                    dispatch(setUserId(res.data.userId));
-                }
-
                 if (res.data?.cartId) {
                     dispatch(setCartId(res.data.cartId));
                     hasUpdates = true;
@@ -187,7 +183,7 @@ export const CookieNotice = () => {
                 }
 
                 if (hasUpdates) {
-                    dispatch(initApp());
+                    dispatch(initApp({userId: res.data?.userId}));
                 }
             } catch (error: any) {
                 addNotification(

@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import {clearUser, setAuthenticated, setUserData} from './userSlice';
+import {clearUser, setAuthenticated, setUserData, setUserId} from './userSlice';
 import { createAsyncThunk, configureStore } from '@reduxjs/toolkit';
 import cartReducer, { fetchCart } from './cartSlice';
 import wishlistReducer, { fetchWishlist } from './wishlistSlice';
@@ -13,9 +13,9 @@ import {Service, UserManagementService} from '@/api';
  * - Обновление accessToken при необходимости
  * - Загрузка корзины и избранного
  */
-export const initApp = createAsyncThunk<void, void, { state: RootState }>(
+export const initApp = createAsyncThunk<void, {userId: number}, { state: RootState }>(
     'app/init',
-    async (_, { getState, dispatch }) => {
+    async ({userId}, { getState, dispatch }) => {
         const { cart, wishlist } = getState();
 
         const tasks: Array<Promise<unknown>> = [];
@@ -64,6 +64,7 @@ export const initApp = createAsyncThunk<void, void, { state: RootState }>(
             tasks.push(refreshPromise);
         } else {
             dispatch(clearUser());
+            dispatch(setUserId(userId));
         }
 
         /**
