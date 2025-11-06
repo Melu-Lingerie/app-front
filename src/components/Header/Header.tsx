@@ -2,6 +2,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Menu, Search, ShoppingCart, User, LogOut, Loader2 } from 'lucide-react';
+import {HeaderDrawer} from '../Drawers';
 import Cookies from 'js-cookie';
 import api from '@/axios/api.ts';
 
@@ -72,6 +73,7 @@ const setCookie = (name: string, value: string, days: number) => {
     document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; Secure; SameSite=Lax`;
 };
 
+
 const sendSessionToServer = async () => {
     const deviceInfo = await detectDeviceInfo();
     return api.post('/users/guests', { deviceInfo });
@@ -90,6 +92,8 @@ export const Header = () => {
     const [loggingOut, setLoggingOut] = useState(false);
     const accountBtnRef = useRef<HTMLButtonElement | null>(null);
     const accountMenuRef = useRef<HTMLDivElement | null>(null);
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
@@ -188,7 +192,11 @@ export const Header = () => {
             <div className="relative flex items-center justify-between h-[49px] px-10">
                 {/* Левая часть */}
                 <div className="flex items-center">
-                    <button type="button" className={iconBtn}>
+                    <button
+                      type="button"
+                      className={iconBtn}
+                      onClick={() => setIsDrawerOpen(true)}
+                    >
                         <Menu className="w-4 h-4" aria-hidden="true" />
                     </button>
                     {/*<button type="button" className={textBtn}>*/}
@@ -355,6 +363,9 @@ export const Header = () => {
                     </AnimatePresence>
                 </div>
             </div>
+
+            {/* Drawer */}
+            <HeaderDrawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
 
             {/* Divider */}
             <div className="w-screen h-px bg-[#CCC]" />

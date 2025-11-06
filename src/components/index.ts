@@ -16,3 +16,4 @@ export {FallbackHeroCreative} from './FallbackHeroCreative';
 export {LoginModal} from './Modals';
 export {RegisterModal} from './Modals';
 export {VerifyEmailModal} from './Modals';
+export {HeaderDrawer} from './Drawers';
