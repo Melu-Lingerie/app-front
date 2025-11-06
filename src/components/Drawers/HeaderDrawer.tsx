@@ -71,7 +71,7 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                         drag={entering ? false : 'x'}
                         dragElastic={0.04}
                         dragMomentum={false}
-                        onDragEnd={(e, info) => { if (info.offset.x < -120) onClose(); }}
+                        onDragEnd={(_, info) => { if (info.offset.x < -120) onClose(); }}
                         role="dialog"
                         aria-modal="true"
                         aria-label="Навигация"

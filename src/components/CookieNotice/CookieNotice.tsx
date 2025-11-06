@@ -4,7 +4,6 @@ import api from '@/axios/api.ts';
 import { useNotifications } from '@/hooks/useNotifications.ts';
 import { useDispatch } from 'react-redux';
 import { setCartId } from '@/store/cartSlice';
-import { setUserId } from '@/store/userSlice';
 import { setWishlistId } from '@/store/wishlistSlice';
 import {type AppDispatch, initApp} from '@/store'; // импортируем initApp
 
