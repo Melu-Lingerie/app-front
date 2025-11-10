@@ -116,6 +116,20 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
 
+    // Попытаться сохранить логин/пароль в менеджере паролей браузера
+    const tryStorePasswordCredential = async (emailVal: string, passwordVal: string) => {
+        try {
+            const navAny = navigator as any;
+            const winAny = window as any;
+            if (navAny?.credentials && winAny?.PasswordCredential) {
+                const cred = new winAny.PasswordCredential({ id: emailVal, password: passwordVal });
+                await navAny.credentials.store(cred);
+            }
+        } catch {
+            // молча игнорируем — не во всех браузерах поддерживается
+        }
+    };
+
     const validateField = (name: 'email' | 'password', value: string) => {
         let error = '';
         if (name === 'email' && !emailRegex.test(value)) {
@@ -190,6 +204,11 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                 accessToken: response.accessToken ?? null,
                 accessTokenExpiresAt: accessTokenExpiresAt ?? null,
             }));
+
+            // ✅ сохраняем пароль в менеджере браузера ТОЛЬКО если пользователь поставил галочку
+            if (remember && email && password) {
+                await tryStorePasswordCredential(email, password);
+            }
 
             // ✅ теперь пересылаем новую сессию на сервер, чтобы получить актуальные айди
             const res = await sendSessionToServer();
@@ -345,12 +364,15 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                             className="mt-[60px]"
                             onSubmit={handleSubmit}
                             noValidate
+                            autoComplete={remember ? 'on' : 'off'}
                         >
                             {/* Email */}
                             <label className="block text-[14px] leading-[18px] uppercase mb-[20px]">
                                 e-mail
                                 <input
                                     type="email"
+                                    name="username"
+                                    autoComplete={remember ? 'username' : 'off'}
                                     value={email}
                                     onChange={(e) => handleChange('email', e.target.value)}
                                     onBlur={() => handleBlur('email')}
@@ -383,6 +405,8 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                                 <div className="relative mt-[20px]">
                                     <input
                                         type={showPassword ? 'text' : 'password'}
+                                        name="password"
+                                        autoComplete={remember ? 'current-password' : 'new-password'}
                                         value={password}
                                         onChange={(e) => handleChange('password', e.target.value)}
                                         onBlur={() => handleBlur('password')}

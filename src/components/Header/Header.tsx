@@ -11,7 +11,7 @@ import { type RootState, type AppDispatch, initApp } from '@/store';
 // animation
 import { motion, AnimatePresence } from 'framer-motion';
 import {LoginModal, RegisterModal, VerifyEmailModal} from '@/components';
-import {selectIsAuthenticated, clearUser, setUserData} from '@/store/userSlice.ts';
+import {selectIsAuthenticated, clearUser} from '@/store/userSlice.ts';
 import { setCartId } from '@/store/cartSlice';
 import { setWishlistId } from '@/store/wishlistSlice';
 import { Service } from '@/api/services/Service.ts';
