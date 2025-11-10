@@ -6,9 +6,9 @@ import {Service, type LoginRequestDto, type LoginResponseDto} from '@/api';
 import {useDispatch} from 'react-redux';
 import { setUserData } from '@/store/userSlice';
 import {type AppDispatch, initApp} from '@/store';
-import {setCartId} from "@/store/cartSlice.ts";
-import {setWishlistId} from "@/store/wishlistSlice.ts";
-import api from "@/axios/api.ts";
+import {setCartId} from '@/store/cartSlice.ts';
+import {setWishlistId} from '@/store/wishlistSlice.ts';
+import api from '@/axios/api.ts';
 
 interface DeviceInfo {
     deviceType: string;
@@ -165,16 +165,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
         try {
             const response: LoginResponseDto = await Service.login(requestBody);
 
-            // ✅ сохраняем refreshToken и sessionId
-            Cookies.set('refreshToken', response.refreshToken!, {
-                expires: response.refreshTokenExpiresIn
-                    ? response.refreshTokenExpiresIn / 86400 // секунды → дни
-                    : 7,
-                secure: true,
-                sameSite: 'strict',
-                path: '/'
-            });
-
+            // ✅ сохраняем sessionId (refresh приходит через Set-Cookie на бэке)
             if (response.sessionId) {
                 Cookies.set('sessionId', response.sessionId, {
                     expires: 30,
@@ -184,8 +175,21 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                 });
             }
 
-            // ✅ обновляем данные пользователя (только доступные поля)
-            dispatch(setUserData(response));
+            // ✅ обновляем данные пользователя (включая accessToken и accessTokenExpiresAt)
+            const accessTokenExpiresAt = typeof response.accessTokenExpiresIn === 'number'
+                ? Date.now() + response.accessTokenExpiresIn * 1000
+                : undefined;
+
+            dispatch(setUserData({
+                userId: response.userId ?? null,
+                email: response.email ?? null,
+                firstName: response.firstName ?? null,
+                lastName: response.lastName ?? null,
+                role: response.role ?? null,
+                status: response.status ?? null,
+                accessToken: response.accessToken ?? null,
+                accessTokenExpiresAt: accessTokenExpiresAt ?? null,
+            }));
 
             // ✅ теперь пересылаем новую сессию на сервер, чтобы получить актуальные айди
             const res = await sendSessionToServer();

@@ -5,7 +5,7 @@ import ForWishListSkeleton from '@/assets/ForWishListSkeleton.svg';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {ProductSkeleton} from '@/pages/Catalog/ProductSkeleton';
-import {Card} from "@/components";
+import {Card} from '@/components';
 
 export const FavoritesTab = () => {
     const navigate = useNavigate();

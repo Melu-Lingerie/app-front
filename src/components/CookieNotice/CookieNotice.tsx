@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '@/axios/api.ts';
 import { useNotifications } from '@/hooks/useNotifications.ts';
 import { useDispatch } from 'react-redux';
+import { setUserData, setAuthenticated } from '@/store/userSlice.ts';
+import { Service } from '@/api/services/Service.ts';
 import { setCartId } from '@/store/cartSlice';
 import { setWishlistId } from '@/store/wishlistSlice';
-import {type AppDispatch, initApp} from '@/store'; // импортируем initApp
+import { type AppDispatch, initApp } from '@/store'; // импортируем initApp и store
 
 interface DeviceInfo {
     deviceType: string;
@@ -25,6 +27,8 @@ const CONFIG = {
     cookieMaxAgeDays: 30,
     noticeCookie: 'cookieNoticeShown',
 };
+
+const AUTH_LS_KEY = 'wasAuthed';
 
 // ---- cookie helpers ----
 const getCookie = (name: string): string | undefined => {
@@ -159,45 +163,74 @@ export const CookieNotice = () => {
 
     useEffect(() => {
         const init = async () => {
-            const sid = ensureSessionId();
-            setCookie(CONFIG.cookieName, sid, CONFIG.cookieMaxAgeDays);
+            // кем был пользователь до перезагрузки
+            const prevWasAuthed = localStorage.getItem(AUTH_LS_KEY) === '1';
 
+            // 0) сначала пробуем тихий refresh (httpOnly cookie на бэке)
+            let refreshOK = false;
+            try {
+                const res = await Service.refresh();
+                if (res?.accessToken) {
+                    const accessTokenExpiresAt =
+                        typeof res.accessTokenExpiresIn === 'number'
+                            ? Date.now() + res.accessTokenExpiresIn * 1000
+                            : undefined;
+
+                    dispatch(setAuthenticated(true));
+                    dispatch(setUserData({
+                        accessToken: res.accessToken!,
+                        accessTokenExpiresAt: accessTokenExpiresAt ?? null,
+                    }));
+
+                    localStorage.setItem(AUTH_LS_KEY, '1');
+                    refreshOK = true;
+                }
+            } catch {
+                // рефреш не удался — решим ниже
+            }
+
+            // поддерживаем cookie notice независимо от статуса
             if (getCookie(CONFIG.noticeCookie)) {
                 setCookie(CONFIG.noticeCookie, '1', CONFIG.cookieMaxAgeDays);
             }
 
+            // 1) sessionId стратегия
+            //    refreshOK === true → оставляем текущий sid
+            //    refreshOK === false:
+            //       - если раньше был авторизован → меняем sid
+            //       - если был гостем → оставляем текущий sid
+            let sid = ensureSessionId();
+            if (!refreshOK) {
+                // Меняем sessionId ТОЛЬКО если до перезагрузки пользователь был авторизован
+                if (prevWasAuthed) {
+                    sid = crypto.randomUUID();
+                    setCookie(CONFIG.cookieName, sid, CONFIG.cookieMaxAgeDays);
+                }
+                localStorage.setItem(AUTH_LS_KEY, '0');
+            } else {
+                localStorage.setItem(AUTH_LS_KEY, '1');
+            }
+
+            // 2) регистрируем текущую сессию
             try {
                 const res = await sendSessionToServer();
 
-                let hasUpdates = false;
+                if (res.data?.cartId) dispatch(setCartId(res.data.cartId));
+                if (res.data?.wishlistId) dispatch(setWishlistId(res.data.wishlistId));
 
-                if (res.data?.cartId) {
-                    dispatch(setCartId(res.data.cartId));
-                    hasUpdates = true;
-                }
-
-                if (res.data?.wishlistId) {
-                    dispatch(setWishlistId(res.data.wishlistId));
-                    hasUpdates = true;
-                }
-
-                if (hasUpdates) {
-                    dispatch(initApp({userId: res.data?.userId}));
-                }
+                // 3) инициализация без повторного silent refresh
+                dispatch(initApp({ userId: res.data?.userId, skipSilentRefresh: true }));
             } catch (error: any) {
-                addNotification(
-                    error?.message || 'Не удалось инициализировать сессию',
-                    'error'
-                );
+                addNotification(error?.message || 'Не удалось инициализировать сессию', 'error');
             }
         };
 
         init();
 
+        // поддерживаем sessionId/notice раз в час
         const iv = setInterval(() => {
             const sid = ensureSessionId();
             setCookie(CONFIG.cookieName, sid, CONFIG.cookieMaxAgeDays);
-
             if (getCookie(CONFIG.noticeCookie)) {
                 setCookie(CONFIG.noticeCookie, '1', CONFIG.cookieMaxAgeDays);
             }

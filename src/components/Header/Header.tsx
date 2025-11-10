@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Menu, Search, ShoppingCart, User, LogOut, Loader2 } from 'lucide-react';
 import {HeaderDrawer} from '../Drawers';
-import Cookies from 'js-cookie';
 import api from '@/axios/api.ts';
 
 // redux
@@ -12,7 +11,7 @@ import { type RootState, type AppDispatch, initApp } from '@/store';
 // animation
 import { motion, AnimatePresence } from 'framer-motion';
 import {LoginModal, RegisterModal, VerifyEmailModal} from '@/components';
-import { selectIsAuthenticated, clearUser } from '@/store/userSlice.ts';
+import {selectIsAuthenticated, clearUser, setUserData} from '@/store/userSlice.ts';
 import { setCartId } from '@/store/cartSlice';
 import { setWishlistId } from '@/store/wishlistSlice';
 import { Service } from '@/api/services/Service.ts';
@@ -128,13 +127,12 @@ export const Header = () => {
       setLoggingOut(true);
       try {
         // 1) Запрос на разлогин (по refreshToken из куки)
-        const refreshToken = Cookies.get('refreshToken') || '';
-        await Service.logout({ refreshToken: refreshToken });
+        await Service.logout();
+        localStorage.setItem('wasAuthed', '0');
         dispatch(setInitialized(false));
         setIsAccountMenuOpen(false);
 
-          // 2) Чистим refreshToken и пользователя (accessToken и др.) из Redux
-        Cookies.remove('refreshToken', { path: '/' });
+        // 2) Чистим пользователя (accessToken и др.) из Redux
         dispatch(clearUser());
 
         // 3) Генерим новую гостевую сессию как в CookieNotice
@@ -149,7 +147,7 @@ export const Header = () => {
         if (res.data?.wishlistId) {
           dispatch(setWishlistId(res.data.wishlistId));
         }
-        await dispatch(initApp({ userId: res.data?.userId }));
+        await dispatch(initApp({ userId: res.data?.userId, skipSilentRefresh: true }));
 
       } catch {
         // Ошибку можно показать в toast/alert при необходимости

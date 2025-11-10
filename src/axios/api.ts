@@ -3,7 +3,7 @@ import axios, {
     type InternalAxiosRequestConfig,
     CanceledError,
 } from 'axios';
-import { store } from '@/store';
+import { store, logoutAndReinit } from '@/store';
 import qs from 'qs';
 import {isAbortError} from '@/utils/utils.ts';
 
@@ -87,8 +87,121 @@ const getRequestKey = (config: InternalAxiosRequestConfig): string => {
     return `${method}::${url}::${query}::${body}`;
 };
 
- //  Request: отменяем ПРЕДЫДУЩИЙ, новый отправляем
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+// --- Auth route bypass ------------------------------------------------------
+const BYPASS_REFRESH_PATHS = [
+    '/auth/refresh',
+    '/auth/refresh-token',
+    '/auth/logout',
+    '/users/guests',
+];
+
+const shouldBypassAuth = (config: InternalAxiosRequestConfig): boolean => {
+    const rawUrl = config.url ?? '';
+    const base = config.baseURL ?? '';
+    const full = isAbsoluteUrl(rawUrl)
+        ? new URL(rawUrl)
+        : new URL(joinUrl(base, rawUrl), window.location.origin);
+    const p = full.pathname;
+    return BYPASS_REFRESH_PATHS.some((x) => p.endsWith(x));
+};
+
+// --- Auth helpers -----------------------------------------------------------
+const SKEW_MS = 45_000; // рефрешим токен немного заранее
+let refreshInFlight: Promise<void> | null = null;
+
+const COOL_DOWN_MS = 30_000; // не спамим рефрешем при отсутствии куки
+let refreshHardFailedUntil = 0; // таймштамп, до которого рефреш отключён
+let logoutInFlight: Promise<void> | null = null;
+
+const triggerLogoutOnce = async (callServerLogout = true) => {
+    if (!logoutInFlight) {
+        logoutInFlight = (store.dispatch as any)(logoutAndReinit({ callServerLogout }));
+        try { await logoutInFlight; } finally { logoutInFlight = null; }
+    } else {
+        await logoutInFlight;
+    }
+};
+
+const doRefresh = async (): Promise<void> => {
+    const res = await fetch('/api/v1/auth/refresh-token', {
+        method: 'POST',
+        credentials: 'include', // httpOnly-кука уйдёт сама
+        headers: { 'Content-Type': 'application/json' },
+    });
+
+    let data: any = null;
+    try { data = await res.json(); } catch {}
+
+    if (!res.ok) {
+        const err: any = new Error('Refresh failed');
+        err.status = res.status;
+        const msg = (data?.message || data?.error || data?.detail || '').toString().toLowerCase();
+        if (res.status === 401 || res.status === 400) {
+            // пытаемся понять, что куки нет
+            if (msg.includes('cookie') && msg.includes('refresh')) {
+                err.code = 'REFRESH_MISSING';
+            } else {
+                err.code = 'REFRESH_UNAVAILABLE';
+            }
+        } else {
+            err.code = 'REFRESH_ERROR';
+        }
+        throw err;
+    }
+
+    if (!data?.accessToken) {
+        const err: any = new Error('No accessToken in refresh response');
+        err.code = 'REFRESH_INVALID';
+        throw err;
+    }
+
+    const expiresAt = typeof data.accessTokenExpiresIn === 'number'
+        ? Date.now() + data.accessTokenExpiresIn * 1000 - SKEW_MS
+        : undefined;
+
+    store.dispatch({
+        type: 'user/setAuthenticated',
+        payload: true,
+    } as any);
+    store.dispatch({
+        type: 'user/setUserData',
+        payload: {
+            accessToken: data.accessToken,
+            accessTokenExpiresAt: expiresAt ?? null,
+        },
+    } as any);
+};
+
+const ensureFreshToken = async (): Promise<void> => {
+    const state = store.getState() as any;
+    const user = state?.user;
+    const now = Date.now();
+
+    // Гостям/неаутентифицированным токен не нужен — ничего не делаем
+    if (!user?.isAuthenticated) return;
+
+    // Живой токен — выходим
+    if (user?.accessToken && user?.accessTokenExpiresAt && user.accessTokenExpiresAt > now) return;
+
+    // Если недавно падали — не спамим рефрешом
+    if (now < refreshHardFailedUntil) throw new Error('REFRESH_UNAVAILABLE');
+
+    if (!refreshInFlight) {
+        refreshInFlight = doRefresh()
+            .catch((e) => {
+                // Запретим повторные попытки на время, чтобы не было бесконечного цикла
+                refreshHardFailedUntil = Date.now() + COOL_DOWN_MS;
+                throw e;
+            })
+            .finally(() => {
+                refreshInFlight = null;
+            });
+    }
+    await refreshInFlight;
+};
+
+//  Request: отменяем ПРЕДЫДУЩИЙ, новый отправляем
+api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
     const key = getRequestKey(config);
 
     const prev = pendingRequests.get(key);
@@ -108,17 +221,40 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     pendingRequests.set(key, controller);
 
     requestMeta.set(config, { key, controller });
-    const state = store.getState();
-    const token = state.user?.accessToken;
+
+    // 🔐 перед каждым запросом убеждаемся, что токен жив/обновлен (кроме bypass-маршрутов)
+    const bypass = shouldBypassAuth(config);
+    let proceedAsGuest = false;
+    if (!bypass) {
+        try {
+            await ensureFreshToken();
+        } catch (e) {
+            const code = (e as any)?.code;
+            const callServerLogout = code !== 'REFRESH_MISSING';
+            await triggerLogoutOnce(callServerLogout);
+            if (code === 'REFRESH_MISSING') {
+                // рефреш-куки нет — не отменяем запрос, идём как гость
+                proceedAsGuest = true;
+            } else {
+                // иные ошибки рефреша — отменяем запрос
+                throw new CanceledError('Canceled');
+            }
+        }
+    }
+
+    const state = store.getState() as any;
+    const token = (!bypass && !proceedAsGuest)
+        ? (state.user?.accessToken as string | undefined)
+        : undefined;
 
     if (token) {
         config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${token}`;
+        (config.headers as any).Authorization = `Bearer ${token}`;
     }
     return config;
 });
 
- //  Response: чистка и корректная отмена
+//  Response: чистка и корректная отмена
 api.interceptors.response.use(
     (response) => {
         const cfg = response.config as InternalAxiosRequestConfig;
@@ -132,9 +268,9 @@ api.interceptors.response.use(
         }
         return response;
     },
-    (error: unknown) => {
+    async (error: unknown) => {
         const cfg = (error as AxiosError<unknown>)?.config as
-            | InternalAxiosRequestConfig
+            | (InternalAxiosRequestConfig & { _retried?: boolean })
             | undefined;
 
         if (cfg) {
@@ -148,8 +284,34 @@ api.interceptors.response.use(
             }
         }
 
+        if (
+            (error as AxiosError)?.response?.status === 401 &&
+            cfg &&
+            !cfg._retried &&
+            !shouldBypassAuth(cfg)
+        ) {
+            try {
+                await ensureFreshToken();
+                cfg._retried = true;
+                const token = (store.getState() as any).user?.accessToken as string | undefined;
+                if (token) {
+                    cfg.headers = cfg.headers || {};
+                    (cfg.headers as any).Authorization = `Bearer ${token}`;
+                }
+                return api.request(cfg);
+            } catch (e) {
+                const code = (e as any)?.code;
+                const callServerLogout = code !== 'REFRESH_MISSING';
+                await triggerLogoutOnce(callServerLogout);
+                if (code === 'REFRESH_MISSING') {
+                    // возвращаем исходную ошибку, чтобы логика могла обработать 401 как гостю
+                    return Promise.reject(error);
+                }
+                return Promise.reject(new CanceledError('Canceled'));
+            }
+        }
+
         if (error instanceof CanceledError || axios.isCancel?.(error) || isAbortError(error)) {
-            // Мягко реджектим как отмену (с явным тип-параметром)
             return Promise.reject(new CanceledError<unknown>('Canceled'));
         }
 

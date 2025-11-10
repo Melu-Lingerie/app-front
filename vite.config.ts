@@ -10,7 +10,7 @@ export default defineConfig({
         tailwindcss()
     ],
     server: {
-        port: 80, // порт разработки
+        port: 3000, // порт разработки
         host: true,
         proxy: {
             '/api': {

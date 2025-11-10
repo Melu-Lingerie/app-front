@@ -85,84 +85,139 @@ export const AccountPage = () => {
             {/* Правая часть */}
             <div className="w-3/4 p-10">
                 <AnimatePresence mode="wait">
-                    <Routes location={location} key={location.pathname}>
-                        {isGuest ? (
-                            <>
-                                <Route
-                                    path="favorites"
-                                    element={
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -10 }}
-                                            transition={{ duration: 0.25 }}
-                                        >
-                                            <FavoritesTab />
-                                        </motion.div>
-                                    }
-                                />
-                                {/* 🧭 Любой другой путь гостя ведёт в избранное */}
-                                <Route path="*" element={<Navigate to="/account/favorites" replace />} />
-                            </>
-                        ) : (
-                            <>
-                                <Route
-                                    path="profile"
-                                    element={
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -10 }}
-                                            transition={{ duration: 0.25 }}
-                                        >
-                                            <></>
-                                        </motion.div>
-                                    }
-                                />
-                                <Route
-                                    path="security"
-                                    element={
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -10 }}
-                                            transition={{ duration: 0.25 }}
-                                        >
-                                            <></>
-                                        </motion.div>
-                                    }
-                                />
-                                <Route
-                                    path="orders"
-                                    element={
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -10 }}
-                                            transition={{ duration: 0.25 }}
-                                        >
-                                            <></>
-                                        </motion.div>
-                                    }
-                                />
-                                <Route
-                                    path="favorites"
-                                    element={
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -10 }}
-                                            transition={{ duration: 0.25 }}
-                                        >
-                                            <FavoritesTab />
-                                        </motion.div>
-                                    }
-                                />
-                                {/* 🧭 По умолчанию открываем личную информацию */}
-                                <Route path="*" element={<Navigate to="/account/profile" replace />} />
-                            </>
-                        )}
-                    </Routes>
+                    {!initialized ? (
+                        <Routes location={location} key={location.pathname}>
+                            <Route
+                                path="favorites"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <FavoritesTab />
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="profile"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <></>
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="security"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <></>
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="orders"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <></>
+                                    </motion.div>
+                                }
+                            />
+                            {/* Пока приложение не инициализировано — не делаем редиректов, оставляем URL как есть */}
+                            <Route path="*" element={<></>} />
+                        </Routes>
+                    ) : isGuest ? (
+                        <Routes location={location} key={location.pathname}>
+                            <Route
+                                path="favorites"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <FavoritesTab />
+                                    </motion.div>
+                                }
+                            />
+                            {/* 🧭 Любой другой путь гостя ведёт в избранное */}
+                            <Route path="*" element={<Navigate to="/account/favorites" replace />} />
+                        </Routes>
+                    ) : (
+                        <Routes location={location} key={location.pathname}>
+                            <Route
+                                path="profile"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <></>
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="security"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <></>
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="orders"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <></>
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="favorites"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <FavoritesTab />
+                                    </motion.div>
+                                }
+                            />
+                            {/* 🧭 По умолчанию открываем личную информацию */}
+                            <Route path="*" element={<Navigate to="/account/profile" replace />} />
+                        </Routes>
+                    )}
                 </AnimatePresence>
             </div>
         </div>

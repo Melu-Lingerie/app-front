@@ -11,6 +11,7 @@ interface UserState {
         | 'UNREGISTERED'
         | null;
     accessToken: string | null;
+    accessTokenExpiresAt: number | null;
 
     /** 🔐 Показывает, авторизован ли пользователь */
     isAuthenticated: boolean;
@@ -33,6 +34,7 @@ const initialState: UserState = {
     role: null,
     status: null,
     accessToken: null,
+    accessTokenExpiresAt: null,
     isAuthenticated: false,
 };
 
@@ -60,6 +62,7 @@ const userSlice = createSlice({
             state.role = null;
             state.status = null;
             state.accessToken = null;
+            state.accessTokenExpiresAt = null;
             state.isAuthenticated = false;
         },
     },

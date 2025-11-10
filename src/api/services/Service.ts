@@ -6,8 +6,6 @@ import type { ForgotPasswordRequestDto } from '../models/ForgotPasswordRequestDt
 import type { ForgotPasswordResponseDto } from '../models/ForgotPasswordResponseDto';
 import type { LoginRequestDto } from '../models/LoginRequestDto';
 import type { LoginResponseDto } from '../models/LoginResponseDto';
-import type { LogoutRequestDto } from '../models/LogoutRequestDto';
-import type { RefreshRequestDto } from '../models/RefreshRequestDto';
 import type { RefreshResponseDto } from '../models/RefreshResponseDto';
 import type { RegisterRequestDto } from '../models/RegisterRequestDto';
 import type { RegisterResponseDto } from '../models/RegisterResponseDto';
@@ -23,7 +21,7 @@ import { request as __request } from '../core/request';
 export class Service {
     /**
      * Подтверждение email
-     * Верификация email адреса с помощью кода, отправленного при регистрации
+     * Верификация email адреса с помощью кода, отправленного при регистрации. После успешной верификации пользователь должен выполнить вход через /login.
      * @param requestBody
      * @returns VerifyEmailResponseDto Email успешно подтвержден, пользователь активирован
      * @throws ApiError
@@ -108,19 +106,14 @@ export class Service {
     }
     /**
      * Обновление access токена
-     * Получение нового access токена с помощью refresh токена
-     * @param requestBody
+     * Получение нового access токена с помощью refresh токена из HttpOnly cookie. Новый refresh token также устанавливается в cookie (token rotation).
      * @returns RefreshResponseDto Токен успешно обновлен
      * @throws ApiError
      */
-    public static refresh(
-        requestBody: RefreshRequestDto,
-     options?: Partial<ApiRequestOptions>): CancelablePromise<RefreshResponseDto> {
+    public static refresh( options?: Partial<ApiRequestOptions>): CancelablePromise<RefreshResponseDto> {
         return __request(OpenAPI, { ...options,
             method: 'POST',
             url: '/auth/refresh-token',
-            body: requestBody,
-            mediaType: 'application/json',
             errors: {
                 401: `Невалидный refresh токен`,
             },
@@ -128,19 +121,14 @@ export class Service {
     }
     /**
      * Выход из системы
-     * Выход из системы на текущем устройстве. Удаляет refresh токен для текущей сессии.
-     * @param requestBody
+     * Выход из системы на текущем устройстве. Удаляет refresh токен для текущей сессии и очищает cookie.
      * @returns string Успешный выход из системы
      * @throws ApiError
      */
-    public static logout(
-        requestBody: LogoutRequestDto,
-     options?: Partial<ApiRequestOptions>): CancelablePromise<Record<string, string>> {
+    public static logout( options?: Partial<ApiRequestOptions>): CancelablePromise<Record<string, string>> {
         return __request(OpenAPI, { ...options,
             method: 'POST',
             url: '/auth/logout',
-            body: requestBody,
-            mediaType: 'application/json',
             errors: {
                 401: `Невалидный refresh токен`,
             },
@@ -148,19 +136,14 @@ export class Service {
     }
     /**
      * Выход из системы на всех устройствах
-     * Выход из системы на всех устройствах пользователя. Удаляет все refresh токены.
-     * @param requestBody
+     * Выход из системы на всех устройствах пользователя. Удаляет все refresh токены и очищает cookie.
      * @returns string Успешный выход из системы на всех устройствах
      * @throws ApiError
      */
-    public static logoutAll(
-        requestBody: LogoutRequestDto,
-     options?: Partial<ApiRequestOptions>): CancelablePromise<Record<string, string>> {
+    public static logoutAll( options?: Partial<ApiRequestOptions>): CancelablePromise<Record<string, string>> {
         return __request(OpenAPI, { ...options,
             method: 'POST',
             url: '/auth/logout-all',
-            body: requestBody,
-            mediaType: 'application/json',
             errors: {
                 401: `Невалидный refresh токен`,
             },
@@ -168,7 +151,7 @@ export class Service {
     }
     /**
      * Вход в систему
-     * Аутентификация пользователя по email и паролю. Возвращает токены и sessionId.
+     * Аутентификация пользователя по email и паролю. Возвращает access token в теле ответа, refresh token в HttpOnly cookie.
      * @param requestBody
      * @returns LoginResponseDto Успешная аутентификация
      * @throws ApiError
