@@ -101,7 +101,6 @@ export const ForgotPasswordModal = ({ isOpen, onBack, onCloseAll, onOpenVerify }
     };
     const handleOverlayTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget && !loading) {
-            e.preventDefault();
             ignoreBlur.current = true;
         }
     };

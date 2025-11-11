@@ -29,7 +29,6 @@ export const VerifyEmailModal: React.FC<VerifyEmailModalProps> = ({ isOpen, emai
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const { addNotification } = useNotifications();
-console.log(email, newPassword)
     // Таймер для кнопки "Отправить код повторно"
     const [resendTimer, setResendTimer] = useState(0);
 

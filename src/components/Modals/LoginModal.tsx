@@ -287,7 +287,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister, onOpenVerify }
     };
     const handleOverlayTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget && !loading) {
-            e.preventDefault();
+            // Нельзя preventDefault в пассивных touch listeners — просто ставим флаг
             ignoreBlur.current = true;
         }
     };
