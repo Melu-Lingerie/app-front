@@ -9,6 +9,7 @@ import {type AppDispatch, initApp} from '@/store';
 import {setCartId} from '@/store/cartSlice.ts';
 import {setWishlistId} from '@/store/wishlistSlice.ts';
 import api from '@/axios/api.ts';
+import {ForgotPasswordModal} from '@/components';
 
 interface DeviceInfo {
     deviceType: string;
@@ -93,9 +94,10 @@ interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSwitchToRegister: () => void;
+    onOpenVerify: (email: string, expiresInMinutes: number, newPassword?: string) => void;
 }
 
-export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) => {
+export const LoginModal = ({ isOpen, onClose, onSwitchToRegister, onOpenVerify }: LoginModalProps) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -107,6 +109,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
     });
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState<string | null>(null);
+    const [isForgotOpen, setIsForgotOpen] = useState(false);
     const ignoreBlur = useRef(false);
     const suppressNextBlurRef = useRef(false);
     const dispatch = useDispatch<AppDispatch>();
@@ -163,13 +166,14 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             ignoreBlur.current = false;
         }, 350);
     };
-    const isValid = useCallback(() => emailRegex.test(email) && password.length >= 8, [email, password, emailRegex]);
+    const isValidLogin = useCallback(() => emailRegex.test(email) && password.length >= 8, [email, password, emailRegex]);
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         validateField('email', email);
         validateField('password', password);
-        if (!isValid()) return;
+        if (!isValidLogin()) return;
 
         setLoading(true);
         setServerError(null);
@@ -311,19 +315,20 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             }
 
             // ENTER отправляет форму
-            if (e.key === 'Enter' && isValid() && !loading) {
+            if (e.key === 'Enter' && !loading && isValidLogin()) {
                 handleSubmit(e as unknown as React.FormEvent);
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, isValid, loading]);
+    }, [isOpen, isValidLogin, loading]);
 
     return (
         <AnimatePresence>
-            {isOpen && (
+            {isOpen && !isForgotOpen && (
                 <motion.div
+                    key="login-modal"
                     className="fixed inset-0 bg-black/50 flex items-center justify-center z-51"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -339,6 +344,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                         transition={{ duration: 0.3, ease: 'easeOut' }}
                         className="relative bg-white rounded-2xl w-full max-w-md mx-4 px-[30px] pt-[20px] pb-[90px]"
                     >
+
                         {/* Кнопка закрытия */}
                         <button
                             onMouseDown={(e) => {
@@ -352,7 +358,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                         </button>
 
                         {/* Заголовок */}
-                        <h2 className="text-[16px] leading-[18px] uppercase font-semibold text-left">
+                        <h2 className="text-[16px] leading-[18px] uppercase font-semibold text-center">
                             Войти или зарегистрироваться
                         </h2>
 
@@ -385,7 +391,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                                     } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                                 />
                                 <AnimatePresence>
-                                    {touched.email && errors.email && (
+                                    {touched.email && errors.email && email.length > 0 && (
                                         <motion.p
                                             initial={{ opacity: 0, y: -5 }}
                                             animate={{ opacity: 1, y: 0 }}
@@ -406,7 +412,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         name="password"
-                                        autoComplete={remember ? 'current-password' : 'new-password'}
+                                        autoComplete="current-password"
                                         value={password}
                                         onChange={(e) => handleChange('password', e.target.value)}
                                         onBlur={() => handleBlur('password')}
@@ -428,7 +434,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                                     </button>
                                 </div>
                                 <AnimatePresence>
-                                    {touched.password && errors.password && (
+                                    {touched.password && errors.password && password.length > 0 && (
                                         <motion.p
                                             initial={{ opacity: 0, y: -5 }}
                                             animate={{ opacity: 1, y: 0 }}
@@ -454,31 +460,31 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                                     />
                                     <span
                                         className={`w-4 h-4 rounded border border-[#F8C6D7] flex items-center justify-center transition-colors duration-150
-                      peer-checked:bg-[#F8C6D7] group-hover:border-[#F8C6D7] ${
+                          peer-checked:bg-[#F8C6D7] group-hover:border-[#F8C6D7] ${
                                             loading ? 'opacity-50' : ''
                                         }`}
                                     >
-                    <AnimatePresence>
-                      {remember && (
-                          <motion.svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="white"
-                              strokeWidth="3"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="w-3 h-3"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              exit={{ scale: 0 }}
-                              transition={{ duration: 0.15 }}
-                          >
-                              <polyline points="20 6 9 17 4 12" />
-                          </motion.svg>
-                      )}
-                    </AnimatePresence>
-                  </span>
+                        <AnimatePresence>
+                          {remember && (
+                              <motion.svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="white"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="w-3 h-3"
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  exit={{ scale: 0 }}
+                                  transition={{ duration: 0.15 }}
+                              >
+                                  <polyline points="20 6 9 17 4 12" />
+                              </motion.svg>
+                          )}
+                        </AnimatePresence>
+                      </span>
                                     Запомнить пароль
                                 </label>
 
@@ -486,6 +492,11 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                                     type="button"
                                     disabled={loading}
                                     className="text-[12px] leading-[18px] underline cursor-pointer hover:text-[#F8C6D7] transition-colors disabled:opacity-50"
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        suppressNextBlurRef.current = true; // не валидируем blur при переходе
+                                        setIsForgotOpen(true);
+                                    }}
                                 >
                                     Забыли пароль?
                                 </button>
@@ -511,16 +522,14 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                             {/* Кнопка */}
                             <motion.button
                                 type="submit"
-                                disabled={!isValid() || loading}
-                                whileHover={isValid() && !loading ? { scale: 1.03 } : {}}
-                                whileTap={isValid() && !loading ? { scale: 0.97 } : {}}
+                                disabled={!isValidLogin() || loading}
+                                whileHover={isValidLogin() && !loading ? { scale: 1.03 } : {}}
+                                whileTap={isValidLogin() && !loading ? { scale: 0.97 } : {}}
                                 className={`mt-[40px] w-full h-[56px] rounded-[8px] border border-[#FFFBF5]
-                            text-[14px] leading-[18px] uppercase text-center font-semibold transition-all
-                            ${
-                                    isValid() && !loading
-                                        ? 'bg-[#F8C6D7] text-black hover:shadow-md cursor-pointer'
-                                        : 'bg-[#F8C6D7]/50 text-gray-400 cursor-not-allowed'
-                                }`}
+        text-[14px] leading-[18px] uppercase text-center font-semibold transition-all
+        ${isValidLogin() && !loading
+            ? 'bg-[#F8C6D7] text-black hover:shadow-md cursor-pointer'
+            : 'bg-[#F8C6D7]/50 text-gray-400 cursor-not-allowed'}`}
                             >
                                 {loading ? 'Вход...' : 'Войти в личный кабинет'}
                             </motion.button>
@@ -545,6 +554,13 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                     </motion.div>
                 </motion.div>
             )}
+            <ForgotPasswordModal
+                key="forgot-modal"
+                isOpen={isForgotOpen}
+                onBack={() => setIsForgotOpen(false)}
+                onCloseAll={() => { setIsForgotOpen(false); handleClose(); }}
+                onOpenVerify={(email, expires, newPw) => { onOpenVerify(email, expires, newPw); }}
+            />
         </AnimatePresence>
     );
 };

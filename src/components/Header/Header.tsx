@@ -86,6 +86,7 @@ export const Header = () => {
     const [showVerify, setShowVerify] = useState(false);
     const [verifyEmail, setVerifyEmail] = useState('');
     const [verifyExpires, setVerifyExpires] = useState(0);
+    const [verifyNewPassword, setVerifyNewPassword] = useState<string | undefined>(undefined);
 
     const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
@@ -164,6 +165,13 @@ export const Header = () => {
                 onSwitchToRegister={() => {
                     setTimeout(() => setIsRegisterOpen(true), 200);
                 }}
+                onOpenVerify={(email, expires, newPw) => {
+                    setIsLoginOpen(false);
+                    setVerifyEmail(email);
+                    setVerifyExpires(expires);
+                    setVerifyNewPassword(newPw);
+                    setShowVerify(true);
+                }}
             />
 
             <RegisterModal
@@ -185,7 +193,8 @@ export const Header = () => {
                 isOpen={showVerify}
                 email={verifyEmail}
                 expiresIn={verifyExpires}
-                onClose={() => setShowVerify(false)}
+                newPassword={verifyNewPassword}
+                onClose={() => { setShowVerify(false); setVerifyNewPassword(undefined); }}
             />
             <div className="relative flex items-center justify-between h-[49px] px-10">
                 {/* Левая часть */}

@@ -269,7 +269,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                         errors.lastName ? 'border-red-400' : 'border-[#CCC]'
                                     } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                                 />
-                                {errors.lastName && (
+                                {errors.lastName && lastName.length > 0 && (
                                     <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
                                 )}
                             </label>
@@ -295,7 +295,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                         errors.firstName ? 'border-red-400' : 'border-[#CCC]'
                                     } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                                 />
-                                {errors.firstName && (
+                                {errors.firstName && firstName.length > 0 && (
                                     <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
                                 )}
                             </label>
@@ -321,7 +321,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                         errors.middleName ? 'border-red-400' : 'border-[#CCC]'
                                     } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                                 />
-                                {errors.middleName && (
+                                {errors.middleName && middleName.length > 0 && (
                                     <p className="text-red-500 text-xs mt-1">{errors.middleName}</p>
                                 )}
                             </label>
@@ -349,7 +349,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                         errors.email ? 'border-red-400' : 'border-[#CCC]'
                                     } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                                 />
-                                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                                {errors.email && email.length > 0 && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                             </label>
 
 
@@ -439,7 +439,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                         {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                     </button>
                                 </div>
-                                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                                {errors.password && password.length > 0 && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                             </label>
 
                             {/* Подтверждение пароля */}

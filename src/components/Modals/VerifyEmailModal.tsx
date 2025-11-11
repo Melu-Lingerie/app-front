@@ -15,18 +15,21 @@ type VerifyEmailModalProps = {
     /** Время действия кода (в минутах) */
     expiresIn: number;
 
+    /** Новый пароль (если введён на предыдущем шаге) */
+    newPassword?: string;
+
     /** Закрытие модалки */
     onClose: () => void;
 };
 
-export const VerifyEmailModal: React.FC<VerifyEmailModalProps> = ({ isOpen, email, expiresIn, onClose }) => {
+export const VerifyEmailModal: React.FC<VerifyEmailModalProps> = ({ isOpen, email, expiresIn, newPassword, onClose }) => {
     const [digits, setDigits] = useState<string[]>(['', '', '', '', '', '']);
     const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
     const code = digits.join('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const { addNotification } = useNotifications();
-
+console.log(email, newPassword)
     // Таймер для кнопки "Отправить код повторно"
     const [resendTimer, setResendTimer] = useState(0);
 
@@ -63,8 +66,13 @@ export const VerifyEmailModal: React.FC<VerifyEmailModalProps> = ({ isOpen, emai
         if (code.length !== 6) return;
         setLoading(true);
         try {
-            await Service.verifyEmail({ email, code });
-            addNotification('E-mail успешно подтвержден', 'success');
+            if (newPassword && newPassword.length >= 8) {
+                await Service.resetPassword({ email, code, newPassword });
+                addNotification('Пароль успешно сброшен', 'success');
+            } else {
+                await Service.verifyEmail({ email, code });
+                addNotification('E-mail успешно подтвержден', 'success');
+            }
             onClose();
         } catch (err: any) {
             setError(err?.message || 'Неверный код');
