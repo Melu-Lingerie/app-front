@@ -29,6 +29,7 @@ export const initApp = createAsyncThunk<void, {userId: number; skipSilentRefresh
             // Валидный accessToken → отмечаем и подтягиваем профиль
             dispatch(setAuthenticated(true));
             localStorage.setItem('wasAuthed', '1');
+            dispatch(setUserId(userId));
             try {
                 const data = await UserManagementService.getCurrentUserInfo();
                 dispatch(setUserData(data));
@@ -45,6 +46,7 @@ export const initApp = createAsyncThunk<void, {userId: number; skipSilentRefresh
                     : undefined;
                 dispatch(setAuthenticated(true));
                 dispatch(setUserData({
+                    userId,
                     accessToken: res.accessToken!,
                     accessTokenExpiresAt: accessTokenExpiresAt ?? null,
                 }));

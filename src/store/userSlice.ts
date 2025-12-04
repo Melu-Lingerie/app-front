@@ -21,6 +21,7 @@ interface UserState {
     middleName: string | null;
     phoneNumber: string | null;
     birthDate: string | null;
+    addresses: import('@/api/models/AddressFacadeResponseDto').AddressFacadeResponseDto[];
 }
 
 const initialState: UserState = {
@@ -36,6 +37,7 @@ const initialState: UserState = {
     accessToken: null,
     accessTokenExpiresAt: null,
     isAuthenticated: false,
+    addresses: [],
 };
 
 const userSlice = createSlice({
@@ -48,6 +50,9 @@ const userSlice = createSlice({
         setUserData(state, action: PayloadAction<Partial<UserState>>) {
             Object.assign(state, action.payload);
         },
+        setAddresses(state, action: PayloadAction<import('@/api/models/AddressFacadeResponseDto').AddressFacadeResponseDto[]>) {
+            state.addresses = action.payload;
+        },
         setAuthenticated(state, action: PayloadAction<boolean>) {
             state.isAuthenticated = action.payload;
         },
@@ -59,6 +64,7 @@ const userSlice = createSlice({
             state.lastName = null;
             state.phoneNumber = null;
             state.birthDate = null;
+            state.addresses = [];
             state.role = null;
             state.status = null;
             state.accessToken = null;
@@ -68,7 +74,7 @@ const userSlice = createSlice({
     },
 });
 
-export const { setUserId, clearUser, setUserData, setAuthenticated } = userSlice.actions;
+export const { setUserId, clearUser, setUserData, setAuthenticated, setAddresses } = userSlice.actions;
 
 export const selectUser = (state: { user: UserState }) => state.user;
 export const selectUserId = (state: { user: UserState }) => state.user.userId;

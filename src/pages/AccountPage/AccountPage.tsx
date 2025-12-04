@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-
 import { motion, AnimatePresence } from 'framer-motion';
 import GuestIcon from '@/assets/GuestIcon.svg';
 import { FavoritesTab } from '@/pages/AccountPage/Tabs/FavoritesTab.tsx';
-// import { ProfileTab } from '@/pages/AccountPage/Tabs/ProfileTab.tsx';
+import { ProfileTab } from '@/pages/AccountPage/Tabs/ProfileTab.tsx';
 // import { SecurityTab } from '@/pages/AccountPage/Tabs/SecurityTab.tsx';
 // import { OrdersTab } from '@/pages/AccountPage/Tabs/OrdersTab.tsx';
 import { useSelector } from 'react-redux';
@@ -16,7 +16,6 @@ export const AccountPage = () => {
     const user = useSelector(selectUser);
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const isGuest = !isAuthenticated;
-
     const initialized = useSelector(selectAppInitialized);
     const tabs = [
         { label: 'Личная информация', path: '/account/profile' },
@@ -31,7 +30,7 @@ export const AccountPage = () => {
 
     return (
         <>
-        <div className="flex min-h-screen">
+        <div className="flex min-h-180">
             {/* Левая часть */}
             <div className="w-1/4 border-r border-[#CCCCCC] pt-[40px]">
                 {/* Блок с аватаром и именем */}
@@ -109,7 +108,7 @@ export const AccountPage = () => {
                                         exit={{ opacity: 0, y: -10 }}
                                         transition={{ duration: 0.25 }}
                                     >
-                                        <></>
+                                        <ProfileTab />
                                     </motion.div>
                                 }
                             />
@@ -122,7 +121,7 @@ export const AccountPage = () => {
                                         exit={{ opacity: 0, y: -10 }}
                                         transition={{ duration: 0.25 }}
                                     >
-                                        <></>
+                                        <ProfileTab />
                                     </motion.div>
                                 }
                             />
@@ -171,7 +170,7 @@ export const AccountPage = () => {
                                         exit={{ opacity: 0, y: -10 }}
                                         transition={{ duration: 0.25 }}
                                     >
-                                        <></>
+                                        <ProfileTab />
                                     </motion.div>
                                 }
                             />
