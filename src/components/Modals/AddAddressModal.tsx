@@ -1,18 +1,40 @@
 import {useNotifications} from '@/hooks/useNotifications.ts';
 import {useEffect, useRef, useState} from 'react';
 import {AddressManagementService} from '@/api';
+import type { AddressFacadeResponseDto } from '@/api/models/AddressFacadeResponseDto';
 import { motion } from 'framer-motion';
 
-export const AddAddressModal: React.FC<{ onClose: () => void; onSuccess: () => void }> = ({ onClose, onSuccess }) => {
+export const AddAddressModal: React.FC<{
+    onClose: () => void;
+    onSuccess: (updated?: AddressFacadeResponseDto) => void;
+    address?: AddressFacadeResponseDto;
+}> = ({ onClose, onSuccess, address }) => {
     const { addNotification } = useNotifications();
-    const [addressLabel, setAddressLabel] = useState('');
-    const [city, setCity] = useState('');
-    const [country, setCountry] = useState('');
-    const [streetAddress, setStreetAddress] = useState('');
-    const [postalCode, setPostalCode] = useState('');
+    const [addressLabel, setAddressLabel] = useState(address?.addressLabel ?? '');
+    const [city, setCity] = useState(address?.city ?? '');
+    const [country, setCountry] = useState(address?.country ?? '');
+    const [streetAddress, setStreetAddress] = useState(address?.streetAddress ?? '');
+    const [postalCode, setPostalCode] = useState(address?.postalCode ?? '');
     const [errors, setErrors] = useState<{ [k: string]: string }>({});
     const [touched, setTouched] = useState({ addressLabel: false, city: false, country: false, streetAddress: false, postalCode: false });
     const [submitting, setSubmitting] = useState(false);
+
+    const isEdit = !!address?.id;
+
+    const initialRef = useRef({
+        addressLabel: address?.addressLabel ?? '',
+        city: address?.city ?? '',
+        country: address?.country ?? '',
+        streetAddress: address?.streetAddress ?? '',
+        postalCode: address?.postalCode ?? '',
+    });
+
+    const isDirty =
+        addressLabel !== initialRef.current.addressLabel ||
+        city !== initialRef.current.city ||
+        country !== initialRef.current.country ||
+        streetAddress !== initialRef.current.streetAddress ||
+        postalCode !== initialRef.current.postalCode;
 
     const ignoreBlur = useRef(false);
     const suppressNextBlurRef = useRef(false);
@@ -71,17 +93,29 @@ export const AddAddressModal: React.FC<{ onClose: () => void; onSuccess: () => v
       setSubmitting(true);
       setErrors({});
       try {
-        await AddressManagementService.createAddress({
-          addressLabel: addressLabel.trim(),
-          city: city.trim(),
-          country: country.trim(),
-          streetAddress: streetAddress.trim(),
-          postalCode: postalCode.trim(),
-        } as any);
-        addNotification('Адрес добавлен', 'success');
-        onSuccess();
+        if (isEdit && address?.id) {
+          const updated = await AddressManagementService.updateAddress(address.id, {
+            addressLabel: addressLabel.trim(),
+            city: city.trim(),
+            country: country.trim(),
+            streetAddress: streetAddress.trim(),
+            postalCode: postalCode.trim(),
+          } as any);
+          addNotification('Адрес обновлён', 'success');
+          onSuccess(updated as any);
+        } else {
+          await AddressManagementService.createAddress({
+            addressLabel: addressLabel.trim(),
+            city: city.trim(),
+            country: country.trim(),
+            streetAddress: streetAddress.trim(),
+            postalCode: postalCode.trim(),
+          } as any);
+          addNotification('Адрес добавлен', 'success');
+          onSuccess();
+        }
       } catch (err: any) {
-        addNotification(err?.message || 'Ошибка при создании адреса', 'error');
+        addNotification(err?.message || (isEdit ? 'Ошибка при обновлении адреса' : 'Ошибка при создании адреса'), 'error');
       } finally {
         setSubmitting(false);
       }
@@ -144,12 +178,15 @@ export const AddAddressModal: React.FC<{ onClose: () => void; onSuccess: () => v
                   onTouchStart={() => { ignoreBlur.current = true; }}
                   onClick={() => { onClose(); setTimeout(() => { ignoreBlur.current = false; }, 300); }}
                   className="absolute top-4 right-4 text-gray-500 text-xl cursor-pointer disabled:opacity-40"
+                  disabled={submitting}
                 >
                   ✕
                 </button>
                 {/* Header */}
                 <div className="-mx-6 px-6 mb-6 border-b border-[#CCCCCC] pb-4">
-                    <h3 className="text-[16px] leading-[18px] uppercase font-semibold text-left">Добавить адрес</h3>
+                    <h3 className="text-[16px] leading-[18px] uppercase font-semibold text-left">
+                        {isEdit ? 'Изменить адрес' : 'Добавить адрес'}
+                    </h3>
                 </div>
 
                 {/* Body */}
@@ -171,6 +208,7 @@ export const AddAddressModal: React.FC<{ onClose: () => void; onSuccess: () => v
                             setTouched((t) => ({ ...t, addressLabel: true }));
                           }}
                           autoFocus
+                          disabled={submitting}
                         />
                     </label>
 
@@ -190,6 +228,7 @@ export const AddAddressModal: React.FC<{ onClose: () => void; onSuccess: () => v
                                 }
                                 setTouched((t) => ({ ...t, country: true }));
                             }}
+                            disabled={submitting}
                         />
                     </label>
 
@@ -209,6 +248,7 @@ export const AddAddressModal: React.FC<{ onClose: () => void; onSuccess: () => v
                             }
                             setTouched((t) => ({ ...t, city: true }));
                           }}
+                          disabled={submitting}
                         />
                     </label>
 
@@ -228,6 +268,7 @@ export const AddAddressModal: React.FC<{ onClose: () => void; onSuccess: () => v
                             }
                             setTouched((t) => ({ ...t, streetAddress: true }));
                           }}
+                          disabled={submitting}
                         />
                     </label>
 
@@ -247,6 +288,7 @@ export const AddAddressModal: React.FC<{ onClose: () => void; onSuccess: () => v
                             }
                             setTouched((t) => ({ ...t, postalCode: true }));
                           }}
+                          disabled={submitting}
                         />
                     </label>
 
@@ -254,11 +296,11 @@ export const AddAddressModal: React.FC<{ onClose: () => void; onSuccess: () => v
                     <div className="mt-[40px]" />
                     <button
                         type="submit"
-                        disabled={submitting || !isValid()}
+                        disabled={submitting || !isValid() || (isEdit && !isDirty)}
                         tabIndex={-1}
-                        className={`w-full h-[56px] border border-[#FFFBF5] rounded bg-[#F8C6D7] text-[14px] leading-[18px] uppercase ${!submitting && isValid() ? 'cursor-pointer hover:shadow-md transition transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
+                        className={`w-full h-[56px] border border-[#FFFBF5] rounded bg-[#F8C6D7] text-[14px] leading-[18px] uppercase ${!submitting && isValid() && (!isEdit || isDirty) ? 'cursor-pointer hover:shadow-md transition transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
                     >
-                        Добавить адрес
+                        {isEdit ? 'Изменить адрес' : 'Добавить адрес'}
                     </button>
                 </form>
             </motion.div>

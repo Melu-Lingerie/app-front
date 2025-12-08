@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect, useRef } from 'react';
-import {selectUser, setAddresses, setUserData, removeAddressById} from '@/store/userSlice';
+import {selectUser, setAddresses, setUserData, removeAddressById, updateAddressById} from '@/store/userSlice';
 import { selectAppInitialized } from '@/store/appSlice';
 import { ru } from 'date-fns/locale';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -45,6 +45,19 @@ export const ProfileTab = () => {
     const [addressesLoading, setAddressesLoading] = useState(false);
     const addressesLoadedRef = useRef(false);
     const [addAddressOpen, setAddAddressOpen] = useState(false);
+
+    const [editAddressOpen, setEditAddressOpen] = useState(false);
+    const [addressToEdit, setAddressToEdit] = useState<import('@/api/models/AddressFacadeResponseDto').AddressFacadeResponseDto | null>(null);
+
+    const openEditAddress = (addr: import('@/api/models/AddressFacadeResponseDto').AddressFacadeResponseDto) => {
+        setAddressToEdit(addr);
+        setEditAddressOpen(true);
+    };
+
+    const closeEditAddress = () => {
+        setEditAddressOpen(false);
+        setAddressToEdit(null);
+    };
 
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [addressIdToDelete, setAddressIdToDelete] = useState<number | null>(null);
@@ -445,7 +458,7 @@ export const ProfileTab = () => {
             {/* Адреса доставки */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 {(addressesLoading || !initialized) && [1,2,3].map((i) => (
-                    <div key={`addr-skel-${i}`} className="h-[200px] rounded bg-[#F5F5F5] animate-pulse" />
+                    <div key={`addr-skel-${i}`} className="h-[98px] rounded bg-[#F5F5F5] animate-pulse" />
                 ))}
 
                 {!(addressesLoading || !initialized) && (user.addresses ?? []).map((addr, idx) => (
@@ -455,7 +468,14 @@ export const ProfileTab = () => {
                                 Адрес: {addr.addressLabel}
                             </p>
                             <div>
-                                <button className="cursor-pointer mr-2"><SquarePen width={18} height={18} /></button>
+                                <button
+                                    type="button"
+                                    className="cursor-pointer mr-2"
+                                    onClick={() => openEditAddress(addr)}
+                                    aria-label="Редактировать адрес"
+                                >
+                                    <SquarePen width={18} height={18} />
+                                </button>
                                 <button
                                     type="button"
                                     className="cursor-pointer"
@@ -508,6 +528,20 @@ export const ProfileTab = () => {
                   onSuccess={async () => {
                     setAddAddressOpen(false);
                     await reloadAddresses();
+                  }}
+                />
+              )}
+
+              {editAddressOpen && addressToEdit && (
+                <AddAddressModal
+                  key={`editAddressModal-${addressToEdit.id}`}
+                  address={addressToEdit}
+                  onClose={closeEditAddress}
+                  onSuccess={(updated) => {
+                    if (updated) {
+                      dispatch(updateAddressById(updated));
+                    }
+                    closeEditAddress();
                   }}
                 />
               )}
