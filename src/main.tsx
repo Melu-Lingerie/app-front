@@ -7,11 +7,11 @@ import './App.css';
 import '@fontsource/montserrat';
 
 createRoot(document.getElementById('root')!).render(
-    <StrictMode>
+    // <StrictMode>
         <NotificationsProvider>
             <BrowserRouter>
                 <App/>
-            </BrowserRouter>
+            </BrowserRouter>2
         </NotificationsProvider>
-    </StrictMode>
+    // </StrictMode>
 );

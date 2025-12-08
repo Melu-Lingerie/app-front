@@ -53,6 +53,9 @@ const userSlice = createSlice({
         setAddresses(state, action: PayloadAction<import('@/api/models/AddressFacadeResponseDto').AddressFacadeResponseDto[]>) {
             state.addresses = action.payload;
         },
+        removeAddressById(state, action: PayloadAction<number>) {
+            state.addresses = state.addresses.filter((addr) => addr.id !== action.payload);
+        },
         setAuthenticated(state, action: PayloadAction<boolean>) {
             state.isAuthenticated = action.payload;
         },
@@ -74,7 +77,7 @@ const userSlice = createSlice({
     },
 });
 
-export const { setUserId, clearUser, setUserData, setAuthenticated, setAddresses } = userSlice.actions;
+export const { setUserId, clearUser, setUserData, setAuthenticated, setAddresses, removeAddressById } = userSlice.actions;
 
 export const selectUser = (state: { user: UserState }) => state.user;
 export const selectUserId = (state: { user: UserState }) => state.user.userId;

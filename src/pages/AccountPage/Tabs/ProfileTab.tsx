@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect, useRef } from 'react';
-import {selectUser, setAddresses, setUserData} from '@/store/userSlice';
+import {selectUser, setAddresses, setUserData, removeAddressById} from '@/store/userSlice';
 import { selectAppInitialized } from '@/store/appSlice';
 import { ru } from 'date-fns/locale';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -11,6 +11,7 @@ import {AddressManagementService} from '@/api';
 import type {AppDispatch} from '@/store';
 import {AddAddressModal} from '@/components/Modals';
 import { AnimatePresence } from 'framer-motion';
+import {SquarePen, X} from "lucide-react";
 
 export const ProfileTab = () => {
     const user = useSelector(selectUser);
@@ -44,6 +45,36 @@ export const ProfileTab = () => {
     const [addressesLoading, setAddressesLoading] = useState(false);
     const addressesLoadedRef = useRef(false);
     const [addAddressOpen, setAddAddressOpen] = useState(false);
+
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [addressIdToDelete, setAddressIdToDelete] = useState<number | null>(null);
+    const [deletingAddress, setDeletingAddress] = useState(false);
+
+    const openDeleteConfirm = (id?: number) => {
+        if (!id) return;
+        setAddressIdToDelete(id);
+        setDeleteConfirmOpen(true);
+    };
+
+    const closeDeleteConfirm = () => {
+        setDeleteConfirmOpen(false);
+        setAddressIdToDelete(null);
+    };
+
+    const handleDeleteAddress = async () => {
+        if (!addressIdToDelete) return;
+        setDeletingAddress(true);
+        try {
+            await AddressManagementService.deleteAddress(addressIdToDelete);
+            dispatch(removeAddressById(addressIdToDelete));
+            addNotification('Адрес удалён', 'success');
+            closeDeleteConfirm();
+        } catch (e) {
+            addNotification('Не удалось удалить адрес', 'error');
+        } finally {
+            setDeletingAddress(false);
+        }
+    };
 
     const reloadAddresses = async () => {
         setAddressesLoading(true);
@@ -418,58 +449,53 @@ export const ProfileTab = () => {
                 ))}
 
                 {!(addressesLoading || !initialized) && (user.addresses ?? []).map((addr, idx) => (
-                    <div key={addr.id ?? idx} className="border border-[#E5E5E5] rounded p-4 flex flex-col gap-3">
-                        <input
-                            className="h-[40px] rounded-[8px] border border-[#CCCCCC] px-3"
-                            defaultValue={addr.addressLabel ?? ''}
-                            placeholder="Название (Дом/Работа)"
-                            name={`addressLabel-${addr.id ?? idx}`}
-                            type="text"
-                        />
-                        <input
-                            className="h-[40px] rounded-[8px] border border-[#CCCCCC] px-3"
-                            defaultValue={addr.streetAddress ?? ''}
-                            placeholder="Улица, дом, кв."
-                            name={`streetAddress-${addr.id ?? idx}`}
-                            type="text"
-                        />
-                        <div className="grid grid-cols-2 gap-3">
-                            <input
-                                className="h-[40px] rounded-[8px] border border-[#CCCCCC] px-3"
-                                defaultValue={addr.city ?? ''}
-                                placeholder="Город"
-                                name={`city-${addr.id ?? idx}`}
-                                type="text"
-                            />
-                            <input
-                                className="h-[40px] rounded-[8px] border border-[#CCCCCC] px-3"
-                                defaultValue={addr.postalCode ?? ''}
-                                placeholder="Индекс"
-                                name={`postalCode-${addr.id ?? idx}`}
-                                type="text"
-                            />
+                    <div key={addr.id ?? idx} className="flex flex-col">
+                        <div className="flex justify-between mb-5">
+                            <p className="uppercase text-[14px] leading-[18px] font-medium">
+                                Адрес: {addr.addressLabel}
+                            </p>
+                            <div>
+                                <button className="cursor-pointer mr-2"><SquarePen width={18} height={18} /></button>
+                                <button
+                                    type="button"
+                                    className="cursor-pointer"
+                                    onClick={() => openDeleteConfirm(addr.id)}
+                                    aria-label="Удалить адрес"
+                                >
+                                    <X width={18} height={18} />
+                                </button>
+                            </div>
                         </div>
+                        <p className="text-[16px] leading-[18px] text-[#999999] font-medium">
+                            {addr.streetAddress}
+                        </p>
+                        <p className="text-[16px] leading-[18px] text-[#999999] font-medium">
+                            {addr.country}, {addr.city}
+                        </p>
+                        <p className="text-[16px] leading-[18px] text-[#999999] font-medium">
+                            {addr.postalCode}
+                        </p>
                     </div>
                 ))}
+
+                <div>
+                    <button
+                        type="button"
+                        disabled={!initialized || loading || addressesLoading || deletingAddress}
+                        onClick={() => setAddAddressOpen(true)}
+                        className={`text-[16px] leading-[18px] underline ${initialized && !loading && !addressesLoading && !deletingAddress ? 'cursor-pointer transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
+                    >
+                        Добавить адрес
+                    </button>
+                </div>
             </div>
 
             <div className="mt-[60px]">
                 <button
                     type="button"
-                    disabled={!initialized || loading || addressesLoading}
-                    onClick={() => setAddAddressOpen(true)}
-                    className={`text-[16px] leading-[18px] underline ${initialized && !loading && !addressesLoading ? 'cursor-pointer transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
-                >
-                    Добавить адрес
-                </button>
-            </div>
-
-            <div className="mt-[60px]">
-                <button
-                    type="button"
-                    disabled={!initialized || !isDirty || loading}
+                    disabled={!initialized || !isDirty || loading || deletingAddress}
                     onClick={handleSave}
-                    className={`w-[445px] h-[56px] border border-[#FFFBF5] rounded bg-[#F8C6D7] text-[14px] leading-[18px] uppercase ${initialized && isDirty && !loading ? 'cursor-pointer hover:shadow-md transition transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
+                    className={`w-[445px] h-[56px] border border-[#FFFBF5] rounded bg-[#F8C6D7] text-[14px] leading-[18px] uppercase ${initialized && isDirty && !loading && !deletingAddress ? 'cursor-pointer hover:shadow-md transition transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
                 >
                     Сохранить данные
                 </button>
@@ -484,6 +510,43 @@ export const ProfileTab = () => {
                     await reloadAddresses();
                   }}
                 />
+              )}
+
+              {deleteConfirmOpen && (
+                <div
+                  key="deleteConfirmModal"
+                  className="fixed inset-0 z-50 flex items-center justify-center"
+                  role="dialog"
+                  aria-modal="true"
+                >
+                  <div
+                    className="absolute inset-0 bg-black/40"
+                    onClick={closeDeleteConfirm}
+                  />
+                  <div className="relative w-[90%] max-w-[420px] rounded-[12px] bg-white p-6 shadow-lg">
+                    <p className="text-[16px] leading-[22px] font-medium mb-6">
+                      Вы уверены, что хотите удалить этот адрес?
+                    </p>
+                    <div className="flex justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={closeDeleteConfirm}
+                        className="h-[40px] px-4 rounded-[8px] border border-[#CCCCCC] text-[14px] leading-[18px] uppercase cursor-pointer"
+                        disabled={deletingAddress}
+                      >
+                        Нет
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDeleteAddress}
+                        className="cursor-pointer h-[40px] px-4 rounded-[8px] bg-[#F8C6D7] text-[14px] leading-[18px] uppercase"
+                        disabled={deletingAddress}
+                      >
+                        Да
+                      </button>
+                    </div>
+                  </div>
+                </div>
               )}
             </AnimatePresence>
         </div>
