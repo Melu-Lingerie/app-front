@@ -124,6 +124,16 @@ export const Header = () => {
         };
     }, []);
 
+    useEffect(() => {
+        const onOpenLogin: EventListener = () => {
+            setIsLoginOpen(true);
+        };
+        window.addEventListener('open-login-modal', onOpenLogin);
+        return () => {
+            window.removeEventListener('open-login-modal', onOpenLogin);
+        };
+    }, []);
+
     const handleLogout = async () => {
       setLoggingOut(true);
       try {
