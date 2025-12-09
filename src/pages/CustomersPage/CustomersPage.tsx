@@ -1,4 +1,4 @@
-import {useLocation, useNavigate, Routes, Route, Navigate} from 'react-router-dom';
+import {useLocation, useNavigate, Routes, Route, Navigate, Link} from 'react-router-dom';
 import {motion, AnimatePresence} from 'framer-motion';
 
 export const CustomersPage = () => {
@@ -8,6 +8,9 @@ export const CustomersPage = () => {
     const tabs = [
         {label: 'Доставка', path: '/customers/delivery'},
         {label: 'Возврат', path: '/customers/returns'},
+        {label: 'Вопрос-ответ', path: '/customers/faq'},
+        {label: 'Уход за изделиями', path: '/customers/care'},
+        {label: 'Подарочные сертификаты', path: '/customers/certificates'},
     ];
 
     const handleTabClick = (tabPath: string) => {
@@ -217,11 +220,23 @@ export const CustomersPage = () => {
                                                     *Сроки доставки возврата из Калининграда увеличены, осуществляются в течение 17-25 рабочих дней до момента получения на складе. Для более быстрой доставки вы можете отправить возврат самостоятельно. Стоимость самостоятельной отправки любым другим способом не компенсируется.
                                                 </p>
                                                 <p className="text-[16px] leading-[22px] mb-3">
+                                                    Также вы можете отправить посылку обратившись в любую транспортную компанию. Отправить посылку необходимо курьером по адресу: 196084, Санкт-Петербург, ул. Смоленская, дом 33, лит А, ООО «АЙРОНБАЙ». Данный возврат осуществляется за счет покупателя.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px] mb-3">
                                                     Как только мы получим посылку, наши специалисты проверят изделия и оформят возврат денежных средств. Возврат обрабатывается в течение 10 рабочих дней с момента поступления на склад. После обработки вашего возврата денежные средства возвращаются на карту, с которой был оплачен заказ на сайте. Срок зачисления денежных средств зависит от Банка-эмитента.
                                                 </p>
                                                 <p className="text-[16px] leading-[22px] mb-3">
                                                     В случае несоблюдения условий возврата или изменения способа или условий доставки, компания снимает с себя всю ответственность за неполученные посылки. Транспортные расходы на возврат заказа из-за рубежа оплачиваются покупателем.
                                                 </p>
+                                                <p>Возврат интернет-заказа также доступен в двух офлайн магазинах:</p>
+                                                <ol className="text-[16px] leading-[22px] list-decimal pl-5 space-y-1 mb-2">
+                                                    <li>
+                                                        Москва, Чистопрудный бульвар, дом 21
+                                                    </li>
+                                                    <li>
+                                                        Санкт-Петербург, проспект Добролюбова, дом 5/1
+                                                    </li>
+                                                </ol>
                                                 <p className="text-[16px] leading-[22px] mb-3">
                                                     Для осуществления возврата необходимо приехать в магазин и сообщить продавцу-консультанту запрос на возврат. Возврат будет одобрен в случае соблюдения всех условий.
                                                     При предъявлении на кассе физической банковской карты, с которой была осуществлена оплата на сайте, деньги будут возвращены в тот же день. Срок зачисления денежных средств зависит от Банка-эмитента. Для оформления возврата необходимо заполнить заявление на возврат.
@@ -230,6 +245,356 @@ export const CustomersPage = () => {
                                                 <p className="text-[16px] leading-[22px]">
                                                     Если у вас есть вопросы по возврату товара — свяжитесь с нами удобным для вас способом:
                                                 </p>
+                                            </section>
+                                        </div>
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="faq"
+                                element={
+                                    <motion.div
+                                        initial={{opacity: 0, y: 10}}
+                                        animate={{opacity: 1, y: 0}}
+                                        exit={{opacity: 0, y: -10}}
+                                        transition={{duration: 0.25}}
+                                    >
+                                        <div className="space-y-[40px]">
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Как с нами связаться
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Напишите в WhatsApp или Telegram
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Горячая линия:
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Контакты магазинов
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Оплата при получении
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Оплата заказа доступна только онлайн — при оформлении на сайте.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Возврат
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Вернуть товар можно в течение 14 дней с момента получения.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Подробности — в разделе <Link to="/customers/returns" className="underline">«Возврат»</Link>
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Как выбрать размер
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Ориентируйтесь на таблицу в карточке товара.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Если нужно уточнение — свяжитесь с нами. Мы поможем.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Где находится заказ
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Сборка заказа — 1–2 рабочих дня.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Трек-номер поступает на почту после отправки.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Заказы через Яндекс доставку отслеживаются только в приложении Яндекс Go.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Если трек не пришёл — напишите или позвоните.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Промокод за подписку
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Промокод действует на первый заказ при покупке товаров по полной цене.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    На разделы SALE, Underwear и ART не распространяется.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Как использовать бонусы
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Бонусами можно оплатить до 50% от стоимости заказа.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Срок действия — 6 месяцев с момента начисления.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Сроки активации:
+                                                    <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                        <li>
+                                                            бонусы за регистрацию доступны к списанию через 7 дней
+                                                        </li>
+                                                        <li>
+                                                            бонусы за покупку: через 14 дней (оффлайн) и через 19 дней (онлайн)
+                                                        </li>
+                                                        <li>
+                                                            бонусы в день рождения: начисляются за 10 дней до дня рождения и сгорают через 10 дней после
+                                                        </li>
+                                                    </ul>
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Исключения:
+                                                    <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                        <li>
+                                                            оплата бонусами недоступна для категорий ART и Underwear
+                                                        </li>
+                                                        <li>
+                                                            при использовании бонусов кешбэк на оставшуюся сумму не начисляется
+                                                        </li>
+                                                        <li>
+                                                            бонусы, промокоды и скидки не суммируются
+                                                        </li>
+                                                    </ul>
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Бонусы начисляются при покупке изделий со скидкой, но использовать их можно только при оплате товаров по полной цене.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    При возврате покупки бонусы сгорают.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Если заказ задерживается
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Свяжитесь с нами. Уточните номер заказа — мы направим запрос в курьерскую службу и сообщим статус.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Способы оплаты
+                                                </p>
+                                                <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                    <li>
+                                                        Банковские карты РФ
+                                                    </li>
+                                                    <li>
+                                                        Международные карты (список стран — здесь)
+                                                    </li>
+                                                    <li>
+                                                        Dolyame (для карт РФ)
+                                                    </li>
+                                                    <li>
+                                                        СБП (Система быстрых платежей)
+                                                    </li>
+                                                </ul>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Возврат средств
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    После получения возвратной посылки обработка занимает до 10 рабочих дней.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Если срок прошел — напишите нам. Мы всё проверим.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Брак
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Сделайте фото и направьте его нам.
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Если дефект подтвержден — все транспортные расходы мы берём на себя.
+                                                </p>
+                                            </section>
+                                        </div>
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="care"
+                                element={
+                                    <motion.div
+                                        initial={{opacity: 0, y: 10}}
+                                        animate={{opacity: 1, y: 0}}
+                                        exit={{opacity: 0, y: -10}}
+                                        transition={{duration: 0.25}}
+                                    >
+                                        <div className="space-y-[40px]">
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Стирка
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    После стирки деликатные ткани необходимо сушить аккуратно. Не выкручивайте бельё, чтобы избежать деформации волокон. Расположите изделие на горизонтальной поверхности или полотенце, вдали от прямого солнца и нагревательных приборов.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Сушка
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Машинная сушка для кружевного и шелкового белья не рекомендуется.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Утюжка
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Большинство кружевного и шелкового белья не требует глажки. Если необходимо разгладить складки, используйте минимальную температуру утюга и гладильную поверхность через тонкую ткань. Прямое воздействие высокой температуры на кружево и эластичные волокна может повредить изделие.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Химчистка
+                                                </p>
+                                                <p className="text-[16px] leading-[22px]">
+                                                    Химчистка не рекомендуется.
+                                                </p>
+                                            </section>
+                                        </div>
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="certificates"
+                                element={
+                                    <motion.div
+                                        initial={{opacity: 0, y: 10}}
+                                        animate={{opacity: 1, y: 0}}
+                                        exit={{opacity: 0, y: -10}}
+                                        transition={{duration: 0.25}}
+                                    >
+                                        <div className="space-y-[40px]">
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Срок действия и номинал
+                                                </p>
+                                                <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                    <li>
+                                                        Срок действия: Ваш подарок будет ждать своего часа целых 3 года с момента приобретения.
+                                                    </li>
+                                                    <li>
+                                                        Номинал: Вы сами выбираете сумму — от 500 до 500 000 рублей.
+                                                    </li>
+                                                </ul>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Доставка виртуального сертификата
+                                                </p>
+                                                <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                    <li>
+                                                        Электронный сертификат мы моментально отправим в СМС-сообщении.
+                                                    </li>
+                                                    <li>
+                                                        Хотите сделать сюрприз? Вы можете заранее назначить дату и время доставки.
+                                                    </li>
+                                                </ul>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Как активировать и использовать
+                                                </p>
+                                                <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                    <li>
+                                                        Простая активация: Виртуальный сертификат можно легко привязать к вашему личному кабинету Melu (при оформлении заказа или позже, указав номер телефона).
+                                                    </li>
+                                                    <li>
+                                                        Оплата онлайн: Для использования на сайте или в приложении просто выберите способ оплаты «Картой онлайн» и введите код сертификата.
+                                                    </li>
+                                                    <li>
+                                                        Оплата в магазине:
+                                                        <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                            <li>
+                                                                Физический сертификат: Предъявите оригинал на кассе.
+                                                            </li>
+                                                            <li>
+                                                                Виртуальный сертификат: Покажите SMS с кодом или письмо от Melu.
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Где и как можно расплатиться?
+                                                </p>
+                                                <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                    <li>
+                                                        Действует везде: Оплачивайте покупки в любых магазинах Melu, на сайте и в приложении.
+                                                    </li>
+                                                    <li>
+                                                        Гибкая оплата: Сертификатом можно оплатить весь заказ или его часть, а также доставку. Сумму можно разделить на несколько покупок.
+                                                    </li>
+                                                    <li>
+                                                        Недействителен для предзаказов.
+                                                    </li>
+                                                </ul>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Совместимость с другими акциями
+                                                </p>
+                                                <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                    <li>
+                                                        Да! Сертификат можно комбинировать с бонусными баллами и промокодами.
+                                                    </li>
+                                                    <li>
+                                                        Нет: При покупке самого сертификата бонусные баллы не начисляются.
+                                                    </li>
+                                                </ul>
+                                            </section>
+
+                                            <section>
+                                                <p className="text-[16px] leading-[18px] font-medium uppercase mb-3">
+                                                    Возврат
+                                                </p>
+                                                <ul className="text-[16px] leading-[22px] list-disc pl-5 space-y-1">
+                                                    <li>
+                                                        Возврат сертификата: Возврат физического или виртуального сертификата возможен только в розничных магазинах Melu.
+                                                    </li>
+                                                    <li>
+                                                        Возврат товара, купленного за сертификат: При возврате товара средства возвращаются наличными или на банковскую карту.
+                                                    </li>
+                                                </ul>
                                             </section>
                                         </div>
                                     </motion.div>

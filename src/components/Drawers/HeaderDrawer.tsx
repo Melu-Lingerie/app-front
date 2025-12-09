@@ -226,8 +226,12 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                                         >Возврат</motion.button>
                                         <motion.button
                                             type="button"
-                                            className="w-full block text-left text-[14px] leading-[18px] uppercase mb-[20px] transition-colors hover:bg-gray-50 rounded-md -mx-2 px-2"
+                                            className="cursor-pointer w-full block text-left text-[14px] leading-[18px] uppercase mb-[20px] transition-colors hover:bg-gray-50 rounded-md -mx-2 px-2"
                                             variants={itemV}
+                                            onClick={() => {
+                                                navigate('/customers/faq');
+                                                onClose();
+                                            }}
                                         >Вопрос‒ответ</motion.button>
                                         <motion.button
                                             type="button"
@@ -241,8 +245,12 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                                         >Комьюнити</motion.button>
                                         <motion.button
                                             type="button"
-                                            className="w-full block text-left text-[14px] leading-[18px] uppercase transition-colors hover:bg-gray-50 rounded-md -mx-2 px-2"
+                                            className="cursor-pointer w-full block text-left text-[14px] leading-[18px] uppercase transition-colors hover:bg-gray-50 rounded-md -mx-2 px-2"
                                             variants={itemV}
+                                            onClick={() => {
+                                                navigate('/customers/care');
+                                                onClose();
+                                            }}
                                         >Уход за изделиями</motion.button>
                                     </div>
                                 </>

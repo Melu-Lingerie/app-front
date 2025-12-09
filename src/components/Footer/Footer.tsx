@@ -43,7 +43,7 @@ export const Footer = () => {
                 <Link to="/customers/delivery">ДОСТАВКА</Link>
                 {/*<p>ОПЛАТА</p>*/}
                 <Link to="/customers/returns">ВОЗВРАТ</Link>
-                {/*<p>FAQ</p>*/}
+                <Link to="/customers/faq">FAQ</Link>
                 {/*<p>ТЕХПОДДЕРЖКА</p>*/}
             </div>
 
