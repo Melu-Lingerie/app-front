@@ -86,10 +86,10 @@ export const MainPage = () => {
     }, [fetchPage, page, hasMore, loadingMore, addNotification]);
 
     return (
-        <>
+        <div className="overflow-x-hidden">
             <ActualInfo />
 
-            <div className="max-w-[100vw] overflow-hidden px-4 md:px-10 pt-[40px] md:pt-[90px]">
+            <div className="px-4 md:px-10 pt-[40px] md:pt-[90px]">
                 <h2 className="text-lg md:text-2xl leading-6 uppercase">НОВАЯ КОЛЛЕКЦИЯ</h2>
 
                 {!loading && !newProducts.length
@@ -112,7 +112,7 @@ export const MainPage = () => {
                 }
 
                 {/* горизонтальная линия */}
-                <div className="relative w-screen left-[calc((100%-100vw)/2)] h-[1px] dark:bg-white/10 bg-[#CCC]"/>
+                <div className="relative left-1/2 -translate-x-1/2 w-screen h-[1px] dark:bg-white/10 bg-[#CCC]"/>
 
                 <div className="my-[40px] md:mb-[90px]">
                     <h2 className="text-lg md:text-2xl leading-6 uppercase">БЭКСТЕЙДЖ</h2>
@@ -133,8 +133,8 @@ export const MainPage = () => {
                     </div>
                 </div>
 
-                <div className="relative w-screen left-[calc((100%-100vw)/2)] h-[1px] dark:bg-white/10 bg-[#CCC]"/>
+                <div className="relative left-1/2 -translate-x-1/2 w-screen h-[1px] dark:bg-white/10 bg-[#CCC]"/>
             </div>
-        </>
+        </div>
     );
 };

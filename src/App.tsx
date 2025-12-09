@@ -27,12 +27,8 @@ function App() {
                 root.classList.add('dark');
                 return;
             }
-            if (stored === 'light') {
-                root.classList.remove('dark');
-                return;
-            }
-            // default / system
-            applySystem();
+            // По умолчанию светлая тема (если нет сохранённой или явно 'light')
+            root.classList.remove('dark');
         };
 
         applyStored();

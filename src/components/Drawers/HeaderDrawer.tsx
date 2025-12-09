@@ -33,12 +33,18 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
-    // Theme sync
+    // Синхронизация темы при открытии drawer и при изменении storage
     useEffect(() => {
         const sync = () => setIsDarkTheme(document.documentElement.classList.contains('dark'));
+
+        // Синхронизируем при открытии
+        if (open) {
+            sync();
+        }
+
         window.addEventListener('storage', sync);
         return () => window.removeEventListener('storage', sync);
-    }, []);
+    }, [open]);
 
     const toggleTheme = (dark: boolean) => {
         document.documentElement.classList.toggle('dark', dark);
