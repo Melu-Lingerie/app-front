@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { MainPageControllerService, type BannerMainPageFacadeDto } from '@/api';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,6 +9,7 @@ import {useSafeState} from '@/hooks/useSafeState.ts';
 import {FallbackHeroCreative} from '@/components';
 
 const intervalMs = 5000;
+const SWIPE_THRESHOLD = 50;
 
 export const ActualInfo = () => {
     const [banners, setBanners] = useSafeState<BannerMainPageFacadeDto[]>([]);
@@ -22,6 +23,10 @@ export const ActualInfo = () => {
 
     // «тик» для рестарта таймера после возврата вкладки
     const [clock, tickClock] = useState(0);
+
+    // Свайп
+    const touchStartX = useRef<number | null>(null);
+    const touchEndX = useRef<number | null>(null);
 
     const navigate = useNavigate();
     const { signal } = useAbortController();
@@ -84,6 +89,45 @@ export const ActualInfo = () => {
         tickClock((c) => c + 1);
     };
 
+    // Свайп обработчики
+    const goNext = useCallback(() => {
+        if (banners.length === 0) return;
+        setCurrentIndex((prev) => (prev + 1) % banners.length);
+        tickClock((c) => c + 1);
+    }, [banners.length]);
+
+    const goPrev = useCallback(() => {
+        if (banners.length === 0) return;
+        setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length);
+        tickClock((c) => c + 1);
+    }, [banners.length]);
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        touchStartX.current = e.touches[0].clientX;
+        touchEndX.current = null;
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+        if (touchStartX.current === null || touchEndX.current === null) return;
+
+        const diff = touchStartX.current - touchEndX.current;
+
+        if (Math.abs(diff) > SWIPE_THRESHOLD) {
+            if (diff > 0) {
+                goNext(); // свайп влево → следующий
+            } else {
+                goPrev(); // свайп вправо → предыдущий
+            }
+        }
+
+        touchStartX.current = null;
+        touchEndX.current = null;
+    };
+
     // Скелетон — полноэкранный баннер минус хедер
     if (loading) {
         return (
@@ -102,7 +146,12 @@ export const ActualInfo = () => {
     const active = banners[currentIndex]; // баннер точно есть, иначе мы в фолбэке
 
     return (
-        <div className="relative w-full h-[calc(100svh-60px)] md:h-[calc(100svh-80px)] overflow-hidden">
+        <div
+            className="relative w-full h-[calc(100svh-60px)] md:h-[calc(100svh-80px)] overflow-hidden touch-pan-y"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
             {/* показываем активный только когда он загрузился */}
             {banners.map((banner, idx) => {
                 const id = (banner.id as unknown) as string | number;
