@@ -32,7 +32,6 @@ export function CartPage() {
         cartId,
         items,
         itemsCount,
-        totalAmount,
         loading,
         removingItemIds,
         updatingItemIds,
