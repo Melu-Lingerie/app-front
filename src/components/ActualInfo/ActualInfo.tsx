@@ -87,10 +87,10 @@ export const ActualInfo = () => {
     // Скелетон (aspect + min-h)
     if (loading) {
         return (
-            <div className="w-full aspect-[16/9] md:min-h-[620px] relative bg-gray-200 animate-pulse flex flex-col items-center justify-end">
-                <div className="mb-[60px] h-16 w-80 bg-gray-300 rounded" />
-                <div className="w-[600px] h-[2px] bg-gray-300 mb-5" />
-                <div className="mb-[60px] h-10 w-32 bg-gray-300 rounded-full" />
+            <div className="w-full min-h-[400px] md:min-h-[620px] relative bg-gray-200 animate-pulse flex flex-col items-center justify-end">
+                <div className="mb-[30px] md:mb-[60px] h-12 md:h-16 w-60 md:w-80 bg-gray-300 rounded" />
+                <div className="w-[200px] md:w-[600px] h-[2px] bg-gray-300 mb-4 md:mb-5" />
+                <div className="mb-[30px] md:mb-[60px] h-10 w-28 md:w-32 bg-gray-300 rounded-full" />
             </div>
         );
     }
@@ -102,7 +102,7 @@ export const ActualInfo = () => {
     const active = banners[currentIndex]; // баннер точно есть, иначе мы в фолбэке
 
     return (
-        <div className="relative w-full aspect-[16/9] md:min-h-[620px] overflow-hidden">
+        <div className="relative w-full min-h-[400px] md:min-h-[620px] overflow-hidden">
             {/* показываем активный только когда он загрузился */}
             {banners.map((banner, idx) => {
                 const id = (banner.id as unknown) as string | number;
@@ -137,15 +137,15 @@ export const ActualInfo = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.8, ease: 'easeOut' }}
-                    className="relative z-10 flex flex-col items-center justify-end text-white h-full"
+                    className="relative z-10 flex flex-col items-center justify-end text-white h-full px-4"
                 >
-                    <p className="mb-[60px] text-[42px] md:text-[62px] leading-[1.05] uppercase text-center px-4">
+                    <p className="mb-[30px] md:mb-[60px] text-[28px] md:text-[62px] leading-[1.1] uppercase text-center">
                         {active.title}
                     </p>
-                    <div className="w-[60%] max-w-[600px] border-t-2 border-white mb-5" />
+                    <div className="w-[80%] md:w-[60%] max-w-[600px] border-t-2 border-white mb-4 md:mb-5" />
                     <button
                         onClick={() => navigate(active.url)}
-                        className="mb-[60px] cursor-pointer px-6 py-2 rounded-xl bg-[#F8C6D7] text-black uppercase hover:bg-[#f5b6ca] transition active:scale-95"
+                        className="mb-[30px] md:mb-[60px] cursor-pointer px-6 py-2 rounded-xl bg-[#F8C6D7] text-black text-[14px] uppercase hover:bg-[#f5b6ca] transition active:scale-95"
                     >
                         Смотреть
                     </button>
@@ -153,7 +153,7 @@ export const ActualInfo = () => {
             </AnimatePresence>
 
             {/* Индикаторы */}
-            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+            <div className="absolute bottom-3 md:bottom-5 left-1/2 -translate-x-1/2 flex gap-2 md:gap-3 z-20">
                 {banners.map((_, idx) => (
                     <motion.button
                         key={idx}
@@ -166,7 +166,7 @@ export const ActualInfo = () => {
                             scale: idx === currentIndex ? 1.3 : 1,
                         }}
                         transition={{ duration: 0.4 }}
-                        className="w-3 h-3 rounded-full cursor-pointer"
+                        className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full cursor-pointer"
                     />
                 ))}
             </div>
