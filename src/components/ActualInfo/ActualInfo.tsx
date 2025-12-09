@@ -84,10 +84,10 @@ export const ActualInfo = () => {
         tickClock((c) => c + 1);
     };
 
-    // Скелетон (aspect + min-h)
+    // Скелетон — полноэкранный баннер минус хедер
     if (loading) {
         return (
-            <div className="w-full min-h-[400px] md:min-h-[620px] relative bg-gray-200 animate-pulse flex flex-col items-center justify-end">
+            <div className="w-full h-[calc(100svh-60px)] md:h-[calc(100svh-80px)] relative bg-gray-200 animate-pulse flex flex-col items-center justify-end">
                 <div className="mb-[30px] md:mb-[60px] h-12 md:h-16 w-60 md:w-80 bg-gray-300 rounded" />
                 <div className="w-[200px] md:w-[600px] h-[2px] bg-gray-300 mb-4 md:mb-5" />
                 <div className="mb-[30px] md:mb-[60px] h-10 w-28 md:w-32 bg-gray-300 rounded-full" />
@@ -102,7 +102,7 @@ export const ActualInfo = () => {
     const active = banners[currentIndex]; // баннер точно есть, иначе мы в фолбэке
 
     return (
-        <div className="relative w-full min-h-[400px] md:min-h-[620px] overflow-hidden">
+        <div className="relative w-full h-[calc(100svh-60px)] md:h-[calc(100svh-80px)] overflow-hidden">
             {/* показываем активный только когда он загрузился */}
             {banners.map((banner, idx) => {
                 const id = (banner.id as unknown) as string | number;
