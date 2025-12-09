@@ -5,11 +5,15 @@ import {
     useState,
     type CSSProperties,
     type ReactNode,
+    type TouchEvent,
+    type MouseEvent,
 } from 'react';
 import { CarouselButton } from './CarouselButton';
 import { ProductSkeleton } from '@/pages/Catalog/ProductSkeleton';
 import { useSelector } from 'react-redux';
 import { selectAppInitialized } from '@/store/appSlice';
+
+const SWIPE_THRESHOLD = 50; // минимальное расстояние для свайпа
 
 type CarouselProps<T> = {
     items: T[];
@@ -94,6 +98,84 @@ export const Carousel = <T,>({
         setIndex((i) => Math.max(i - 1, 0));
     }, []);
 
+    // ===== Touch/Swipe support =====
+    const touchStartX = useRef<number | null>(null);
+    const touchEndX = useRef<number | null>(null);
+    const isDragging = useRef(false);
+
+    const handleTouchStart = useCallback((e: TouchEvent<HTMLDivElement>) => {
+        touchStartX.current = e.touches[0].clientX;
+        touchEndX.current = null;
+        isDragging.current = true;
+    }, []);
+
+    const handleTouchMove = useCallback((e: TouchEvent<HTMLDivElement>) => {
+        if (!isDragging.current) return;
+        touchEndX.current = e.touches[0].clientX;
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        if (!isDragging.current || touchStartX.current === null || touchEndX.current === null) {
+            isDragging.current = false;
+            return;
+        }
+
+        const diff = touchStartX.current - touchEndX.current;
+
+        if (Math.abs(diff) > SWIPE_THRESHOLD) {
+            if (diff > 0) {
+                // свайп влево → следующий
+                handleNext();
+            } else {
+                // свайп вправо → предыдущий
+                handlePrev();
+            }
+        }
+
+        touchStartX.current = null;
+        touchEndX.current = null;
+        isDragging.current = false;
+    }, [handleNext, handlePrev]);
+
+    // Mouse drag support (for desktop trackpad/mouse)
+    const mouseStartX = useRef<number | null>(null);
+    const isMouseDragging = useRef(false);
+
+    const handleMouseDown = useCallback((e: MouseEvent<HTMLDivElement>) => {
+        mouseStartX.current = e.clientX;
+        isMouseDragging.current = true;
+    }, []);
+
+    const handleMouseMove = useCallback((e: MouseEvent<HTMLDivElement>) => {
+        if (!isMouseDragging.current || mouseStartX.current === null) return;
+        e.preventDefault();
+    }, []);
+
+    const handleMouseUp = useCallback((e: MouseEvent<HTMLDivElement>) => {
+        if (!isMouseDragging.current || mouseStartX.current === null) {
+            isMouseDragging.current = false;
+            return;
+        }
+
+        const diff = mouseStartX.current - e.clientX;
+
+        if (Math.abs(diff) > SWIPE_THRESHOLD) {
+            if (diff > 0) {
+                handleNext();
+            } else {
+                handlePrev();
+            }
+        }
+
+        mouseStartX.current = null;
+        isMouseDragging.current = false;
+    }, [handleNext, handlePrev]);
+
+    const handleMouseLeave = useCallback(() => {
+        mouseStartX.current = null;
+        isMouseDragging.current = false;
+    }, []);
+
     // ширина контейнера
     useEffect(() => {
         setImageHeight(0);
@@ -141,8 +223,17 @@ export const Carousel = <T,>({
     };
 
     return (
-        <div ref={containerRef} className="relative my-[60px] mb-10">
-            <div className="w-full overflow-hidden">
+        <div ref={containerRef} className="relative my-[30px] md:my-[60px] mb-10">
+            <div
+                className="w-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+            >
                 <div
                     className="flex transition-transform ease"
                     style={{

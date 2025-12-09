@@ -8,9 +8,21 @@ import {isAbortError} from '@/utils/utils.ts';
 
 const PAGE_SIZE = 8;
 
+// Hook для определения мобильного устройства
+const useIsMobile = () => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+    return isMobile;
+};
+
 export const MainPage = () => {
     const [newProducts, setNewProducts] = useState<ProductCatalogResponseDto[]>([]);
     const [loading, setLoading] = useState(true);
+    const isMobile = useIsMobile();
 
     // пагинация
     const [page, setPage] = useState(0);
@@ -77,23 +89,23 @@ export const MainPage = () => {
         <>
             <ActualInfo />
 
-            <div className="max-w-[100vw] overflow-hidden px-10 pt-[90px]">
-                <h2 className="text-2xl leading-6">НОВАЯ КОЛЛЕКЦИЯ</h2>
+            <div className="max-w-[100vw] overflow-hidden px-4 md:px-10 pt-[40px] md:pt-[90px]">
+                <h2 className="text-lg md:text-2xl leading-6 uppercase">НОВАЯ КОЛЛЕКЦИЯ</h2>
 
                 {!loading && !newProducts.length
-                    ? <div className="py-20 text-center text-gray-500">Товары не найдены 😢</div>
+                    ? <div className="py-20 text-center text-gray-500">Товары не найдены</div>
                     : <Carousel
                         items={newProducts}
-                        gap={20}
+                        gap={isMobile ? 12 : 20}
                         loading={loading}
-                        visibleCount={4}
+                        visibleCount={isMobile ? 2 : 4}
                         hasMore={hasMore}
                         loadingMore={loadingMore}
                         preloadOffset={2}
                         onLoadMore={onLoadMore}
                         renderItem={(item, {widthStyle, reportImageHeight}) => (
                             <div key={item.productId} style={widthStyle}>
-                                <Card card={item} reportImageHeight={reportImageHeight} />
+                                <Card card={item} reportImageHeight={reportImageHeight} showAddToCart={isMobile} />
                             </div>
                         )}
                     />
@@ -102,17 +114,17 @@ export const MainPage = () => {
                 {/* горизонтальная линия */}
                 <div className="relative w-screen left-[calc((100%-100vw)/2)] h-[1px] dark:bg-white/10 bg-[#CCC]"/>
 
-                <div className="my-[40px] mb-[90px]">
-                    <h2 className="text-2xl leading-6">БЭКСТЕЙДЖ</h2>
-                    <div className="flex gap-5 mt-[60px]">
-                        {mockBackStageData.map((card) => (
+                <div className="my-[40px] md:mb-[90px]">
+                    <h2 className="text-lg md:text-2xl leading-6 uppercase">БЭКСТЕЙДЖ</h2>
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-5 mt-[30px] md:mt-[60px]">
+                        {mockBackStageData.slice(0, isMobile ? 1 : 4).map((card) => (
                             <div
                                 key={card.id}
-                                className="flex justify-center items-end text-white text-center pb-[30px]"
+                                className="flex justify-center items-end text-white text-center pb-[30px] text-sm md:text-base uppercase"
                                 style={{
-                                    flex: '0 0 calc((100% - (20px * (4 - 1))) / 4)',
+                                    flex: isMobile ? '1' : '0 0 calc((100% - (20px * (4 - 1))) / 4)',
                                     background: `url(${card.image}) center/cover no-repeat`,
-                                    height: 666,
+                                    height: isMobile ? 400 : 666,
                                 }}
                             >
                                 {card.title}

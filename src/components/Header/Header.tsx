@@ -79,7 +79,7 @@ const sendSessionToServer = async () => {
 };
 
 export const Header = () => {
-    const textBtn = 'relative text-sm cursor-pointer';
+    const textBtn = 'relative text-sm cursor-pointer hidden md:block';
     const iconBtn = 'relative size-4 cursor-pointer';
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
@@ -206,33 +206,31 @@ export const Header = () => {
                 newPassword={verifyNewPassword}
                 onClose={() => { setShowVerify(false); setVerifyNewPassword(undefined); }}
             />
-            <div className="relative flex items-center justify-between h-[49px] px-10">
+            <div className="relative flex items-center justify-between h-[49px] px-4 md:px-10">
                 {/* Левая часть */}
-                <div className="flex items-center">
+                <div className="flex items-center gap-3 md:gap-4">
                     <button
                       type="button"
                       className={iconBtn}
                       onClick={() => setIsDrawerOpen(true)}
                     >
-                        <Menu className="w-4 h-4" aria-hidden="true" />
+                        <Menu className="w-4 h-4 md:w-4 md:h-4" aria-hidden="true" />
                     </button>
-                    {/*<button type="button" className={textBtn}>*/}
-                    {/*    MIX’N’MATCH*/}
-                    {/*</button>*/}
-                    {/*<button type="button" className={textBtn}>*/}
-                    {/*    SECRET BOX*/}
-                    {/*</button>*/}
+                    {/* Search - visible on mobile too */}
+                    <button type="button" className={`${iconBtn} md:hidden`}>
+                        <Search className="w-4 h-4" aria-hidden="true" />
+                    </button>
                 </div>
 
                 {/* Заголовок */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <Link to="/">
-                        <p className="m-0 text-[24px] font-semibold">MELU LINGERIE</p>
+                        <p className="m-0 text-[18px] md:text-[24px] font-semibold whitespace-nowrap">MELU LINGERIE</p>
                     </Link>
                 </div>
 
                 {/* Правая часть */}
-                <div className="flex items-center min-w-[150px] justify-end">
+                <div className="flex items-center gap-3 md:gap-4 md:min-w-[150px] justify-end">
                     <AnimatePresence mode="wait">
                         {!initialized ? (
                             <motion.div
@@ -241,10 +239,10 @@ export const Header = () => {
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.3 }}
-                                className="flex items-center gap-4"
+                                className="flex items-center gap-3 md:gap-4"
                             >
-                                <div className="w-12 h-4 bg-gray-200 animate-pulse rounded" />
-                                <div className="w-12 h-4 bg-gray-200 animate-pulse rounded" />
+                                <div className="hidden md:block w-12 h-4 bg-gray-200 animate-pulse rounded" />
+                                <div className="hidden md:block w-12 h-4 bg-gray-200 animate-pulse rounded" />
                                 <div className="w-4 h-4 bg-gray-200 animate-pulse rounded-full" />
                                 <div className="w-4 h-4 bg-gray-200 animate-pulse rounded-full" />
                             </motion.div>
@@ -255,9 +253,9 @@ export const Header = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.3 }}
-                                className="flex items-center gap-4"
+                                className="flex items-center gap-3 md:gap-4"
                             >
-                                {/* Wishlist */}
+                                {/* Wishlist - desktop only text */}
                                 <button type="button" className={textBtn} onClick={() => navigate('/account/favorites')}>
                                     ИЗБРАННОЕ
                                     <AnimatePresence>
@@ -278,13 +276,24 @@ export const Header = () => {
 
                                 {/* Login / Account */}
                                 {!isAuthenticated ? (
-                                    <button
-                                        type="button"
-                                        className={textBtn}
-                                        onClick={() => setIsLoginOpen(true)}
-                                    >
-                                        ВОЙТИ
-                                    </button>
+                                    <>
+                                        {/* Desktop - text button */}
+                                        <button
+                                            type="button"
+                                            className={textBtn}
+                                            onClick={() => setIsLoginOpen(true)}
+                                        >
+                                            ВОЙТИ
+                                        </button>
+                                        {/* Mobile - icon button */}
+                                        <button
+                                            type="button"
+                                            className={`${iconBtn} md:hidden`}
+                                            onClick={() => setIsLoginOpen(true)}
+                                        >
+                                            <User className="w-4 h-4" aria-hidden="true" />
+                                        </button>
+                                    </>
                                 ) : (
                                     <div className="relative flex items-center">
                                         <button
@@ -308,12 +317,12 @@ export const Header = () => {
                                               animate={{ opacity: 1, y: 0, scale: 1 }}
                                               exit={{ opacity: 0, y: -6, scale: 0.98 }}
                                               transition={{ duration: 0.18, ease: 'easeOut' }}
-                                              className="absolute left-1/2 top-full -translate-x-1/2 mt-2 w-48 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#2A2A2B] shadow-2xl z-50 overflow-hidden origin-top"
+                                              className="absolute right-0 md:left-1/2 top-full md:-translate-x-1/2 mt-2 w-48 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#2A2A2B] shadow-2xl z-50 overflow-hidden origin-top"
                                               role="menu"
                                               aria-busy={loggingOut}
                                             >
                                               {/* caret */}
-                                              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-white/10 border-l border-t border-gray-200 rotate-45" />
+                                              <span className="hidden md:block absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-white/10 border-l border-t border-gray-200 rotate-45" />
                                               <button
                                                 type="button"
                                                 className="w-full text-left px-4 py-2 text-sm hover:bg-[#F8C6D7]/10 focus:bg-[#F8C6D7]/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#F8C6D7] flex items-center gap-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:focus:bg-transparent"
@@ -348,8 +357,8 @@ export const Header = () => {
                                     </div>
                                 )}
 
-                                {/* Search */}
-                                <button type="button" className={iconBtn}>
+                                {/* Search - desktop only (mobile search is on left) */}
+                                <button type="button" className={`${iconBtn} hidden md:block`}>
                                     <Search className="w-4 h-4" aria-hidden="true" />
                                 </button>
 

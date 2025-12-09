@@ -20,12 +20,14 @@ type Props = {
     card: Required<ProductCatalogResponseDto>;
     widthStyle?: CSSProperties;
     reportImageHeight?: (h: number) => void;
+    showAddToCart?: boolean;
 };
 
 export const Card = ({
                          card: { s3url, name, productStatus, price, colors, productId },
                          widthStyle,
-                         reportImageHeight
+                         reportImageHeight,
+                         showAddToCart = false
                      }: Props) => {
     const { ref: textRef, isTruncated } = useIsTruncated<HTMLParagraphElement>();
     const [isLoaded, setIsLoaded] = useState(false);
@@ -150,6 +152,21 @@ export const Card = ({
                         ))}
                     </ul>
                 </div>
+
+                {/* Mobile Add to Cart button */}
+                {showAddToCart && (
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            // TODO: implement add to cart
+                            navigate(`/catalog/${productId}`);
+                        }}
+                        className="w-full mt-3 h-[36px] border border-[#CCC] dark:border-white/20 text-[12px] uppercase cursor-pointer hover:bg-[#F8C6D7] hover:border-[#F8C6D7] transition-colors"
+                    >
+                        Добавить в корзину
+                    </button>
+                )}
             </div>
         </div>
     );
