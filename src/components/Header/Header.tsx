@@ -206,6 +206,7 @@ export const Header = () => {
                 newPassword={verifyNewPassword}
                 onClose={() => { setShowVerify(false); setVerifyNewPassword(undefined); }}
             />
+            <header className="sticky top-0 z-50 bg-[#FFFBF5] dark:bg-[#1a1a1a]">
             <div className="relative flex items-center justify-between h-[49px] px-4 md:px-10">
                 {/* Левая часть */}
                 <div className="flex items-center gap-3 md:gap-4">
@@ -390,11 +391,12 @@ export const Header = () => {
                 </div>
             </div>
 
+            {/* Divider */}
+            <div className="w-full h-px bg-[#CCC] dark:bg-white/10" />
+            </header>
+
             {/* Drawer */}
             <HeaderDrawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
-
-            {/* Divider */}
-            <div className="w-screen h-px bg-[#CCC] dark:bg-white/10" />
         </>
     );
 };
