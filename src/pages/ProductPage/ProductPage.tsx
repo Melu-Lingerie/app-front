@@ -29,6 +29,7 @@ import {
     selectWishlistItems,
     selectWishlistLoading,
 } from '@/store/wishlistSlice.ts';
+import { selectAppInitialized } from '@/store/appSlice';
 import api from '@/axios/api.ts';
 
 export function ProductPage() {
@@ -44,6 +45,7 @@ export function ProductPage() {
     const wishlistId = useSelector(selectWishlistId);
     const wishlistItems = useSelector(selectWishlistItems);
     const wishlistLoading = useSelector(selectWishlistLoading);
+    const appInitialized = useSelector(selectAppInitialized);
 
     const [product, setProduct] = useState<ProductCardResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -176,12 +178,12 @@ export function ProductPage() {
         <div className="w-full">
             <div className="flex w-full gap-5 mb-20">
                 {/* Картинки */}
-                <div className="flex-1">
+                <div className="flex-1 mr-5">
                     <ProductImages images={images} />
                 </div>
 
                 {/* Инфоблок */}
-                <div className="w-[560px] shrink-0 pr-10 mt-[60px]">
+                <div className="flex-1 shrink-0 pr-10 mt-[60px]">
                     <div className="sticky top-[20px]">
                         {/* Заголовок + цена */}
                         <div className="flex flex-col gap-[24px]">
@@ -288,7 +290,9 @@ export function ProductPage() {
 
                         {/* Кнопка Добавить в корзину */}
                         <div className="mt-[30px]">
-                            {inCart ? (
+                            {!appInitialized ? (
+                                <div className="w-full h-[56px] rounded-[8px] bg-gray-200 animate-pulse" />
+                            ) : inCart ? (
                                 <button
                                     onClick={() => navigate('/cart')}
                                     className="w-full h-[56px] rounded-[8px] border bg-[#F8C6D7] border-[#F8C6D7]
@@ -323,29 +327,33 @@ export function ProductPage() {
 
                         {/* Кнопка Добавить в избранное */}
                         <div className="mt-[20px]">
-                            <button
-                                onClick={handleToggleWishlist}
-                                disabled={wishlistLoading}
-                                className={`flex items-center gap-2 cursor-pointer transition 
-                                    ${
-                                    wishlistLoading
-                                        ? 'opacity-50 cursor-not-allowed'
-                                        : 'hover:opacity-80'
-                                }`}
-                            >
-                                <img
-                                    src={inWishlist ? FillWishList : WishListInCard}
-                                    alt="Избранное"
-                                    className="w-5 h-5"
-                                />
-                                <span
-                                    className={`text-[16px] leading-[22px] ${
-                                        inWishlist ? 'text-[#F8C6D7]' : 'text-[#999]'
+                            {!appInitialized ? (
+                                <div className="w-[220px] h-[24px] rounded-[6px] bg-gray-200 animate-pulse" />
+                            ) : (
+                                <button
+                                    onClick={handleToggleWishlist}
+                                    disabled={wishlistLoading}
+                                    className={`flex items-center gap-2 cursor-pointer transition 
+                                        ${
+                                        wishlistLoading
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : 'hover:opacity-80'
                                     }`}
                                 >
-                                    {inWishlist ? 'В избранном' : 'Добавить в избранное'}
-                                </span>
-                            </button>
+                                    <img
+                                        src={inWishlist ? FillWishList : WishListInCard}
+                                        alt="Избранное"
+                                        className="w-5 h-5"
+                                    />
+                                    <span
+                                        className={`text-[16px] leading-[22px] ${
+                                            inWishlist ? 'text-[#F8C6D7]' : 'text-[#999]'
+                                        }`}
+                                    >
+                                        {inWishlist ? 'В избранном' : 'Добавить в избранное'}
+                                    </span>
+                                </button>
+                            )}
                         </div>
 
                         {/* Кнопки коллекция/категория */}
