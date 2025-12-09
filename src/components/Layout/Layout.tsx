@@ -6,7 +6,7 @@ export const Layout = () =>
     (
         <div className="overflow-x-hidden">
             <Header/>
-            <main>
+            <main className="pt-[50px]">
                 <Outlet/>
             </main>
             <Footer/>
