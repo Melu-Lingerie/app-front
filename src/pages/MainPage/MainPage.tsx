@@ -86,7 +86,7 @@ export const MainPage = () => {
     }, [fetchPage, page, hasMore, loadingMore, addNotification]);
 
     return (
-        <div className="overflow-x-hidden">
+        <>
             <ActualInfo />
 
             <div className="px-4 md:px-10 pt-[40px] md:pt-[90px]">
@@ -135,6 +135,6 @@ export const MainPage = () => {
 
                 <div className="relative left-1/2 -translate-x-1/2 w-screen h-[1px] dark:bg-white/10 bg-[#CCC]"/>
             </div>
-        </div>
+        </>
     );
 };

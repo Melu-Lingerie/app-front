@@ -4,7 +4,7 @@ import {Footer} from '../Footer';
 
 export const Layout = () =>
     (
-        <div>
+        <div className="overflow-x-hidden">
             <Header/>
             <main>
                 <Outlet/>
