@@ -77,6 +77,13 @@ export const ActualInfo = () => {
     const allFailed = banners.length > 0 && Object.keys(failed).length >= banners.length;
     const shouldFallback = !banners.length || allFailed;
 
+    const handleDotClick = (idx: number) => {
+        if (idx === currentIndex) return;
+        setCurrentIndex(idx);
+        // небольшой «тик» чтобы перезапустить таймер автопереключения после ручного выбора
+        tickClock((c) => c + 1);
+    };
+
     // Скелетон (aspect + min-h)
     if (loading) {
         return (
@@ -145,18 +152,21 @@ export const ActualInfo = () => {
                 </motion.div>
             </AnimatePresence>
 
-            {/* Индикаторы (как было) */}
+            {/* Индикаторы */}
             <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-3 z-20">
                 {banners.map((_, idx) => (
-                    <motion.span
+                    <motion.button
                         key={idx}
+                        type="button"
+                        onClick={() => handleDotClick(idx)}
+                        aria-label={`Переключить баннер ${idx + 1}`}
                         initial={false}
                         animate={{
                             backgroundColor: idx === currentIndex ? '#F8C6D7' : 'rgba(255,255,255,0.5)',
                             scale: idx === currentIndex ? 1.3 : 1,
                         }}
                         transition={{ duration: 0.4 }}
-                        className="w-3 h-3 rounded-full"
+                        className="w-3 h-3 rounded-full cursor-pointer"
                     />
                 ))}
             </div>
