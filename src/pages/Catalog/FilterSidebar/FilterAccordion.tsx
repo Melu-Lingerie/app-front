@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import ArrowDown from '@/assets/ArrowDown.svg';
+import {ChevronDown} from 'lucide-react';
 
 interface FilterAccordionProps {
     title: string;
@@ -25,11 +25,7 @@ export const FilterAccordion = ({
             <span>{title}</span>
             <div className="flex items-center">
                 {rightContent}
-                <img
-                    className={`ml-2 transition-transform ${isOpen ? 'rotate-180' : 'rotate-0'}`}
-                    src={ArrowDown}
-                    alt="Стрелка"
-                />
+                <ChevronDown className={`ml-2 transition-transform ${isOpen ? 'rotate-180' : 'rotate-0'}`} width={17} height={17} />
             </div>
         </button>
         <div

@@ -41,11 +41,11 @@ export const FavoritesTab = () => {
                     <div className="flex gap-6 mb-[60px]">
                         {[1,2,3].map(i => (
                             <div key={i} className="flex flex-col items-center">
-                                <div className="relative w-[135px] h-[202px] bg-[#F5F5F5] rounded-md mb-[6px]">
+                                <div className="relative w-[135px] h-[202px] bg-[#F5F5F5] dark:bg-white/10 rounded-md mb-[6px]">
                                     <img src={ForWishListSkeleton} className="absolute top-2 right-2 w-5 h-5" />
                                 </div>
-                                <div className="w-[109px] h-[4px] bg-[#F5F5F5] mb-[4px]" />
-                                <div className="w-[69px] h-[4px] bg-[#F5F5F5]" />
+                                <div className="w-[109px] h-[4px] bg-[#F5F5F5] dark:bg-white/10 mb-[4px]" />
+                                <div className="w-[69px] h-[4px] bg-[#F5F5F5] dark:bg-white/10 " />
                             </div>
                         ))}
                     </div>

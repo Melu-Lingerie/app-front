@@ -3,7 +3,7 @@ type ProductSkeletonProps = {
 };
 
 export const ProductSkeleton = ({ withBorder = false }: ProductSkeletonProps) => (
-    <div className={withBorder ? 'p-5 border-r border-b border-[#CCC]' : ''}>
+    <div className={withBorder ? 'p-5 border-r border-b border-[#CCC] dark:border-white/10' : ''}>
         <div className="flex flex-col gap-3 animate-pulse">
             {/* Картинка */}
             <div className="w-full aspect-[2/3] bg-gray-200 rounded" />

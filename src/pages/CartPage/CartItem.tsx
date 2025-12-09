@@ -26,10 +26,10 @@ export const CartItem = ({
     const isLoading = isRemoving || isUpdating;
 
     return (
-        <div className="relative border-t border-[#CCC] pt-6 w-full">
+        <div className="relative border-t border-[#CCC] dark:border-white/10 pt-6 w-full">
             {/* Лоадер с плавным появлением */}
             <div
-                className={`absolute inset-0 z-10 flex items-center justify-center bg-white/70 transition-opacity duration-300 ${
+                className={`absolute inset-0 z-10 flex items-center justify-center bg-white/70 dark:bg-white/10 transition-opacity duration-300 ${
                     isLoading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                 }`}
             >

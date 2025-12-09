@@ -162,7 +162,7 @@ export const AddAddressModal: React.FC<{
             <motion.div
               role="dialog"
               aria-modal="true"
-              className="relative z-10 w-[520px] max-w-[90vw] bg-white rounded-[12px] p-6 shadow-xl"
+              className="relative z-10 w-[520px] max-w-[90vw] bg-white dark:bg-[#2A2A2B] rounded-[12px] p-6 shadow-xl"
               onKeyDown={onKeyDown}
               onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95, y: 8 }}
@@ -177,13 +177,13 @@ export const AddAddressModal: React.FC<{
                   onMouseDown={() => { ignoreBlur.current = true; }}
                   onTouchStart={() => { ignoreBlur.current = true; }}
                   onClick={() => { onClose(); setTimeout(() => { ignoreBlur.current = false; }, 300); }}
-                  className="absolute top-4 right-4 text-gray-500 text-xl cursor-pointer disabled:opacity-40"
+                  className="absolute top-4 right-4 text-gray-500 dark:text-white text-xl cursor-pointer disabled:opacity-40"
                   disabled={submitting}
                 >
                   ✕
                 </button>
                 {/* Header */}
-                <div className="-mx-6 px-6 mb-6 border-b border-[#CCCCCC] pb-4">
+                <div className="-mx-6 px-6 mb-6 border-b border-[#CCCCCC] dark:border-white/10 pb-4">
                     <h3 className="text-[16px] leading-[18px] uppercase font-semibold text-left">
                         {isEdit ? 'Изменить адрес' : 'Добавить адрес'}
                     </h3>
@@ -195,7 +195,7 @@ export const AddAddressModal: React.FC<{
                         <span className="text-[12px] uppercase">Название адреса <span className="text-red-500">*</span></span>
                         <input
                           ref={labelRef}
-                          className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.addressLabel ? 'border-red-400' : 'border-[#CCC]'}`}
+                          className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.addressLabel ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'}`}
                           placeholder="Дайте имя этому адресу"
                           value={addressLabel}
                           onChange={(e) => setAddressLabel(e.target.value)}
@@ -216,7 +216,7 @@ export const AddAddressModal: React.FC<{
                         <span className="text-[12px] uppercase">Страна <span className="text-red-500">*</span></span>
                         <input
                             ref={countryRef}
-                            className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.country ? 'border-red-400' : 'border-[#CCC]'}`}
+                            className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.country ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'}`}
                             placeholder="Введите страну"
                             value={country}
                             onChange={(e) => setCountry(e.target.value)}
@@ -236,7 +236,7 @@ export const AddAddressModal: React.FC<{
                         <span className="text-[12px] uppercase">Населенный пункт <span className="text-red-500">*</span></span>
                         <input
                           ref={cityRef}
-                          className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.city ? 'border-red-400' : 'border-[#CCC]'}`}
+                          className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.city ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'}`}
                           placeholder="Введите название города"
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
@@ -256,7 +256,7 @@ export const AddAddressModal: React.FC<{
                         <span className="text-[12px] uppercase">Адрес <span className="text-red-500">*</span></span>
                         <input
                           ref={streetRef}
-                          className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.streetAddress ? 'border-red-400' : 'border-[#CCC]'}`}
+                          className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.streetAddress ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'}`}
                           placeholder="Введите улицу, дом и квартиру"
                           value={streetAddress}
                           onChange={(e) => setStreetAddress(e.target.value)}
@@ -276,7 +276,7 @@ export const AddAddressModal: React.FC<{
                         <span className="text-[12px] uppercase">Почтовый индекс <span className="text-red-500">*</span></span>
                         <input
                           ref={postalRef}
-                          className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.postalCode ? 'border-red-400' : 'border-[#CCC]'}`}
+                          className={`mt-2 w-full h-[56px] border rounded px-4 outline-none ${errors.postalCode ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'}`}
                           placeholder="Введите почтовый индекс вашего адреса"
                           value={postalCode}
                           onChange={(e) => setPostalCode(e.target.value)}
@@ -298,7 +298,7 @@ export const AddAddressModal: React.FC<{
                         type="submit"
                         disabled={submitting || !isValid() || (isEdit && !isDirty)}
                         tabIndex={-1}
-                        className={`w-full h-[56px] border border-[#FFFBF5] rounded bg-[#F8C6D7] text-[14px] leading-[18px] uppercase ${!submitting && isValid() && (!isEdit || isDirty) ? 'cursor-pointer hover:shadow-md transition transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
+                        className={`w-full h-[56px] border border-[#FFFBF5] dark:border-white/10 rounded bg-[#F8C6D7] text-[14px] leading-[18px] uppercase ${!submitting && isValid() && (!isEdit || isDirty) ? 'cursor-pointer hover:shadow-md transition transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
                     >
                         {isEdit ? 'Изменить адрес' : 'Добавить адрес'}
                     </button>

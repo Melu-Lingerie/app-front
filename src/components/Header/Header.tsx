@@ -308,12 +308,12 @@ export const Header = () => {
                                               animate={{ opacity: 1, y: 0, scale: 1 }}
                                               exit={{ opacity: 0, y: -6, scale: 0.98 }}
                                               transition={{ duration: 0.18, ease: 'easeOut' }}
-                                              className="absolute left-1/2 top-full -translate-x-1/2 mt-2 w-48 rounded-2xl border border-gray-200 bg-white shadow-2xl z-50 overflow-hidden origin-top"
+                                              className="absolute left-1/2 top-full -translate-x-1/2 mt-2 w-48 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#2A2A2B] shadow-2xl z-50 overflow-hidden origin-top"
                                               role="menu"
                                               aria-busy={loggingOut}
                                             >
                                               {/* caret */}
-                                              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white border-l border-t border-gray-200 rotate-45" />
+                                              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-white/10 border-l border-t border-gray-200 rotate-45" />
                                               <button
                                                 type="button"
                                                 className="w-full text-left px-4 py-2 text-sm hover:bg-[#F8C6D7]/10 focus:bg-[#F8C6D7]/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#F8C6D7] flex items-center gap-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:focus:bg-transparent"
@@ -325,7 +325,7 @@ export const Header = () => {
                                                 <User className="w-4 h-4" aria-hidden="true" />
                                                 <span>Мой профиль</span>
                                               </button>
-                                              <div className="h-px bg-gray-100" />
+                                              <div className="h-px bg-gray-100 dark:bg-white/10" />
                                               <button
                                                 type="button"
                                                 className={`w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[#F8C6D7]/10 focus:bg-[#F8C6D7]/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#F8C6D7] flex items-center gap-3 ${loggingOut ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
@@ -385,7 +385,7 @@ export const Header = () => {
             <HeaderDrawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
 
             {/* Divider */}
-            <div className="w-screen h-px bg-[#CCC]" />
+            <div className="w-screen h-px bg-[#CCC] dark:bg-white/10" />
         </>
     );
 };

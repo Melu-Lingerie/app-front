@@ -208,11 +208,11 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="relative bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden"
+                        className="relative bg-white dark:bg-[#2A2A2B] rounded-2xl w-full max-w-md mx-4 overflow-hidden"
                         style={{ clipPath: 'inset(0 round 16px)' }}
                     >
                         {/* Sticky Header */}
-                        <div className="sticky top-0 bg-white z-10 px-[30px] pt-[20px] pb-[20px] border-b border-[#CCCCCC]">
+                        <div className="sticky top-0 bg-white dark:bg-[#2A2A2B] z-10 px-[30px] pt-[20px] pb-[20px] border-b border-[#CCCCCC] dark:border-white/10">
                             <h2 className="text-[16px] leading-[18px] uppercase font-semibold text-left">
                                 Зарегистрироваться
                             </h2>
@@ -231,7 +231,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                     }, 300);
                                 }}
                                 disabled={loading}
-                                className="absolute top-4 right-4 text-gray-500 text-xl cursor-pointer disabled:opacity-40"
+                                className="absolute top-4 right-4 text-gray-500 dark:text-white text-xl cursor-pointer disabled:opacity-40"
                                 type="button"
                             >
                                 ✕
@@ -266,8 +266,8 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                     placeholder="Введите вашу фамилию"
                                     disabled={loading}
                                     className={`mt-[20px] w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none ${
-                                        errors.lastName ? 'border-red-400' : 'border-[#CCC]'
-                                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                        errors.lastName ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                    } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                 />
                                 {errors.lastName && lastName.length > 0 && (
                                     <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
@@ -292,8 +292,8 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                     placeholder="Введите ваше имя"
                                     disabled={loading}
                                     className={`mt-[20px] w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none ${
-                                        errors.firstName ? 'border-red-400' : 'border-[#CCC]'
-                                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                        errors.firstName ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                    } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                 />
                                 {errors.firstName && firstName.length > 0 && (
                                     <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
@@ -318,8 +318,8 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                     placeholder="Введите ваше отчество"
                                     disabled={loading}
                                     className={`mt-[20px] w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none ${
-                                        errors.middleName ? 'border-red-400' : 'border-[#CCC]'
-                                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                        errors.middleName ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                    } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                 />
                                 {errors.middleName && middleName.length > 0 && (
                                     <p className="text-red-500 text-xs mt-1">{errors.middleName}</p>
@@ -346,8 +346,8 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                     placeholder="Введите ваш e-mail"
                                     disabled={loading}
                                     className={`mt-[20px] w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none ${
-                                        errors.email ? 'border-red-400' : 'border-[#CCC]'
-                                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                        errors.email ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                    } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                 />
                                 {errors.email && email.length > 0 && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                             </label>
@@ -398,8 +398,8 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                 className={`mt-[20px] w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none ${
                                   touched.phone && phone && phone.replace(/\D/g, '').length !== 11
                                     ? 'border-red-400'
-                                    : 'border-[#CCC]'
-                                } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                    : 'border-[#CCC] dark:border-white/10'
+                                } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                               />
                               {touched.phone && phone && phone.replace(/\D/g, '').length !== 11 && (
                                 <p className="text-red-500 text-xs mt-1">Введите корректный номер телефона</p>
@@ -427,8 +427,8 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                         placeholder="Введите пароль"
                                         disabled={loading}
                                         className={`w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none pr-10 ${
-                                            errors.password ? 'border-red-400' : 'border-[#CCC]'
-                                        } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                            errors.password ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                        } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                     />
                                     <button
                                         type="button"
@@ -462,8 +462,8 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                         placeholder="Введите пароль ещё раз"
                                         disabled={loading}
                                         className={`w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none pr-10 ${
-                                            errors.passwordConfirm ? 'border-red-400' : 'border-[#CCC]'
-                                        } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                            errors.passwordConfirm ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                        } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                     />
                                     <button
                                         type="button"
@@ -501,7 +501,7 @@ export const RegisterModal = ({ isOpen, onClose, onSwitchToLogin, onSwitchToVeri
                                 disabled={!isValid() || loading}
                                 whileHover={isValid() && !loading ? { scale: 1.01 } : {}}
                                 whileTap={isValid() && !loading ? { scale: 0.97 } : {}}
-                                className={`mt-[60px] w-full h-[56px] rounded-[8px] border border-[#FFFBF5]
+                                className={`mt-[60px] w-full h-[56px] rounded-[8px] border border-[#FFFBF5] dark:border-white/10
                             text-[14px] leading-[18px] uppercase text-center font-semibold transition-all
                             ${
                                     isValid() && !loading

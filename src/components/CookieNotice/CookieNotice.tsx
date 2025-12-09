@@ -126,9 +126,9 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({ onClose }) => (
         transition={{ duration: 0.4, ease: 'easeOut' }}
         className="fixed inset-x-0 bottom-0 z-50 p-4"
     >
-        <div className="mx-auto max-w-4xl rounded-xl bg-white/95 backdrop-blur shadow-lg ring-1 ring-black/10">
+        <div className="mx-auto max-w-4xl rounded-xl bg-white/95 dark:bg-white/10 backdrop-blur shadow-lg ring-1 ring-black/10">
             <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-gray-700 dark:text-gray-200">
                     Мы используем файлы cookie, чтобы улучшить работу сайта и ваш
                     пользовательский опыт. Продолжая использовать наш сайт, вы соглашаетесь
                     с нашей{' '}

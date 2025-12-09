@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')!).render(
         <NotificationsProvider>
             <BrowserRouter>
                 <App/>
-            </BrowserRouter>2
+            </BrowserRouter>
         </NotificationsProvider>
     // </StrictMode>
 );

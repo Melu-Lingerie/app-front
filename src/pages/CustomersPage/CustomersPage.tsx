@@ -21,13 +21,13 @@ export const CustomersPage = () => {
         <>
             <div className="flex min-h-180">
                 {/* Левая колонка с табами */}
-                <div className="w-1/4 border-r border-[#CCCCCC] pt-[68px]">
+                <div className="w-1/4 border-r border-[#CCCCCC] dark:border-white/10 pt-[68px]">
                     <div className="pl-[40px] mb-[100px] text-[24px] leading-[26px] font-medium uppercase">
                         Покупателям
                     </div>
 
                     <nav>
-                        <div className="border-b border-[#CCCCCC]"/>
+                        <div className="border-b border-[#CCCCCC] dark:border-white/10"/>
                         {tabs.map((tab) => {
                             const isActive = location.pathname === tab.path;
                             return (
@@ -42,7 +42,7 @@ export const CustomersPage = () => {
                                     >
                                         {tab.label}
                                     </button>
-                                    <div className="border-b border-[#CCCCCC]"/>
+                                    <div className="border-b border-[#CCCCCC] dark:border-white/10"/>
                                 </div>
                             );
                         })}
@@ -606,7 +606,7 @@ export const CustomersPage = () => {
                     </AnimatePresence>
                 </div>
             </div>
-            <div className="w-full border-t border-[#CCCCCC]"/>
+            <div className="w-full border-t border-[#CCCCCC] dark:border-white/10"/>
         </>
     );
 };

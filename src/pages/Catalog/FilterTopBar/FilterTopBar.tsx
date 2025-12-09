@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import Filter from '@/assets/Filter.svg';
-import ArrowDown from '@/assets/ArrowDown.svg';
 import CloseIcon from '@/assets/CloseIcon.svg';
 import type {SortOption} from '@/pages/Catalog/constants';
+import {ChevronDown, SlidersHorizontal} from 'lucide-react';
 
 interface FilterTopBarProps {
     filterChanges: number;
@@ -58,8 +57,7 @@ export const FilterTopBar = ({
             className={`
                 sticky top-0 z-50
                 grid grid-cols-4
-                border-b border-t border-[#CCC]
-                bg-white
+                border-b border-t border-[#CCC] dark:border-white/10
                 relative w-screen left-[calc((100%-100vw)/2)]
                 h-[58px]
                 transition-shadow duration-300
@@ -68,8 +66,8 @@ export const FilterTopBar = ({
         >
             {/* Колонка 1 — фильтры */}
             <div className="col-span-1 flex items-center px-10">
-                <img className="w-[14px] h-[14px] mr-10" src={Filter} alt="Filter" />
-                <p className="text-[14px] leading-[18px] mr-5">
+                <SlidersHorizontal width={17} height={17} />
+                <p className="text-[14px] leading-[18px] ml-10 mr-5">
                     {`ФИЛЬТРЫ${filterChanges > 0 ? ` (${filterChanges})` : ''}`}
                 </p>
                 {filterChanges > 0 && (
@@ -93,16 +91,14 @@ export const FilterTopBar = ({
                         tabIndex={0}
                     >
                         <p className="text-[14px] leading-[18px] uppercase">{selectedOption}</p>
-                        <img
-                            src={ArrowDown}
-                            alt="Открыть список"
-                            className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                        />
+                        <button className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+                            <ChevronDown width={17} height={17} />
+                        </button>
                     </div>
 
                     {isOpen && (
                         <div
-                            className="absolute top-full left-0 mt-2 w-[200px] bg-white border border-[#CCC] shadow-md rounded-md z-10 max-h-[200px] overflow-y-auto"
+                            className="absolute top-full left-0 mt-2 w-[200px] bg-white dark:bg-[#2A2A2B] border border-[#CCC] dark:border-white/10 shadow-md rounded-md z-10 max-h-[200px] overflow-y-auto"
                             role="listbox"
                         >
                             {options.map((option) => (
@@ -111,7 +107,7 @@ export const FilterTopBar = ({
                                     onClick={() => handleSelect(option)}
                                     role="option"
                                     aria-selected={selectedOption === option}
-                                    className={`px-4 py-2 text-[14px] leading-[18px] uppercase cursor-pointer hover:bg-gray-100 ${
+                                    className={`px-4 py-2 text-[14px] leading-[18px] uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 ${
                                         selectedOption === option ? 'text-[#F892B5] font-medium' : ''
                                     }`}
                                 >

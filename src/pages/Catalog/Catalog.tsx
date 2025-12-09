@@ -234,7 +234,7 @@ export const Catalog = () => {
             {/* Контент */}
             <div className="grid grid-cols-4 relative">
                 {/* === Sidebar === */}
-                <div className="col-span-1 border-r border-b border-[#CCC] bg-white z-40 sticky top-[58px] h-[calc(100vh-58px)] overflow-y-auto">
+                <div className="col-span-1 border-r border-b border-[#CCC] dark:border-white/10 z-40 sticky top-[58px] h-[calc(100vh-58px)] overflow-y-auto">
                     <FilterSidebar
                         minVal={localMinVal}
                         maxVal={localMaxVal}
@@ -284,7 +284,7 @@ export const Catalog = () => {
                                                     duration: 0.4,
                                                     delay: Math.min(index * 0.02, 0.3),
                                                 }}
-                                                className="p-2 border-r border-b border-[#CCC]"
+                                                className="p-2 border-r border-b border-[#CCC] dark:border-white/10"
                                             >
                                                 <Card card={item} />
                                             </motion.div>
@@ -361,7 +361,7 @@ export const Catalog = () => {
                                 </div>
 
                                 {/* 📝 Текст */}
-                                <h2 className="text-xl font-semibold mb-2 text-gray-800">Ничего не найдено</h2>
+                                <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Ничего не найдено</h2>
                                 <p className="text-gray-500 mb-6 max-w-md">
                                     Попробуйте изменить условия поиска или сбросить фильтры.
                                 </p>

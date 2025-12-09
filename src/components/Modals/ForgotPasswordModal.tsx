@@ -122,7 +122,7 @@ export const ForgotPasswordModal = ({ isOpen, onBack, onCloseAll, onOpenVerify }
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="relative bg-white rounded-2xl w-full max-w-md mx-4 px-[30px] pt-[20px] pb-[90px]"
+                        className="relative bg-white dark:bg-[#2A2A2B] rounded-2xl w-full max-w-md mx-4 px-[30px] pt-[20px] pb-[90px]"
                     >
                         {/* Назад */}
                         <button
@@ -148,7 +148,7 @@ export const ForgotPasswordModal = ({ isOpen, onBack, onCloseAll, onOpenVerify }
                                 onCloseAll();
                             }}
                             disabled={loading}
-                            className="absolute top-4 right-4 text-gray-500 text-xl cursor-pointer disabled:opacity-40"
+                            className="absolute top-4 right-4 text-gray-500 dark:text-white text-xl cursor-pointer disabled:opacity-40"
                         >
                             ✕
                         </button>
@@ -159,7 +159,7 @@ export const ForgotPasswordModal = ({ isOpen, onBack, onCloseAll, onOpenVerify }
                         </h2>
 
                         {/* Divider */}
-                        <div className="absolute left-0 right-0 h-px bg-[#CCCCCC] mt-[20px]" />
+                        <div className="absolute left-0 right-0 h-px bg-[#CCCCCC] dark:bg-white/10 mt-[20px]" />
 
                         {/* Форма */}
                         <form className="mt-[60px]" noValidate onSubmit={onSubmit} autoComplete="on">
@@ -195,8 +195,8 @@ export const ForgotPasswordModal = ({ isOpen, onBack, onCloseAll, onOpenVerify }
                                     disabled={loading}
                                     ref={emailRef}
                                     className={`mt-[20px] w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none ${
-                                        touched && !isValid ? 'border-red-400' : 'border-[#CCC]'
-                                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                        touched && !isValid ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                    } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                 />
                                 <AnimatePresence>
                                     {touched && !isValid && email.length > 0 && (
@@ -245,8 +245,8 @@ export const ForgotPasswordModal = ({ isOpen, onBack, onCloseAll, onOpenVerify }
                                     disabled={loading}
                                     ref={newPwRef}
                                     className={`mt-[20px] w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none ${
-                                        newPwTouched && !isNewPwValid ? 'border-red-400' : 'border-[#CCC]'
-                                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                        newPwTouched && !isNewPwValid ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                    } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                 />
                                 <AnimatePresence>
                                     {newPwTouched && newPassword.length > 0 && !isNewPwValid && (
@@ -287,7 +287,7 @@ export const ForgotPasswordModal = ({ isOpen, onBack, onCloseAll, onOpenVerify }
                                 disabled={!isValid || !isNewPwValid || loading || sent}
                                 whileHover={isValid && isNewPwValid && !loading && !sent ? { scale: 1.03 } : {}}
                                 whileTap={isValid && isNewPwValid && !loading && !sent ? { scale: 0.97 } : {}}
-                                className={`mt-[40px] w-full h-[56px] rounded-[8px] border border-[#FFFBF5]
+                                className={`mt-[40px] w-full h-[56px] rounded-[8px] border border-[#FFFBF5] dark:border-white/10
                   text-[14px] leading-[18px] uppercase text-center font-semibold transition-all
                   ${
                                     isValid && isNewPwValid && !loading && !sent

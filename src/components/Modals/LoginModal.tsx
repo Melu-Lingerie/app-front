@@ -342,7 +342,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister, onOpenVerify }
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="relative bg-white rounded-2xl w-full max-w-md mx-4 px-[30px] pt-[20px] pb-[90px]"
+                        className="relative bg-white dark:bg-[#2A2A2B] rounded-2xl w-full max-w-md mx-4 px-[30px] pt-[20px] pb-[90px]"
                     >
 
                         {/* Кнопка закрытия */}
@@ -352,7 +352,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister, onOpenVerify }
                                 handleClose();
                             }}
                             disabled={loading}
-                            className="absolute top-4 right-4 text-gray-500 text-xl cursor-pointer disabled:opacity-40"
+                            className="absolute top-4 right-4 text-gray-500 dark:text-white text-xl cursor-pointer disabled:opacity-40"
                         >
                             ✕
                         </button>
@@ -363,7 +363,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister, onOpenVerify }
                         </h2>
 
                         {/* Divider */}
-                        <div className="absolute left-0 right-0 h-px bg-[#CCCCCC] mt-[20px]" />
+                        <div className="absolute left-0 right-0 h-px bg-[#CCCCCC] dark:bg-white/10 mt-[20px]" />
 
                         {/* Форма */}
                         <form
@@ -387,8 +387,8 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister, onOpenVerify }
                                     disabled={loading}
                                     ref={emailRef}
                                     className={`mt-[20px] w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none ${
-                                        errors.email ? 'border-red-400' : 'border-[#CCC]'
-                                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                        errors.email ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                    } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                 />
                                 <AnimatePresence>
                                     {touched.email && errors.email && email.length > 0 && (
@@ -421,8 +421,8 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister, onOpenVerify }
                                         disabled={loading}
                                         ref={passwordRef}
                                         className={`w-full h-[56px] border rounded px-4 text-[12px] leading-[18px] outline-none pr-10 ${
-                                            errors.password ? 'border-red-400' : 'border-[#CCC]'
-                                        } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                            errors.password ? 'border-red-400' : 'border-[#CCC] dark:border-white/10'
+                                        } ${loading ? 'bg-gray-100 dark:bg-white/10 cursor-not-allowed' : ''}`}
                                     />
                                     <button
                                         type="button"
@@ -525,7 +525,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToRegister, onOpenVerify }
                                 disabled={!isValidLogin() || loading}
                                 whileHover={isValidLogin() && !loading ? { scale: 1.03 } : {}}
                                 whileTap={isValidLogin() && !loading ? { scale: 0.97 } : {}}
-                                className={`mt-[40px] w-full h-[56px] rounded-[8px] border border-[#FFFBF5]
+                                className={`mt-[40px] w-full h-[56px] rounded-[8px] border border-[#FFFBF5] dark:border-white/10
         text-[14px] leading-[18px] uppercase text-center font-semibold transition-all
         ${isValidLogin() && !loading
             ? 'bg-[#F8C6D7] text-black hover:shadow-md cursor-pointer'

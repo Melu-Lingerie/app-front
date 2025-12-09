@@ -102,12 +102,12 @@ export const VerifyEmailModal: React.FC<VerifyEmailModalProps> = ({ isOpen, emai
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
-                    className="relative bg-white rounded-2xl w-full max-w-md mx-4 p-6"
+                    className="relative bg-white dark:bg-[#2A2A2B] rounded-2xl w-full max-w-md mx-4 p-6"
                 >
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="absolute top-6 right-6 text-gray-500 text-xl hover:text-gray-700 transition disabled:opacity-40 cursor-pointer"
+                        className="absolute top-6 right-6 text-gray-500 dark:text-white text-xl hover:text-gray-700 transition disabled:opacity-40 cursor-pointer"
                     >
                         ✕
                     </button>
@@ -187,7 +187,7 @@ export const VerifyEmailModal: React.FC<VerifyEmailModalProps> = ({ isOpen, emai
                                                 }
                                             }
                                         }}
-                                        className="w-[44px] h-[56px] border border-[#CCCCCC] rounded text-center text-[20px] leading-[56px] outline-none focus:ring-2 focus:ring-[#F8C6D7] disabled:bg-gray-100"
+                                        className="w-[44px] h-[56px] border border-[#CCCCCC] dark:border-white/10 rounded text-center text-[20px] leading-[56px] outline-none focus:ring-2 focus:ring-[#F8C6D7] disabled:bg-gray-100 dark:disabled:bg-white/10"
                                     />
                                 ))}
                             </div>

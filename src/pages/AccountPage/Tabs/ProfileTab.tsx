@@ -294,7 +294,7 @@ export const ProfileTab = () => {
                         {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
                         </>
                     ) : (
-                        <div className="h-[56px] rounded-[8px] bg-[#F5F5F5] animate-pulse" />
+                        <div className="h-[56px] rounded-[8px] bg-[#F5F5F5] dark:bg-white/10 animate-pulse" />
                     )}
                 </div>
                 <div className="flex flex-col">
@@ -311,7 +311,7 @@ export const ProfileTab = () => {
                         {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
                         </>
                     ) : (
-                        <div className="h-[56px] rounded-[8px] bg-[#F5F5F5] animate-pulse" />
+                        <div className="h-[56px] rounded-[8px] bg-[#F5F5F5] dark:bg-white/10 animate-pulse" />
                     )}
                 </div>
                 <div className="flex flex-col">
@@ -325,7 +325,7 @@ export const ProfileTab = () => {
                             type="text"
                         />
                     ) : (
-                        <div className="h-[56px] rounded-[8px] bg-[#F5F5F5] animate-pulse" />
+                        <div className="h-[56px] rounded-[8px] bg-[#F5F5F5] dark:bg-white/10 animate-pulse" />
                     )}
                 </div>
             </div>
@@ -337,7 +337,7 @@ export const ProfileTab = () => {
                     {initialized && !loading ? (
                         <>
                         <input
-                            className={`h-[56px] rounded-[8px] border px-4 ${errors.email ? 'border-red-400' : 'border-[#CCCCCC]'} bg-[#F5F5F5] cursor-not-allowed`}
+                            className={`h-[56px] rounded-[8px] border px-4 ${errors.email ? 'border-red-400' : 'border-[#CCCCCC]'} bg-[#F5F5F5] dark:bg-white/10 cursor-not-allowed`}
                             value={email}
                             name="email"
                             type="email"
@@ -346,7 +346,7 @@ export const ProfileTab = () => {
                         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                         </>
                     ) : (
-                        <div className="h-[56px] rounded-[8px] bg-[#F5F5F5] animate-pulse" />
+                        <div className="h-[56px] rounded-[8px] bg-[#F5F5F5] dark:bg-white/10 animate-pulse" />
                     )}
                 </div>
                 <label className="block text-[14px] leading-[18px] uppercase mb-[20px]">
@@ -384,7 +384,7 @@ export const ProfileTab = () => {
                         )}
                         </>
                     ) : (
-                        <div className="mt-[20px] h-[56px] rounded bg-[#F5F5F5] animate-pulse" />
+                        <div className="mt-[20px] h-[56px] rounded bg-[#F5F5F5] dark:bg-white/10 animate-pulse" />
                     )}
                 </label>
                 <label className="block text-[14px] leading-[18px] uppercase mb-[20px]">
@@ -449,7 +449,7 @@ export const ProfileTab = () => {
                             )}
                         </div>
                     ) : (
-                        <div className="mt-[20px] h-[56px] rounded bg-[#F5F5F5] animate-pulse" />
+                        <div className="mt-[20px] h-[56px] rounded bg-[#F5F5F5] dark:bg-white/10 animate-pulse" />
                     )}
                 </label>
             </div>
@@ -458,7 +458,7 @@ export const ProfileTab = () => {
             {/* Адреса доставки */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 {(addressesLoading || !initialized) && [1,2,3].map((i) => (
-                    <div key={`addr-skel-${i}`} className="h-[98px] rounded bg-[#F5F5F5] animate-pulse" />
+                    <div key={`addr-skel-${i}`} className="h-[98px] rounded bg-[#F5F5F5] dark:bg-white/10 animate-pulse" />
                 ))}
 
                 {!(addressesLoading || !initialized) && (user.addresses ?? []).map((addr, idx) => (
@@ -557,7 +557,7 @@ export const ProfileTab = () => {
                     className="absolute inset-0 bg-black/40"
                     onClick={closeDeleteConfirm}
                   />
-                  <div className="relative w-[90%] max-w-[420px] rounded-[12px] bg-white p-6 shadow-lg">
+                  <div className="relative w-[90%] max-w-[420px] rounded-[12px] bg-white dark:bg-[#2A2A2B] p-6 shadow-lg">
                     <p className="text-[16px] leading-[22px] font-medium mb-6">
                       Вы уверены, что хотите удалить этот адрес?
                     </p>

@@ -100,7 +100,7 @@ export const MainPage = () => {
                 }
 
                 {/* горизонтальная линия */}
-                <div className="relative w-screen left-[calc((100%-100vw)/2)] h-[1px] bg-[#CCC]"/>
+                <div className="relative w-screen left-[calc((100%-100vw)/2)] h-[1px] dark:bg-white/10 bg-[#CCC]"/>
 
                 <div className="my-[40px] mb-[90px]">
                     <h2 className="text-2xl leading-6">БЭКСТЕЙДЖ</h2>
@@ -121,7 +121,7 @@ export const MainPage = () => {
                     </div>
                 </div>
 
-                <div className="relative w-screen left-[calc((100%-100vw)/2)] h-[1px] bg-[#CCC]"/>
+                <div className="relative w-screen left-[calc((100%-100vw)/2)] h-[1px] dark:bg-white/10 bg-[#CCC]"/>
             </div>
         </>
     );

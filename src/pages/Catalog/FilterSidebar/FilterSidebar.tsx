@@ -69,7 +69,7 @@ export const FilterSidebar = ({
                     isOpen={isTypeOpen}
                     onToggle={() => setIsTypeOpen(!isTypeOpen)}
                 >
-                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800">
+                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
                         {['трусики', 'сорочки', 'бра'].map((type) => (
                             <label key={type} className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -90,7 +90,7 @@ export const FilterSidebar = ({
                     isOpen={isSizeOpen}
                     onToggle={() => setIsSizeOpen(!isSizeOpen)}
                 >
-                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800">
+                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
                         {['S', 'M', 'L'].map((size) => (
                             <label key={size} className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -111,7 +111,7 @@ export const FilterSidebar = ({
                     isOpen={isColorOpen}
                     onToggle={() => setIsColorOpen(!isColorOpen)}
                 >
-                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800">
+                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
                         {['black', 'white'].map((color) => (
                             <label key={color} className="flex items-center gap-2 cursor-pointer">
                                 <input

@@ -199,10 +199,10 @@ export function CartPage() {
                             Рассчитывается при оформлении
                         </span>
                     </div>
-                    <button className="w-[405px] h-[56px] rounded-[8px] border border-[#FFFBF5] bg-[#F8C6D7] text-[14px] leading-[18px] uppercase font-medium cursor-pointer hover:opacity-90 transition">
+                    <button className="w-[405px] h-[56px] rounded-[8px] border border-[#FFFBF5] dark:border-white/10 bg-[#F8C6D7] text-[14px] leading-[18px] uppercase font-medium cursor-pointer hover:opacity-90 transition">
                         Оформить заказ
                     </button>
-                    <div className="w-full h-[1px] bg-[#CCC] my-[20px]" />
+                    <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 my-[20px]" />
                     <p className="text-[#999] text-[12px] font-medium leading-[18px]">
                         Войдите или зарегистрируйтесь, чтобы применить промокод или получить баллы за
                         покупку.
@@ -211,7 +211,7 @@ export function CartPage() {
             </div>
 
             {/* Divider */}
-            <div className="relative left-1/2 ml-[-50vw] w-screen h-[1px] bg-[#CCC] mt-[60px]" />
+            <div className="relative left-1/2 ml-[-50vw] w-screen h-[1px] bg-[#CCC] dark:bg-white/10 mt-[60px]" />
 
             {/* Дополните образ */}
             <div className="px-[195px] mt-[60px]">
@@ -233,7 +233,7 @@ export function CartPage() {
             </div>
 
             {/* Divider */}
-            <div className="relative left-1/2 ml-[-50vw] w-screen h-[1px] bg-[#CCC] mt-[120px]" />
+            <div className="relative left-1/2 ml-[-50vw] w-screen h-[1px] bg-[#CCC] dark:bg-white/10 mt-[120px]" />
         </div>
     );
 }

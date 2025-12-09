@@ -232,12 +232,12 @@ export function ProductPage() {
                                             className={`flex items-center gap-2 px-3 py-1 rounded-md border text-sm transition
                                                 ${
                                                 selectedColor === color
-                                                    ? 'border-black font-semibold'
-                                                    : 'border-gray-300 text-gray-600'
+                                                    ? 'border-black font-semibold dark:border-gray-300'
+                                                    : 'border-gray-300 text-gray-600 dark:border-black'
                                             }
                                                 ${
                                                 !hasAvailable
-                                                    ? 'opacity-50 cursor-not-allowed'
+                                                    ? 'opacity-30 cursor-not-allowed'
                                                     : 'hover:border-black'
                                             }`}
                                         >
@@ -273,12 +273,12 @@ export function ProductPage() {
                                         className={`px-3 py-1 rounded-md border text-sm transition
                                             ${
                                             activeVariant?.id === variant.id
-                                                ? 'border-black font-semibold'
-                                                : 'border-gray-300 text-gray-600'
+                                                ? 'border-black font-semibold dark:border-gray-300'
+                                                : 'border-gray-300 text-gray-600 dark:border-black'
                                         }
                                             ${
                                             !variant.isAvailable
-                                                ? 'opacity-50 cursor-not-allowed'
+                                                ? 'opacity-30 cursor-not-allowed'
                                                 : 'hover:border-black'
                                         }`}
                                     >
@@ -311,10 +311,10 @@ export function ProductPage() {
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={loadingCart}
-                                    className="w-full h-[56px] rounded-[8px] border border-[#2A2A2B]
+                                    className="w-full h-[56px] rounded-[8px] border border-[#2A2A2B] dark:border-white/10
                                         text-[14px] leading-[18px] uppercase
                                         cursor-pointer transition active:scale-95
-                                        hover:bg-gray-100 flex items-center justify-center"
+                                        hover:bg-gray-100 hover:dark:bg-white/10 flex items-center justify-center"
                                 >
                                     {loadingCart ? (
                                         <DotsLoader color="#2A2A2B" size={6} />
@@ -358,7 +358,7 @@ export function ProductPage() {
 
                         {/* Кнопки коллекция/категория */}
                         <div className="mt-[30px] flex gap-3">
-                            <button className="flex items-center justify-between w-full h-[45px] rounded-[8px] border border-[#999] px-[20px] cursor-pointer transition hover:bg-gray-50">
+                            <button className="flex items-center justify-between w-full h-[45px] rounded-[8px] border border-[#999] px-[20px] cursor-pointer transition hover:bg-gray-50 hover:dark:bg-white/10">
                                 <span className="text-[#999] text-[12px] leading-[18px]">
                                     Все товары из коллекции
                                 </span>
@@ -371,7 +371,7 @@ export function ProductPage() {
                                         navigate(`/catalog?types=${product.categoryId}`);
                                     }
                                 }}
-                                className="flex items-center justify-between w-full h-[45px] rounded-[8px] border border-[#999] px-[20px] cursor-pointer transition hover:bg-gray-50"
+                                className="flex items-center justify-between w-full h-[45px] rounded-[8px] border border-[#999] px-[20px] cursor-pointer transition hover:bg-gray-50 hover:dark:bg-white/10"
                             >
                                 <span className="text-[#999] text-[12px] leading-[18px]">
                                     Все товары из категории
@@ -443,7 +443,7 @@ export function ProductPage() {
             )}
 
             {/* Divider */}
-            <div className="w-full h-[1px] bg-[#CCC] mt-[90px]" />
+            <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mt-[90px]" />
         </div>
     );
 }

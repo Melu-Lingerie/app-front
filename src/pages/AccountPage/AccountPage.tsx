@@ -32,7 +32,7 @@ export const AccountPage = () => {
         <>
         <div className="flex min-h-180">
             {/* Левая часть */}
-            <div className="w-1/4 border-r border-[#CCCCCC] pt-[40px]">
+            <div className="w-1/4 border-r border-[#CCCCCC] dark:border-white/10 pt-[40px]">
                 {/* Блок с аватаром и именем */}
                 <div className="flex items-center mb-[70px] pl-[40px]">
                     <img
@@ -55,7 +55,7 @@ export const AccountPage = () => {
 
                 {/* Навигация по вкладкам */}
                 <nav>
-                    <div className="border-b border-[#CCCCCC]" />
+                    <div className="border-b border-[#CCCCCC] dark:border-white/10" />
                     {tabs.map((tab) => {
                         const isActive = location.pathname === tab.path;
                         const disabled = !initialized || (isGuest && tab.label !== 'Избранное');
@@ -74,7 +74,7 @@ export const AccountPage = () => {
                                 >
                                     {tab.label}
                                 </button>
-                                <div className="border-b border-[#CCCCCC]" />
+                                <div className="border-b border-[#CCCCCC] dark:border-white/10" />
                             </div>
                         );
                     })}
@@ -220,7 +220,7 @@ export const AccountPage = () => {
                 </AnimatePresence>
             </div>
         </div>
-        <div className="w-full border-t border-[#CCCCCC]" />
+        <div className="w-full border-t border-[#CCCCCC] dark:border-white/10" />
             </>
     );
 };
