@@ -222,13 +222,13 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                                     <span>Покупателям</span>
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
-                                <button type="button" className="text-left text-[14px] uppercase cursor-pointer">
+                                <button type="button" onClick={() => goTo('/about')} className="text-left text-[14px] uppercase cursor-pointer">
                                     О нас
                                 </button>
                                 <button type="button" className="text-left text-[14px] uppercase cursor-pointer">
                                     Документы
                                 </button>
-                                <button type="button" className="text-left text-[14px] uppercase cursor-pointer">
+                                <button type="button" onClick={() => goTo('/contacts')} className="text-left text-[14px] uppercase cursor-pointer">
                                     Контакты
                                 </button>
                             </nav>
@@ -562,7 +562,8 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                         </motion.button>
                         <motion.button
                             type="button"
-                            className="w-full block text-left text-[14px] leading-[18px] uppercase mb-[20px] transition-colors hover:opacity-70"
+                            onClick={() => goTo('/about')}
+                            className="w-full block text-left text-[14px] leading-[18px] uppercase mb-[20px] cursor-pointer transition-colors hover:opacity-70"
                             variants={itemV}
                         >
                             О нас
@@ -576,7 +577,8 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                         </motion.button>
                         <motion.button
                             type="button"
-                            className="w-full block text-left text-[14px] leading-[18px] uppercase transition-colors hover:opacity-70"
+                            onClick={() => goTo('/contacts')}
+                            className="w-full block text-left text-[14px] leading-[18px] uppercase cursor-pointer transition-colors hover:opacity-70"
                             variants={itemV}
                         >
                             Контакты
