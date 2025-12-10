@@ -211,12 +211,13 @@ export const GiftCertificatePage = () => {
                 </div>
             </div>
 
-            {/* Разделитель на всю ширину */}
-            <div className="w-full h-px bg-[#CCC] dark:bg-white/10 mt-[60px] md:mt-[90px]" />
-
             {/* Вы недавно смотрели */}
             {recentlyViewed.length > 0 && (
-                <div className="px-4 md:px-10 mt-[40px] md:mt-[60px]">
+                <>
+                    {/* Разделитель на всю ширину */}
+                    <div className="w-full h-px bg-[#CCC] dark:bg-white/10 mt-[60px] md:mt-[90px]" />
+
+                    <div className="px-4 md:px-10 mt-[40px] md:mt-[60px]">
                     <h2 className="text-[18px] md:text-[24px] font-medium leading-[22px] md:leading-[26px] uppercase mb-[30px] md:mb-[60px]">
                         Вы недавно смотрели
                     </h2>
@@ -232,7 +233,8 @@ export const GiftCertificatePage = () => {
                             </div>
                         )}
                     />
-                </div>
+                    </div>
+                </>
             )}
 
             {/* Модальное окно с условиями использования */}
