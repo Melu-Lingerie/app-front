@@ -234,8 +234,12 @@ export const GiftCertificatePage = () => {
                         )}
                     />
                     </div>
+
                 </>
             )}
+
+            {/* Разделитель перед футером (всегда отображается) */}
+            <div className="w-full h-px bg-[#CCC] dark:bg-white/10 mt-[60px] md:mt-[90px]" />
 
             {/* Модальное окно с условиями использования */}
             <AnimatePresence>
