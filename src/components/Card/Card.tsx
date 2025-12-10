@@ -20,14 +20,12 @@ type Props = {
     card: Required<ProductCatalogResponseDto>;
     widthStyle?: CSSProperties;
     reportImageHeight?: (h: number) => void;
-    showAddToCart?: boolean;
 };
 
 export const Card = ({
                          card: { s3url, name, productStatus, price, colors, productId },
                          widthStyle,
                          reportImageHeight,
-                         showAddToCart = false
                      }: Props) => {
     const { ref: textRef, isTruncated } = useIsTruncated<HTMLParagraphElement>();
     const [isLoaded, setIsLoaded] = useState(false);
