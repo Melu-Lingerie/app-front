@@ -4,3 +4,5 @@ export {CartPage} from './CartPage';
 export {AccountPage} from './AccountPage';
 export {CustomersPage} from './CustomersPage';
 export {GiftCertificatePage} from './GiftCertificatePage';
+export {AboutPage} from './AboutPage';
+export {ContactsPage} from './ContactsPage';
