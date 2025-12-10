@@ -1,0 +1,1 @@
+export { GiftCertificatePage } from './GiftCertificatePage';

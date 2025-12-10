@@ -14,7 +14,7 @@ export default defineConfig({
         host: true,
         proxy: {
             '/api': {
-                target: 'http://51.250.69.176:8082', // адрес вашего бэкенда
+                target: 'http://melu-bra.ru', // через nginx на продакшене
                 changeOrigin: true,
                 secure: false,
             }

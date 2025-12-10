@@ -8,6 +8,7 @@ import {
 } from '@/api';
 import { ProductImages } from './ProductImages.tsx';
 import { useNotifications } from '@/hooks/useNotifications.ts';
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed.ts';
 import { numberFormat } from '@/utils/utils.ts';
 import WishListInCard from '@/assets/WishListInCard.svg';
 import FillWishList from '@/assets/FillWishList.svg';
@@ -35,6 +36,7 @@ import api from '@/axios/api.ts';
 export function ProductPage() {
     const { id } = useParams<{ id: string }>();
     const { addNotification } = useNotifications();
+    const { addItem: addToRecentlyViewed } = useRecentlyViewed();
     const navigate = useNavigate();
 
     const dispatch = useDispatch<AppDispatch>();
@@ -99,6 +101,21 @@ export function ProductPage() {
 
         fetchProduct();
     }, [id]);
+
+    // сохранение товара в историю просмотров
+    useEffect(() => {
+        if (!product || !activeVariant) return;
+
+        // Преобразуем в формат ProductCatalogResponseDto для хранения
+        addToRecentlyViewed({
+            productId: product.productId,
+            name: product.name,
+            price: activeVariant.price,
+            s3url: activeVariant.productVariantMedia?.[0]?.s3url || '',
+            colors: product.productVariants?.map(v => v.colorName) || [],
+            productStatus: 'AVAILABLE',
+        });
+    }, [product, activeVariant, addToRecentlyViewed]);
 
     // загрузка похожих товаров
     useEffect(() => {

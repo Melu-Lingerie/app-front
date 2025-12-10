@@ -9,7 +9,7 @@ import {
     ScrollRestoration,
     CookieNotice,
 } from '@/components';
-import {AccountPage, CartPage, MainPage, ProductPage, CustomersPage} from '@/pages';
+import {AccountPage, CartPage, MainPage, ProductPage, CustomersPage, GiftCertificatePage} from '@/pages';
 
 function App() {
     useEffect(() => {
@@ -74,6 +74,7 @@ function App() {
                     <Route path="cart" element={<CartPage />} />
                     <Route path="account/*" element={<AccountPage />} />
                     <Route path="customers/*" element={<CustomersPage />} />
+                    <Route path="gift-certificate" element={<GiftCertificatePage />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
             </Routes>
