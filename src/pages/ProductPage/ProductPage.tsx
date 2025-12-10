@@ -111,7 +111,7 @@ export function ProductPage() {
             productId: product.productId,
             name: product.name,
             price: activeVariant.price,
-            s3url: activeVariant.productVariantMedia?.[0]?.s3url || '',
+            s3url: activeVariant.productVariantMedia?.[0]?.url || '',
             colors: product.productVariants?.map(v => v.colorName) || [],
             productStatus: 'AVAILABLE',
         });
