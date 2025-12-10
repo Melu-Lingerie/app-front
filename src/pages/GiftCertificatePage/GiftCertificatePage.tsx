@@ -61,7 +61,7 @@ export const GiftCertificatePage = () => {
             {/* Основной контент */}
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 px-4 md:px-10 pt-[30px] md:pt-[60px]">
                 {/* Левая часть - изображение сертификата */}
-                <div className="w-full lg:flex-1 lg:max-w-[1220px]">
+                <div className="w-full lg:flex-1 lg:min-w-0">
                     {/* Главное изображение - соотношение примерно 1220:846 */}
                     <div className="w-full bg-[#CCC] rounded-2xl overflow-hidden" style={{ aspectRatio: '1220 / 846' }}>
                         <img
@@ -76,7 +76,7 @@ export const GiftCertificatePage = () => {
                 </div>
 
                 {/* Правая часть - информация */}
-                <div className="w-full lg:w-[600px] lg:shrink-0">
+                <div className="w-full lg:w-[380px] xl:w-[450px] 2xl:w-[520px] lg:shrink-0">
                     {/* Заголовок */}
                     <h1 className="text-[24px] leading-[26px] font-medium uppercase mb-2">
                         Подарочный сертификат
