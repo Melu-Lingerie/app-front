@@ -218,7 +218,7 @@ export const Catalog = () => {
     return (
         <div className="relative">
             {/* Заголовок страницы */}
-            <h1 className="ml-10 mt-[60px] mb-[30px] text-[36px] leading-[38px]">Каталог</h1>
+            <h1 className="ml-4 md:ml-10 mt-[30px] md:mt-[60px] mb-[20px] md:mb-[30px] text-[28px] md:text-[36px] leading-[32px] md:leading-[38px] uppercase">Каталог</h1>
 
             {/* Верхняя панель фильтров */}
             <FilterTopBar
@@ -229,12 +229,20 @@ export const Catalog = () => {
                 options={[...SORT_OPTIONS]}
                 selectedOption={filters.sort}
                 onSelectChange={handleSortChange}
+                // Mobile filter props
+                minVal={localMinVal}
+                maxVal={localMaxVal}
+                selectedSizes={filters.sizes ?? []}
+                selectedColors={filters.colors ?? []}
+                setMinVal={setLocalMinVal}
+                setMaxVal={setLocalMaxVal}
+                onPriceCommit={flushPrice}
             />
 
             {/* Контент */}
-            <div className="grid grid-cols-4 relative">
-                {/* === Sidebar === */}
-                <div className="col-span-1 border-r border-b border-[#CCC] dark:border-white/10 z-40 sticky top-[58px] h-[calc(100vh-58px)] overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 relative">
+                {/* === Sidebar (скрыт на мобилке) === */}
+                <div className="hidden md:block col-span-1 border-r border-b border-[#CCC] dark:border-white/10 z-40 sticky top-[58px] h-[calc(100vh-58px)] overflow-y-auto">
                     <FilterSidebar
                         minVal={localMinVal}
                         maxVal={localMaxVal}
@@ -248,15 +256,15 @@ export const Catalog = () => {
                     />
                 </div>
 
-                <div className="col-span-3">
-                    <div className="grid grid-cols-3 relative">
+                <div className="col-span-1 md:col-span-3">
+                    <div className="grid grid-cols-2 md:grid-cols-3 relative">
 
                         {/* === ВЕРХНИЙ sentinel === */}
-                        <div ref={topSentinelRef} className="col-span-3 h-0 opacity-0" />
+                        <div ref={topSentinelRef} className="col-span-2 md:col-span-3 h-0 opacity-0" />
 
                         {/* === ВЕРХНИЙ ЛОАДЕР (в потоке, не absolute) === */}
                         {loadingUp && (
-                            <div className="col-span-3 flex justify-center items-center py-6">
+                            <div className="col-span-2 md:col-span-3 flex justify-center items-center py-6">
                                 <Spinner size={48} className="text-gray-500" />
                             </div>
                         )}
@@ -273,7 +281,7 @@ export const Catalog = () => {
                                         <div
                                             ref={setPageAnchor(realPage)}
                                             data-page={realPage}
-                                            className="col-span-3 h-0"
+                                            className="col-span-2 md:col-span-3 h-0"
                                         />
                                         {page.map((item, index) => (
                                             <motion.div
@@ -284,7 +292,7 @@ export const Catalog = () => {
                                                     duration: 0.4,
                                                     delay: Math.min(index * 0.02, 0.3),
                                                 }}
-                                                className="p-2 border-r border-b border-[#CCC] dark:border-white/10"
+                                                className="p-1 md:p-2 border-r border-b border-[#CCC] dark:border-white/10"
                                             >
                                                 <Card card={item} />
                                             </motion.div>
@@ -299,7 +307,7 @@ export const Catalog = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5 }}
-                                className="flex flex-col items-center justify-center py-24 text-center col-span-3"
+                                className="flex flex-col items-center justify-center py-24 text-center col-span-2 md:col-span-3"
                             >
                                 {/* 🔍 Анимированная лупа */}
                                 <div className="relative w-32 h-32 mb-8">
@@ -382,11 +390,11 @@ export const Catalog = () => {
                         )}
 
                         {/* === НИЖНИЙ sentinel === */}
-                        {hasMore && <div ref={bottomSentinelRef} className="col-span-3 h-0 opacity-0" />}
+                        {hasMore && <div ref={bottomSentinelRef} className="col-span-2 md:col-span-3 h-0 opacity-0" />}
 
                         {/* === Нижний лоадер === */}
                         {loadingDown && (
-                            <div className="col-span-3 flex justify-center py-8">
+                            <div className="col-span-2 md:col-span-3 flex justify-center py-8">
                                 <Spinner size={48} className="text-gray-500" />
                             </div>
                         )}

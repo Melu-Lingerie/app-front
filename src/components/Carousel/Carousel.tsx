@@ -19,6 +19,7 @@ type CarouselProps<T> = {
     items: T[];
     gap: number;
     visibleCount: number;
+    mobileVisibleCount?: number;
     renderItem: (
         item: T,
         params: {
@@ -38,7 +39,8 @@ type CarouselProps<T> = {
 export const Carousel = <T,>({
                                  items,
                                  gap,
-                                 visibleCount,
+                                 visibleCount: desktopVisibleCount,
+                                 mobileVisibleCount = 2,
                                  renderItem,
                                  loading = false,
                                  hasMore = false,
@@ -52,6 +54,17 @@ export const Carousel = <T,>({
     const [index, setIndex] = useState(0);
     const [containerWidth, setContainerWidth] = useState(0);
     const [imageHeight, setImageHeight] = useState<number | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Check for mobile on mount and resize
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    const visibleCount = isMobile ? mobileVisibleCount : desktopVisibleCount;
 
     const transitionMs = 400;
     const itemWidth = (containerWidth - gap * (visibleCount - 1)) / visibleCount;

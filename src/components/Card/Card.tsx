@@ -114,11 +114,11 @@ export const Card = ({
             </div>
 
             {/* Info */}
-            <div className='w-full mt-5'>
-                <div className='w-full mb-1.5 flex items-center justify-between'>
+            <div className='w-full mt-3 md:mt-5'>
+                <div className='w-full mb-1 md:mb-1.5 flex items-center justify-between'>
                     <span className='relative group max-w-[80%]'>
-                        <p ref={textRef} className='w-full text-sm truncate'>
-                            {name.toUpperCase()}
+                        <p ref={textRef} className='w-full text-[12px] md:text-sm truncate uppercase'>
+                            {name}
                         </p>
                         {isTruncated && (
                             <span
@@ -132,20 +132,20 @@ export const Card = ({
                         )}
                     </span>
                     {productStatus === 'NEW' && (
-                        <p className='text-[#F895B7]'>NEW</p>
+                        <p className='text-[#F895B7] text-[12px] md:text-sm'>NEW</p>
                     )}
                 </div>
 
                 <div className='w-full flex items-center'>
-                    <p className='text-sm truncate mr-2'>{`${numberFormat(price)} ₽`}</p>
+                    <p className='text-[12px] md:text-sm truncate mr-2'>{`${numberFormat(price)} ₽`}</p>
                     <ul className='flex'>
                         {colors.map((color, index) => (
                             <li
                                 key={index}
-                                className='w-3.5 h-3.5 rounded-full mr-1 last:mr-0'
+                                className='w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full mr-0.5 md:mr-1 last:mr-0'
                                 style={{
                                     backgroundColor: color,
-                                    border: '2px solid #BFBFBF',
+                                    border: '1px solid #BFBFBF',
                                 }}
                                 aria-label={`Цвет: ${color}`}
                             />
@@ -153,20 +153,17 @@ export const Card = ({
                     </ul>
                 </div>
 
-                {/* Mobile Add to Cart button */}
-                {showAddToCart && (
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            // TODO: implement add to cart
-                            navigate(`/catalog/${productId}`);
-                        }}
-                        className="w-full mt-3 h-[36px] border border-[#CCC] dark:border-white/20 text-[12px] uppercase cursor-pointer hover:bg-[#F8C6D7] hover:border-[#F8C6D7] transition-colors"
-                    >
-                        Добавить в корзину
-                    </button>
-                )}
+                {/* Add to Cart button - always shown */}
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/catalog/${productId}`);
+                    }}
+                    className="w-full mt-2 md:mt-3 h-[36px] md:h-[44px] border border-[#2A2A2B] dark:border-white/20 rounded-lg text-[12px] md:text-[14px] uppercase cursor-pointer hover:bg-[#F8C6D7] hover:border-[#F8C6D7] transition-colors"
+                >
+                    Добавить в корзину
+                </button>
             </div>
         </div>
     );

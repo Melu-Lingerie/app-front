@@ -193,25 +193,25 @@ export function ProductPage() {
 
     return (
         <div className="w-full">
-            <div className="flex w-full gap-5 mb-20">
+            <div className="flex flex-col md:flex-row w-full gap-5 mb-10 md:mb-20">
                 {/* Картинки */}
-                <div className="flex-1 mr-5">
+                <div className="w-full md:flex-1 md:mr-5 px-4 md:px-0">
                     <ProductImages images={images} />
                 </div>
 
                 {/* Инфоблок */}
-                <div className="flex-1 shrink-0 pr-10 mt-[60px]">
-                    <div className="sticky top-[20px]">
+                <div className="w-full md:flex-1 md:shrink-0 px-4 md:pr-10 md:px-0 mt-6 md:mt-[60px]">
+                    <div className="md:sticky md:top-[20px]">
                         {/* Заголовок + цена */}
-                        <div className="flex flex-col gap-[24px]">
-                            <h1 className="text-[24px] leading-[26px] font-bold uppercase">
+                        <div className="flex flex-col gap-3 md:gap-[24px]">
+                            <h1 className="text-[18px] md:text-[24px] leading-[22px] md:leading-[26px] font-bold uppercase">
                                 {product.name}
                             </h1>
-                            <p className="text-[#999] leading-[18px]">
+                            <p className="text-[#999] text-[14px] md:text-[16px] leading-[18px]">
                                 {product.articleNumber}
                             </p>
                             {activeVariant ? (
-                                <p className="text-[24px] leading-[26px]">
+                                <p className="text-[20px] md:text-[24px] leading-[24px] md:leading-[26px]">
                                     {`${numberFormat(activeVariant.price)} ₽`}
                                 </p>
                             ) : (
@@ -219,8 +219,57 @@ export function ProductPage() {
                             )}
                         </div>
 
-                        {/* Цвета */}
-                        <div className="mt-8">
+                        {/* Цвета и Размеры - Mobile Dropdowns */}
+                        <div className="md:hidden mt-6 flex gap-3">
+                            {/* Color Dropdown */}
+                            <div className="flex-1 relative">
+                                <select
+                                    value={selectedColor || ''}
+                                    onChange={(e) => {
+                                        const color = e.target.value;
+                                        setSelectedColor(color);
+                                        const variantsForColor = product.productVariants?.filter(v => v.colorName === color) ?? [];
+                                        const variantForColor = variantsForColor.find(v => v.isAvailable) ?? null;
+                                        setActiveVariant(variantForColor);
+                                    }}
+                                    className="w-full h-[56px] px-4 bg-[#FFFAF4] dark:bg-[#2A2A2B] border border-[#999] rounded-lg text-[14px] appearance-none cursor-pointer"
+                                >
+                                    {colors.map((color) => (
+                                        <option key={color} value={color}>{color}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                                        <path d="M8.49996 9.33027L12.0061 5.82422L13.0078 6.82595L8.49996 11.3338L3.99219 6.82595L4.99392 5.82422L8.49996 9.33027Z" fill="#999"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            {/* Size Dropdown */}
+                            <div className="flex-1 relative">
+                                <select
+                                    value={activeVariant?.id || ''}
+                                    onChange={(e) => {
+                                        const variant = sizes.find(v => String(v.id) === e.target.value);
+                                        if (variant) setActiveVariant(variant);
+                                    }}
+                                    className="w-full h-[56px] px-4 bg-[#FFFAF4] dark:bg-[#2A2A2B] border border-[#999] rounded-lg text-[14px] appearance-none cursor-pointer"
+                                >
+                                    {sizes.map((variant) => (
+                                        <option key={variant.id} value={variant.id} disabled={!variant.isAvailable}>
+                                            {variant.size}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                                        <path d="M8.49996 9.33027L12.0061 5.82422L13.0078 6.82595L8.49996 11.3338L3.99219 6.82595L4.99392 5.82422L8.49996 9.33027Z" fill="#999"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Цвета - Desktop */}
+                        <div className="hidden md:block mt-8">
                             <h3 className="mb-2 font-medium">Цвет</h3>
                             <div className="flex flex-wrap gap-2">
                                 {colors.map((color) => {
@@ -274,8 +323,8 @@ export function ProductPage() {
                             </div>
                         </div>
 
-                        {/* Размеры */}
-                        <div className="mt-6">
+                        {/* Размеры - Desktop */}
+                        <div className="hidden md:block mt-6">
                             <h3 className="mb-2 font-medium">Размер</h3>
                             <div className="flex flex-wrap gap-2">
                                 {sizes.map((variant) => (
@@ -306,7 +355,7 @@ export function ProductPage() {
                         </div>
 
                         {/* Кнопка Добавить в корзину */}
-                        <div className="mt-[30px]">
+                        <div className="mt-4 md:mt-[30px]">
                             {!appInitialized ? (
                                 <div className="w-full h-[56px] rounded-[8px] bg-gray-200 animate-pulse" />
                             ) : inCart ? (
@@ -343,7 +392,7 @@ export function ProductPage() {
                         </div>
 
                         {/* Кнопка Добавить в избранное */}
-                        <div className="mt-[20px]">
+                        <div className="mt-3 md:mt-[20px]">
                             {!appInitialized ? (
                                 <div className="w-[220px] h-[24px] rounded-[6px] bg-gray-200 animate-pulse" />
                             ) : (
@@ -374,8 +423,8 @@ export function ProductPage() {
                         </div>
 
                         {/* Кнопки коллекция/категория */}
-                        <div className="mt-[30px] flex gap-3">
-                            <button className="flex items-center justify-between w-full h-[45px] rounded-[8px] border border-[#999] px-[20px] cursor-pointer transition hover:bg-gray-50 hover:dark:bg-white/10">
+                        <div className="mt-4 md:mt-[30px] flex flex-col md:flex-row gap-2 md:gap-3">
+                            <button className="flex items-center justify-between w-full h-[44px] md:h-[45px] rounded-[8px] border border-[#999] px-4 md:px-[20px] cursor-pointer transition hover:bg-gray-50 hover:dark:bg-white/10">
                                 <span className="text-[#999] text-[12px] leading-[18px]">
                                     Все товары из коллекции
                                 </span>
@@ -388,7 +437,7 @@ export function ProductPage() {
                                         navigate(`/catalog?types=${product.categoryId}`);
                                     }
                                 }}
-                                className="flex items-center justify-between w-full h-[45px] rounded-[8px] border border-[#999] px-[20px] cursor-pointer transition hover:bg-gray-50 hover:dark:bg-white/10"
+                                className="flex items-center justify-between w-full h-[44px] md:h-[45px] rounded-[8px] border border-[#999] px-4 md:px-[20px] cursor-pointer transition hover:bg-gray-50 hover:dark:bg-white/10"
                             >
                                 <span className="text-[#999] text-[12px] leading-[18px]">
                                     Все товары из категории
@@ -398,7 +447,7 @@ export function ProductPage() {
                         </div>
 
                         {/* Аккордеоны */}
-                        <div className="mt-[62px] flex flex-col divide-y divide-[#CCC]">
+                        <div className="mt-8 md:mt-[62px] flex flex-col divide-y divide-[#CCC]">
                             <FilterAccordion
                                 title="ОПИСАНИЕ"
                                 isOpen={isDescriptionOpen}
@@ -440,16 +489,17 @@ export function ProductPage() {
 
             {/* Возможно вам понравится */}
             {relatedGoods.length > 0 && (
-                <div className="px-10 mt-[60px]">
-                    <h1 className="text-[24px] leading-[26px] uppercase mb-6">
+                <div className="px-4 md:px-10 mt-10 md:mt-[60px]">
+                    <h1 className="text-[18px] md:text-[24px] leading-[22px] md:leading-[26px] uppercase mb-4 md:mb-6">
                         Возможно вам понравится
                     </h1>
 
                         <Carousel
                             items={relatedGoods}
-                            gap={20}
+                            gap={10}
                             loading={relatedLoading}
                             visibleCount={6}
+                            mobileVisibleCount={2}
                             renderItem={(item, {widthStyle, idx, reportImageHeight}) => (
                                 <div key={idx} style={widthStyle}>
                                     <Card card={item} reportImageHeight={reportImageHeight}/>
@@ -460,7 +510,7 @@ export function ProductPage() {
             )}
 
             {/* Divider */}
-            <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mt-[90px]" />
+            <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mt-10 md:mt-[90px]" />
         </div>
     );
 }

@@ -3,14 +3,14 @@ export const AboutPage = () => {
         <div className="w-full">
             {/* Заголовок */}
             <div className="px-4 md:px-10 pt-[60px] md:pt-[90px]">
-                <h1 className="text-[40px] md:text-[60px] leading-[44px] md:leading-[64px] font-medium text-[#565656] uppercase mb-[100px] md:mb-[154px]">
+                <h1 className="text-[40px] md:text-[60px] leading-[44px] md:leading-[64px] font-medium text-[#565656] dark:text-white uppercase mb-[100px] md:mb-[154px]">
                     О бренде
                 </h1>
             </div>
 
             {/* Главный текст */}
             <div className="px-4 md:px-10">
-                <div className="text-[24px] md:text-[36px] leading-[32px] md:leading-[40px] font-medium text-[#565656]">
+                <div className="text-[24px] md:text-[36px] leading-[32px] md:leading-[40px] font-medium text-[#565656] dark:text-white/90">
                     <p className="md:text-center">Melu — твой надёжный спутник в ритме современной жизни.</p>
                     <p>Мы знаем, что такое быть современной женщиной.</p>
                     <p className="md:text-center">Это значит быть разной: сегодня ты — целеустремлённая профессионалка</p>
@@ -26,20 +26,20 @@ export const AboutPage = () => {
                     <div className="w-full lg:w-[1280px] flex flex-col md:flex-row gap-[40px] md:gap-0">
                         {/* О чём мы? */}
                         <div className="w-full md:w-[620px] md:pr-[20px]">
-                            <h2 className="text-[16px] font-medium text-[#565656] leading-[16px] mb-[32px] md:mb-[48px]">
+                            <h2 className="text-[16px] font-medium text-[#565656] dark:text-white leading-[16px] mb-[32px] md:mb-[48px]">
                                 О чём мы?
                             </h2>
-                            <p className="text-[16px] leading-[20px] text-[#565656] max-w-[600px]">
+                            <p className="text-[16px] leading-[20px] text-[#565656] dark:text-white/80 max-w-[600px]">
                                 Melu создан для того, чтобы поддерживать тебя в каждом из этих проявлений. Мы предлагаем не просто нижнее бельё, а твоего тихого союзника, который подарит уверенность и комфорт, куда бы ни занес тебя твой динамичный график.
                             </p>
                         </div>
 
                         {/* Наша философия */}
                         <div className="w-full md:w-[620px]">
-                            <h2 className="text-[16px] font-medium text-[#565656] leading-[16px] mb-[32px] md:mb-[48px]">
+                            <h2 className="text-[16px] font-medium text-[#565656] dark:text-white leading-[16px] mb-[32px] md:mb-[48px]">
                                 Наша философия
                             </h2>
-                            <p className="text-[16px] leading-[20px] text-[#565656] max-w-[600px]">
+                            <p className="text-[16px] leading-[20px] text-[#565656] dark:text-white/80 max-w-[600px]">
                                 Наша философия — это универсальность без компромиссов. Бельё, которое идеально чувствует себя под деловым костюмом, не подведет во время тренировки и подчеркнет твою индивидуальность на свидании. Мы верим, что ты заслуживаешь безупречного качества и стиля в каждой роли, которую выбираешь.
                             </p>
                         </div>
