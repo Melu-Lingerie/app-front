@@ -105,7 +105,7 @@ export const MainPage = () => {
                         onLoadMore={onLoadMore}
                         renderItem={(item, {widthStyle, reportImageHeight}) => (
                             <div key={item.productId} style={widthStyle}>
-                                <Card card={item} reportImageHeight={reportImageHeight} showAddToCart={isMobile} />
+                                <Card card={item} reportImageHeight={reportImageHeight} />
                             </div>
                         )}
                     />
