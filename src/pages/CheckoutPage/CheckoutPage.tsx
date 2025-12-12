@@ -2,9 +2,7 @@ import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { type RootState } from '@/store';
-import { Spinner } from '@/components/Spinner';
 import { motion } from 'framer-motion';
-import { numberFormat } from '@/utils/utils';
 
 // Иконка СБП
 const SbpIcon = () => (
@@ -32,6 +30,11 @@ const CdekLogo = () => (
 
 type DeliveryType = 'pickup' | 'courier';
 type PaymentMethod = 'sbp' | 'card' | 'installments';
+
+// Форматирование чисел
+const numberFormat = (value: number): string => {
+    return value.toLocaleString('ru-RU');
+};
 
 export function CheckoutPage() {
     const navigate = useNavigate();
@@ -61,10 +64,12 @@ export function CheckoutPage() {
     // Промокод
     const [promoCode, setPromoCode] = useState('');
 
-    // Расчеты
-    const [deliveryCost, setDeliveryCost] = useState(0);
-    const [deliveryDays, setDeliveryDays] = useState<number | null>(null);
-    const [isCalculating, setIsCalculating] = useState(false);
+    // Расчеты (TODO: подключить CDEK API для расчета)
+    const [deliveryCost, _setDeliveryCost] = useState(0);
+    const [deliveryDays, _setDeliveryDays] = useState<number | null>(null);
+    const [isCalculating, _setIsCalculating] = useState(false);
+    // Эти сеттеры будут использоваться при интеграции с CDEK API
+    void _setDeliveryCost; void _setDeliveryDays; void _setIsCalculating;
 
     // Суммы
     const subtotal = useMemo(() => {
