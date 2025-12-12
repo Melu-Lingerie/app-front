@@ -114,14 +114,14 @@ export function CheckoutPage() {
     }
 
     return (
-        <div className="pt-[30px] md:pt-[60px] px-4 sm:px-8 md:px-[60px] lg:px-[110px] pb-[60px]">
+        <div className="pt-[30px] md:pt-[60px] px-4 sm:px-8 md:px-[60px] lg:px-[195px] pb-[60px]">
             <h1 className="text-[28px] md:text-[36px] font-medium uppercase leading-[32px] md:leading-[38px] mb-[30px]">
                 Оформление заказа
             </h1>
 
-            <div className="flex flex-col lg:flex-row lg:justify-between gap-8">
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-[60px]">
                 {/* Левая колонка — форма */}
-                <div className="flex-1 max-w-[600px] min-w-0">
+                <div className="w-full lg:w-[910px] lg:flex-shrink-0">
                     {/* Разделитель */}
                     <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-[30px]" />
 
@@ -129,45 +129,45 @@ export function CheckoutPage() {
                     <section className="mb-[30px]">
                         <h2 className="text-[14px] font-medium uppercase mb-[20px]">Данные получателя</h2>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[75px] gap-y-4">
                             <div>
-                                <label className="block text-[12px] font-medium uppercase mb-2">Имя получателя</label>
+                                <label className="block text-[14px] font-medium uppercase mb-2">Имя получателя</label>
                                 <input
                                     type="text"
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                     placeholder="Ваше имя"
-                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                    className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[12px] font-medium uppercase mb-2">Фамилия получателя</label>
+                                <label className="block text-[14px] font-medium uppercase mb-2">Фамилия получателя</label>
                                 <input
                                     type="text"
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
                                     placeholder="Ваша фамилия"
-                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                    className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[12px] font-medium uppercase mb-2">Телефон</label>
+                                <label className="block text-[14px] font-medium uppercase mb-2">Телефон</label>
                                 <input
                                     type="tel"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     placeholder="Номер телефона"
-                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                    className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[12px] font-medium uppercase mb-2">E-mail</label>
+                                <label className="block text-[14px] font-medium uppercase mb-2">E-mail</label>
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="E-mail"
-                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                    className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                         </div>
@@ -209,27 +209,27 @@ export function CheckoutPage() {
                     <section className="mb-[30px]">
                         <h2 className="text-[14px] font-medium uppercase mb-[20px]">Доставка</h2>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[75px] gap-y-4">
                             <div>
-                                <label className="block text-[12px] font-medium uppercase mb-2">Населенный пункт</label>
+                                <label className="block text-[14px] font-medium uppercase mb-2">Населенный пункт</label>
                                 <input
                                     type="text"
                                     value={city}
                                     onChange={(e) => setCity(e.target.value)}
                                     placeholder="Начните вводить название города"
-                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                    className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[12px] font-medium uppercase mb-2">Тип доставки</label>
+                                <label className="block text-[14px] font-medium uppercase mb-2">Тип доставки</label>
                                 <div className="flex">
                                     <button
                                         type="button"
                                         onClick={() => setDeliveryType('pickup')}
-                                        className={`flex-1 h-[48px] border text-[14px] font-normal transition-colors ${
+                                        className={`w-[222px] h-14 border text-[16px] font-normal transition-colors ${
                                             deliveryType === 'pickup'
-                                                ? 'border-[#2A2A2B] dark:border-white bg-white dark:bg-transparent'
-                                                : 'border-[#CCC] dark:border-white/20 text-[#999]'
+                                                ? 'border-[#2A2A2B] dark:border-white bg-[#FAFAFA] dark:bg-transparent'
+                                                : 'border-[#999] text-[#999]'
                                         }`}
                                     >
                                         Самовывоз
@@ -237,10 +237,10 @@ export function CheckoutPage() {
                                     <button
                                         type="button"
                                         onClick={() => setDeliveryType('courier')}
-                                        className={`flex-1 h-[48px] border-t border-b border-r text-[14px] font-normal transition-colors ${
+                                        className={`w-[222px] h-14 border-t border-b border-r text-[16px] font-normal transition-colors ${
                                             deliveryType === 'courier'
-                                                ? 'border-[#2A2A2B] dark:border-white bg-white dark:bg-transparent'
-                                                : 'border-[#CCC] dark:border-white/20 text-[#999]'
+                                                ? 'border-[#2A2A2B] dark:border-white bg-[#FAFAFA] dark:bg-transparent'
+                                                : 'border-[#999] text-[#999]'
                                         }`}
                                     >
                                         Курьер
@@ -248,35 +248,34 @@ export function CheckoutPage() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-[12px] font-medium uppercase mb-2">Индекс</label>
+                                <label className="block text-[14px] font-medium uppercase mb-2">Индекс</label>
                                 <input
                                     type="text"
                                     value={postalCode}
                                     onChange={(e) => setPostalCode(e.target.value)}
                                     placeholder="XXX XXX"
-                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                    className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[12px] font-medium uppercase mb-2">Адрес</label>
+                                <label className="block text-[14px] font-medium uppercase mb-2">Адрес</label>
                                 <input
                                     type="text"
                                     value={address}
                                     onChange={(e) => setAddress(e.target.value)}
                                     placeholder="Введите вашу улицу, дом, квартиру"
-                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                    className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                         </div>
 
                         <div className="mt-4">
-                            <label className="block text-[12px] font-medium uppercase mb-2">Комментарий</label>
+                            <label className="block text-[14px] font-medium uppercase mb-2">Комментарий</label>
                             <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                                 placeholder="Сообщение курьеру"
-                                rows={4}
-                                className="w-full px-4 py-3 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] resize-none placeholder:text-[#999]"
+                                className="w-full h-40 px-5 py-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] resize-none placeholder:text-[#999]"
                             />
                         </div>
 
@@ -294,26 +293,26 @@ export function CheckoutPage() {
 
                         {/* Службы доставки */}
                         <div className="mt-6">
-                            <label className="block text-[12px] font-medium uppercase mb-4">Службы доставки</label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label className="block text-[14px] font-medium uppercase mb-4">Службы доставки</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[75px] gap-y-4">
                                 {/* CDEK */}
                                 <button
                                     type="button"
                                     onClick={() => setDeliveryService('cdek')}
-                                    className={`h-[48px] flex items-center px-3 border transition-colors ${
+                                    className={`w-96 h-14 flex items-center px-3 border transition-colors bg-[#FAFAFA] dark:bg-transparent ${
                                         deliveryService === 'cdek'
                                             ? 'border-[#2A2A2B] dark:border-white'
                                             : 'border-[#CCC] dark:border-white/20'
                                     }`}
                                 >
-                                    <div className="w-[80px] h-8 bg-[#F5F5F5] dark:bg-white/10 flex items-center justify-center mr-3">
+                                    <div className="w-32 h-9 bg-[#F5F5F5] dark:bg-white/10 flex items-center justify-center mr-3">
                                         <CdekLogo />
                                     </div>
-                                    <span className="text-[12px] font-medium uppercase">CDEK</span>
-                                    <span className="text-[12px] font-medium ml-2">
+                                    <span className="text-[14px] font-medium uppercase">CDEK</span>
+                                    <span className="text-[14px] font-medium ml-2">
                                         {isCalculating ? '...' : `${numberFormat(deliveryCost || 1290)} ₽`}
                                     </span>
-                                    <span className="text-[11px] font-medium text-[#999] ml-2">
+                                    <span className="text-[12px] font-medium text-[#999] ml-2">
                                         {deliveryDays ? `${deliveryDays} дн.` : '4 дня'}
                                     </span>
                                 </button>
@@ -322,14 +321,14 @@ export function CheckoutPage() {
                                 <button
                                     type="button"
                                     disabled
-                                    className="h-[48px] flex items-center px-3 border border-[#CCC]/50 dark:border-white/10 text-[#999]/50 cursor-not-allowed"
+                                    className="w-96 h-14 flex items-center px-3 border border-[rgba(23,23,23,0.3)] dark:border-white/10 bg-[rgba(250,250,250,0.3)] text-[rgba(23,23,23,0.3)] cursor-not-allowed"
                                 >
-                                    <div className="w-[80px] h-8 bg-[#F5F5F5]/50 dark:bg-white/5 flex items-center justify-center mr-3 opacity-50">
+                                    <div className="w-32 h-9 bg-[rgba(245,245,245,0.3)] dark:bg-white/5 flex items-center justify-center mr-3">
                                         <YandexDeliveryLogo />
                                     </div>
-                                    <span className="text-[12px] font-medium uppercase">YANDEX</span>
-                                    <span className="text-[12px] font-medium ml-2">1 290 ₽</span>
-                                    <span className="text-[11px] font-medium ml-2">4 дня</span>
+                                    <span className="text-[14px] font-medium uppercase">YANDEX</span>
+                                    <span className="text-[14px] font-medium ml-2">1 290 ₽</span>
+                                    <span className="text-[12px] font-medium ml-2">4 дня</span>
                                 </button>
                             </div>
                         </div>
@@ -342,38 +341,38 @@ export function CheckoutPage() {
                     <section className="mb-[30px]">
                         <h2 className="text-[14px] font-medium uppercase mb-[20px]">Оплата</h2>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[75px] gap-y-4">
                             {/* СБП */}
                             <button
                                 type="button"
                                 onClick={() => setPaymentMethod('sbp')}
-                                className={`h-[48px] flex items-center px-4 border transition-colors ${
+                                className={`w-96 h-14 flex items-center px-5 border transition-colors bg-[#FAFAFA] dark:bg-transparent ${
                                     paymentMethod === 'sbp'
                                         ? 'border-[#2A2A2B] dark:border-white'
                                         : 'border-[#CCC] dark:border-white/20'
                                 }`}
                             >
                                 <SbpIcon />
-                                <span className="text-[12px] font-medium uppercase ml-3">Система быстрых платежей</span>
+                                <span className="text-[14px] font-medium uppercase ml-3">Система быстрых платежей</span>
                             </button>
 
                             {/* Банковская карта - неактивна */}
                             <button
                                 type="button"
                                 disabled
-                                className="h-[48px] flex items-center px-4 border border-[#CCC]/50 dark:border-white/10 text-[#999]/50 cursor-not-allowed"
+                                className="w-96 h-14 flex items-center px-5 border border-[rgba(23,23,23,0.3)] dark:border-white/10 bg-[rgba(250,250,250,0.3)] text-[rgba(23,23,23,0.3)] cursor-not-allowed"
                             >
-                                <span className="text-[12px] font-medium uppercase">Банковской картой</span>
+                                <span className="text-[14px] font-medium uppercase">Банковской картой</span>
                             </button>
 
                             {/* Долями - неактивна */}
                             <button
                                 type="button"
                                 disabled
-                                className="h-[48px] flex items-center px-4 border border-[#CCC]/50 dark:border-white/10 text-[#999]/50 cursor-not-allowed"
+                                className="w-96 h-14 flex items-center px-5 border border-[rgba(23,23,23,0.3)] dark:border-white/10 bg-[rgba(250,250,250,0.3)] text-[rgba(23,23,23,0.3)] cursor-not-allowed"
                             >
                                 <DolyamiLogo />
-                                <span className="text-[12px] font-medium uppercase ml-2">Сервис долями</span>
+                                <span className="text-[14px] font-medium uppercase ml-2">Сервис долями</span>
                             </button>
                         </div>
                     </section>
@@ -384,44 +383,46 @@ export function CheckoutPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="w-full lg:w-[200px] lg:flex-shrink-0 lg:sticky lg:top-[100px] h-fit"
+                    className="w-full lg:w-96 lg:flex-shrink-0 lg:sticky lg:top-[100px] h-fit"
                 >
-                    <div className="flex justify-between items-baseline mb-1">
-                        <h3 className="text-[14px] font-medium uppercase">Сумма заказа</h3>
-                        <span className="text-[14px] font-medium">{numberFormat(subtotal)} ₽</span>
+                    <div className="flex justify-between items-baseline mb-2">
+                        <h3 className="text-[16px] font-medium uppercase">Сумма заказа</h3>
+                        <span className="text-[16px] font-medium uppercase">{numberFormat(subtotal)} ₽</span>
                     </div>
 
-                    <div className="space-y-0.5 mb-3">
-                        <div className="flex justify-between text-[11px] font-medium text-[#999]">
+                    <div className="space-y-1 mb-4">
+                        <div className="flex justify-between text-[12px] font-medium text-[#999]">
                             <span>Подытог:</span>
                             <span>{numberFormat(subtotal)} ₽</span>
                         </div>
-                        <div className="flex justify-between text-[11px] font-medium text-[#999]">
+                        <div className="flex justify-between text-[12px] font-medium text-[#999]">
                             <span>Доставка:</span>
                             <span>{deliveryCost === 0 ? '0 ₽' : `${numberFormat(deliveryCost)} ₽`}</span>
                         </div>
                     </div>
 
-                    <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-3" />
+                    <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-4" />
 
-                    <div className="flex justify-between text-[14px] font-medium uppercase mb-4">
+                    <div className="flex justify-between text-[16px] font-medium uppercase mb-4">
                         <span>Итого</span>
                         <span>{numberFormat(total)} ₽</span>
                     </div>
 
+                    <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-6" />
+
                     {/* Промокод */}
-                    <div className="mb-4">
-                        <p className="text-[12px] font-medium text-[#999] mb-2">Ввести промокод</p>
+                    <div className="mb-6">
+                        <p className="text-[16px] font-medium text-[#999] mb-3">Ввести промокод</p>
                         <div className="flex items-center border border-[#CCC] dark:border-white/10 bg-white dark:bg-transparent">
                             <input
                                 type="text"
                                 value={promoCode}
                                 onChange={(e) => setPromoCode(e.target.value)}
                                 placeholder="Промокод"
-                                className="flex-1 h-[48px] px-4 bg-transparent text-[12px] font-medium outline-none placeholder:text-[#999]"
+                                className="flex-1 h-14 px-5 bg-transparent text-[12px] font-medium outline-none placeholder:text-[#CCC]"
                             />
-                            <button className="px-3 text-[#999]">
-                                <svg width="14" height="14" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <button className="px-4 text-[#999]">
+                                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9.328 8.5L5.822 4.994L6.824 3.992L11.332 8.5L6.824 13.008L5.822 12.006L9.328 8.5Z" fill="currentColor"/>
                                 </svg>
                             </button>
@@ -431,17 +432,17 @@ export function CheckoutPage() {
                     {/* Кнопка оплаты */}
                     <button
                         disabled={!isFormValid}
-                        className="w-full h-[48px] rounded-lg bg-[#F8C6D7] border border-[#FFFBF5] text-[12px] font-medium uppercase transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full h-14 rounded-lg bg-[#F8C6D7] border border-[#FFFBF5] text-[14px] font-medium uppercase transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Оплатить
                     </button>
 
                     {/* Ссылки */}
-                    <div className="mt-6 space-y-1.5">
-                        <p className="text-[11px] font-medium text-[#999] underline cursor-pointer">Войти в личный кабинет</p>
-                        <p className="text-[11px] font-medium text-[#999] underline cursor-pointer">Условия доставки</p>
-                        <p className="text-[11px] font-medium text-[#999] underline cursor-pointer">Условия обмена и возврата</p>
-                        <p className="text-[11px] font-medium text-[#999] underline cursor-pointer">Информация об оплате</p>
+                    <div className="mt-[120px] space-y-2">
+                        <p className="text-[12px] font-medium text-[#999] underline cursor-pointer">Войти в личный кабинет</p>
+                        <p className="text-[12px] font-medium text-[#999] underline cursor-pointer">Условия доставки</p>
+                        <p className="text-[12px] font-medium text-[#999] underline cursor-pointer">Условия обмена и возврата</p>
+                        <p className="text-[12px] font-medium text-[#999] underline cursor-pointer">Информация об оплате</p>
                     </div>
                 </motion.div>
             </div>
