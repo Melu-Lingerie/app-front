@@ -28,8 +28,24 @@ const CdekLogo = () => (
     </svg>
 );
 
+// Логотип Долями
+const DolyamiLogo = () => (
+    <span className="text-[14px] font-bold tracking-tight">llll ДОЛЯМИ</span>
+);
+
+// Логотип Яндекс Доставка
+const YandexDeliveryLogo = () => (
+    <div className="flex items-center gap-1">
+        <div className="w-5 h-5 bg-[#FC3F1D] rounded-full flex items-center justify-center">
+            <span className="text-white text-xs font-bold">Я</span>
+        </div>
+        <span className="text-sm">Доставка</span>
+    </div>
+);
+
 type DeliveryType = 'pickup' | 'courier';
 type PaymentMethod = 'sbp' | 'card' | 'installments';
+type DeliveryService = 'cdek' | 'yandex';
 
 // Форматирование чисел
 const numberFormat = (value: number): string => {
@@ -54,6 +70,7 @@ export function CheckoutPage() {
     // Доставка
     const [city, setCity] = useState('');
     const [deliveryType, setDeliveryType] = useState<DeliveryType>('courier');
+    const [deliveryService, setDeliveryService] = useState<DeliveryService>('cdek');
     const [postalCode, setPostalCode] = useState('');
     const [address, setAddress] = useState('');
     const [comment, setComment] = useState('');
@@ -83,7 +100,7 @@ export function CheckoutPage() {
 
     if (itemsCount === 0) {
         return (
-            <div className="pt-[30px] md:pt-[60px] px-4 md:px-[195px] pb-[60px] flex flex-col items-center">
+            <div className="pt-[30px] md:pt-[60px] px-4 md:px-[110px] pb-[60px] flex flex-col items-center">
                 <h1 className="text-[24px] md:text-[36px] uppercase mb-6">Оформление заказа</h1>
                 <p className="text-[#999] text-[14px] md:text-[16px] mb-6">Ваша корзина пуста</p>
                 <button
@@ -97,74 +114,74 @@ export function CheckoutPage() {
     }
 
     return (
-        <div className="pt-[30px] md:pt-[60px] px-4 md:px-10">
-            <h1 className="text-[28px] md:text-[36px] font-medium uppercase leading-[32px] md:leading-[38px] mb-[20px] md:mb-[30px]">
+        <div className="pt-[30px] md:pt-[60px] px-4 md:px-[110px] pb-[60px]">
+            <h1 className="text-[28px] md:text-[36px] font-medium uppercase leading-[32px] md:leading-[38px] mb-[30px]">
                 Оформление заказа
             </h1>
 
-            <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-[60px]">
                 {/* Левая колонка — форма */}
-                <div className="flex-1 max-w-[910px]">
+                <div className="flex-1 max-w-[600px]">
                     {/* Разделитель */}
                     <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-[30px]" />
 
                     {/* Данные получателя */}
                     <section className="mb-[30px]">
-                        <h2 className="text-base font-medium uppercase mb-[20px]">Данные получателя</h2>
+                        <h2 className="text-[14px] font-medium uppercase mb-[20px]">Данные получателя</h2>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Имя получателя</label>
+                                <label className="block text-[12px] font-medium uppercase mb-2">Имя получателя</label>
                                 <input
                                     type="text"
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                     placeholder="Ваше имя"
-                                    className="w-full h-[56px] px-5 bg-[#F7F7F7] dark:bg-white/5 border border-[#CCC] dark:border-white/10 text-xs font-medium outline-none focus:border-[#F8C6D7]"
+                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Фамилия получателя</label>
+                                <label className="block text-[12px] font-medium uppercase mb-2">Фамилия получателя</label>
                                 <input
                                     type="text"
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
                                     placeholder="Ваша фамилия"
-                                    className="w-full h-[56px] px-5 bg-[#F7F7F7] dark:bg-white/5 border border-[#CCC] dark:border-white/10 text-xs font-medium outline-none focus:border-[#F8C6D7]"
+                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Телефон</label>
+                                <label className="block text-[12px] font-medium uppercase mb-2">Телефон</label>
                                 <input
                                     type="tel"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     placeholder="Номер телефона"
-                                    className="w-full h-[56px] px-5 bg-[#F7F7F7] dark:bg-white/5 border border-[#CCC] dark:border-white/10 text-xs font-medium outline-none focus:border-[#F8C6D7]"
+                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">E-mail</label>
+                                <label className="block text-[12px] font-medium uppercase mb-2">E-mail</label>
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="E-mail"
-                                    className="w-full h-[56px] px-5 bg-[#F7F7F7] dark:bg-white/5 border border-[#CCC] dark:border-white/10 text-xs font-medium outline-none focus:border-[#F8C6D7]"
+                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                         </div>
 
                         {/* Чекбоксы согласий */}
-                        <div className="mt-5 space-y-2">
+                        <div className="mt-5 space-y-3">
                             <label className="flex items-start gap-2 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={agreeMarketing}
                                     onChange={(e) => setAgreeMarketing(e.target.checked)}
-                                    className="w-4 h-4 mt-0.5 accent-[#F8C6D7]"
+                                    className="w-4 h-4 mt-0.5 accent-[#F8C6D7] border border-[#CCC]"
                                 />
-                                <span className="text-xs font-medium leading-4">
+                                <span className="text-[11px] font-medium leading-[14px]">
                                     Я согласен(-на) на получение рекламно-информационной рассылки (e-mail, whatsapp, sms).
                                 </span>
                             </label>
@@ -173,9 +190,9 @@ export function CheckoutPage() {
                                     type="checkbox"
                                     checked={agreePolicy}
                                     onChange={(e) => setAgreePolicy(e.target.checked)}
-                                    className="w-4 h-4 mt-0.5 accent-[#F8C6D7]"
+                                    className="w-4 h-4 mt-0.5 accent-[#F8C6D7] border border-[#CCC]"
                                 />
-                                <span className="text-xs font-medium leading-4">
+                                <span className="text-[11px] font-medium leading-[14px]">
                                     Я согласен(-на) с{' '}
                                     <span className="underline cursor-pointer">политикой конфиденциальности</span>
                                     {' '}и{' '}
@@ -190,29 +207,29 @@ export function CheckoutPage() {
 
                     {/* Доставка */}
                     <section className="mb-[30px]">
-                        <h2 className="text-base font-medium uppercase mb-[20px]">Доставка</h2>
+                        <h2 className="text-[14px] font-medium uppercase mb-[20px]">Доставка</h2>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Населенный пункт</label>
+                                <label className="block text-[12px] font-medium uppercase mb-2">Населенный пункт</label>
                                 <input
                                     type="text"
                                     value={city}
                                     onChange={(e) => setCity(e.target.value)}
                                     placeholder="Начните вводить название города"
-                                    className="w-full h-[56px] px-5 bg-[#F7F7F7] dark:bg-white/5 border border-[#CCC] dark:border-white/10 text-xs font-medium outline-none focus:border-[#F8C6D7]"
+                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Тип доставки</label>
-                                <div className="flex gap-0">
+                                <label className="block text-[12px] font-medium uppercase mb-2">Тип доставки</label>
+                                <div className="flex">
                                     <button
                                         type="button"
                                         onClick={() => setDeliveryType('pickup')}
-                                        className={`flex-1 h-[56px] border text-base font-normal transition-colors ${
+                                        className={`flex-1 h-[48px] border text-[14px] font-normal transition-colors ${
                                             deliveryType === 'pickup'
                                                 ? 'border-[#2A2A2B] dark:border-white bg-white dark:bg-transparent'
-                                                : 'border-[#999] text-[#999]'
+                                                : 'border-[#CCC] dark:border-white/20 text-[#999]'
                                         }`}
                                     >
                                         Самовывоз
@@ -220,10 +237,10 @@ export function CheckoutPage() {
                                     <button
                                         type="button"
                                         onClick={() => setDeliveryType('courier')}
-                                        className={`flex-1 h-[56px] border text-base font-normal transition-colors ${
+                                        className={`flex-1 h-[48px] border-t border-b border-r text-[14px] font-normal transition-colors ${
                                             deliveryType === 'courier'
                                                 ? 'border-[#2A2A2B] dark:border-white bg-white dark:bg-transparent'
-                                                : 'border-[#999] text-[#999]'
+                                                : 'border-[#CCC] dark:border-white/20 text-[#999]'
                                         }`}
                                     >
                                         Курьер
@@ -231,40 +248,40 @@ export function CheckoutPage() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Индекс</label>
+                                <label className="block text-[12px] font-medium uppercase mb-2">Индекс</label>
                                 <input
                                     type="text"
                                     value={postalCode}
                                     onChange={(e) => setPostalCode(e.target.value)}
                                     placeholder="XXX XXX"
-                                    className="w-full h-[56px] px-5 bg-[#F7F7F7] dark:bg-white/5 border border-[#CCC] dark:border-white/10 text-xs font-medium outline-none focus:border-[#F8C6D7]"
+                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Адрес</label>
+                                <label className="block text-[12px] font-medium uppercase mb-2">Адрес</label>
                                 <input
                                     type="text"
                                     value={address}
                                     onChange={(e) => setAddress(e.target.value)}
                                     placeholder="Введите вашу улицу, дом, квартиру"
-                                    className="w-full h-[56px] px-5 bg-[#F7F7F7] dark:bg-white/5 border border-[#CCC] dark:border-white/10 text-xs font-medium outline-none focus:border-[#F8C6D7]"
+                                    className="w-full h-[48px] px-4 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
                         </div>
 
                         <div className="mt-4">
-                            <label className="block text-sm font-medium uppercase mb-2">Комментарий</label>
+                            <label className="block text-[12px] font-medium uppercase mb-2">Комментарий</label>
                             <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                                 placeholder="Сообщение курьеру"
                                 rows={4}
-                                className="w-full px-5 py-4 bg-[#F7F7F7] dark:bg-white/5 border border-[#CCC] dark:border-white/10 text-xs font-medium outline-none focus:border-[#F8C6D7] resize-none"
+                                className="w-full px-4 py-3 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-[12px] font-medium outline-none focus:border-[#F8C6D7] resize-none placeholder:text-[#999]"
                             />
                         </div>
 
                         {/* Ссылка на сертификат */}
-                        <p className="mt-4 text-xs font-medium">
+                        <p className="mt-4 text-[11px] font-medium">
                             {isAuthenticated ? (
                                 <span className="text-[#999]">Вы можете использовать сертификат при оформлении.</span>
                             ) : (
@@ -277,21 +294,26 @@ export function CheckoutPage() {
 
                         {/* Службы доставки */}
                         <div className="mt-6">
-                            <label className="block text-sm font-medium uppercase mb-4">Службы доставки</label>
+                            <label className="block text-[12px] font-medium uppercase mb-4">Службы доставки</label>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* CDEK */}
                                 <button
                                     type="button"
-                                    className="h-[56px] flex items-center px-3 border border-[#2A2A2B] dark:border-white bg-white dark:bg-transparent"
+                                    onClick={() => setDeliveryService('cdek')}
+                                    className={`h-[48px] flex items-center px-3 border transition-colors ${
+                                        deliveryService === 'cdek'
+                                            ? 'border-[#2A2A2B] dark:border-white'
+                                            : 'border-[#CCC] dark:border-white/20'
+                                    }`}
                                 >
-                                    <div className="w-[128px] h-9 bg-[#F5F5F5] dark:bg-white/10 flex items-center justify-center mr-3">
+                                    <div className="w-[80px] h-8 bg-[#F5F5F5] dark:bg-white/10 flex items-center justify-center mr-3">
                                         <CdekLogo />
                                     </div>
-                                    <span className="text-sm font-medium uppercase">CDEK</span>
-                                    <span className="text-sm font-medium uppercase ml-2">
+                                    <span className="text-[12px] font-medium uppercase">CDEK</span>
+                                    <span className="text-[12px] font-medium ml-2">
                                         {isCalculating ? '...' : `${numberFormat(deliveryCost || 1290)} ₽`}
                                     </span>
-                                    <span className="text-xs font-medium text-[#999] ml-2">
+                                    <span className="text-[11px] font-medium text-[#999] ml-2">
                                         {deliveryDays ? `${deliveryDays} дн.` : '4 дня'}
                                     </span>
                                 </button>
@@ -300,14 +322,14 @@ export function CheckoutPage() {
                                 <button
                                     type="button"
                                     disabled
-                                    className="h-[56px] flex items-center px-3 border border-[#999]/30 text-[#999]/30 cursor-not-allowed"
+                                    className="h-[48px] flex items-center px-3 border border-[#CCC]/50 dark:border-white/10 text-[#999]/50 cursor-not-allowed"
                                 >
-                                    <div className="w-[128px] h-9 bg-[#F5F5F5]/30 dark:bg-white/5 flex items-center justify-center mr-3">
-                                        <span className="text-xs">Яндекс</span>
+                                    <div className="w-[80px] h-8 bg-[#F5F5F5]/50 dark:bg-white/5 flex items-center justify-center mr-3 opacity-50">
+                                        <YandexDeliveryLogo />
                                     </div>
-                                    <span className="text-sm font-medium uppercase">Yandex</span>
-                                    <span className="text-sm font-medium uppercase ml-2">1 290 ₽</span>
-                                    <span className="text-xs font-medium ml-2">4 дня</span>
+                                    <span className="text-[12px] font-medium uppercase">YANDEX</span>
+                                    <span className="text-[12px] font-medium ml-2">1 290 ₽</span>
+                                    <span className="text-[11px] font-medium ml-2">4 дня</span>
                                 </button>
                             </div>
                         </div>
@@ -318,39 +340,40 @@ export function CheckoutPage() {
 
                     {/* Оплата */}
                     <section className="mb-[30px]">
-                        <h2 className="text-base font-medium uppercase mb-[20px]">Оплата</h2>
+                        <h2 className="text-[14px] font-medium uppercase mb-[20px]">Оплата</h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* СБП */}
                             <button
                                 type="button"
                                 onClick={() => setPaymentMethod('sbp')}
-                                className={`h-[56px] flex items-center px-5 border transition-colors ${
+                                className={`h-[48px] flex items-center px-4 border transition-colors ${
                                     paymentMethod === 'sbp'
                                         ? 'border-[#2A2A2B] dark:border-white'
-                                        : 'border-[#999]'
+                                        : 'border-[#CCC] dark:border-white/20'
                                 }`}
                             >
                                 <SbpIcon />
-                                <span className="text-sm font-medium uppercase ml-3">Система быстрых платежей</span>
+                                <span className="text-[12px] font-medium uppercase ml-3">Система быстрых платежей</span>
                             </button>
 
                             {/* Банковская карта - неактивна */}
                             <button
                                 type="button"
                                 disabled
-                                className="h-[56px] flex items-center px-5 border border-[#999]/30 text-[#999]/30 cursor-not-allowed"
+                                className="h-[48px] flex items-center px-4 border border-[#CCC]/50 dark:border-white/10 text-[#999]/50 cursor-not-allowed"
                             >
-                                <span className="text-sm font-medium uppercase">Банковской картой</span>
+                                <span className="text-[12px] font-medium uppercase">Банковской картой</span>
                             </button>
 
                             {/* Долями - неактивна */}
                             <button
                                 type="button"
                                 disabled
-                                className="h-[56px] flex items-center px-5 border border-[#999]/30 text-[#999]/30 cursor-not-allowed"
+                                className="h-[48px] flex items-center px-4 border border-[#CCC]/50 dark:border-white/10 text-[#999]/50 cursor-not-allowed"
                             >
-                                <span className="text-sm font-medium uppercase">Сервис долями</span>
+                                <DolyamiLogo />
+                                <span className="text-[12px] font-medium uppercase ml-2">Сервис долями</span>
                             </button>
                         </div>
                     </section>
@@ -361,47 +384,44 @@ export function CheckoutPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="w-full lg:w-[384px] bg-white dark:bg-transparent p-5 lg:sticky lg:top-[70px] h-fit"
+                    className="w-full lg:w-[220px] lg:sticky lg:top-[100px] h-fit"
                 >
-                    <h3 className="text-base font-medium uppercase mb-4">Сумма заказа</h3>
-
-                    <div className="flex justify-between text-base font-medium uppercase mb-2">
-                        <span>{numberFormat(subtotal)} ₽</span>
+                    <div className="flex justify-between items-baseline mb-1">
+                        <h3 className="text-[14px] font-medium uppercase">Сумма заказа</h3>
+                        <span className="text-[14px] font-medium">{numberFormat(subtotal)} ₽</span>
                     </div>
 
-                    <div className="space-y-1 mb-4">
-                        <div className="flex justify-between text-xs font-medium text-[#999]">
+                    <div className="space-y-0.5 mb-3">
+                        <div className="flex justify-between text-[11px] font-medium text-[#999]">
                             <span>Подытог:</span>
                             <span>{numberFormat(subtotal)} ₽</span>
                         </div>
-                        <div className="flex justify-between text-xs font-medium text-[#999]">
+                        <div className="flex justify-between text-[11px] font-medium text-[#999]">
                             <span>Доставка:</span>
-                            <span>{numberFormat(deliveryCost)} ₽</span>
+                            <span>{deliveryCost === 0 ? '0 ₽' : `${numberFormat(deliveryCost)} ₽`}</span>
                         </div>
                     </div>
 
-                    <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-4" />
+                    <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-3" />
 
-                    <div className="flex justify-between text-base font-medium uppercase mb-4">
+                    <div className="flex justify-between text-[14px] font-medium uppercase mb-4">
                         <span>Итого</span>
                         <span>{numberFormat(total)} ₽</span>
                     </div>
 
-                    <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-4" />
-
                     {/* Промокод */}
                     <div className="mb-4">
-                        <p className="text-base font-medium text-[#999] mb-2">Ввести промокод</p>
+                        <p className="text-[12px] font-medium text-[#999] mb-2">Ввести промокод</p>
                         <div className="flex items-center border border-[#CCC] dark:border-white/10 bg-white dark:bg-transparent">
                             <input
                                 type="text"
                                 value={promoCode}
                                 onChange={(e) => setPromoCode(e.target.value)}
                                 placeholder="Промокод"
-                                className="flex-1 h-[56px] px-5 bg-transparent text-xs font-medium outline-none"
+                                className="flex-1 h-[48px] px-4 bg-transparent text-[12px] font-medium outline-none placeholder:text-[#999]"
                             />
-                            <button className="px-4 text-[#999]">
-                                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <button className="px-3 text-[#999]">
+                                <svg width="14" height="14" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9.328 8.5L5.822 4.994L6.824 3.992L11.332 8.5L6.824 13.008L5.822 12.006L9.328 8.5Z" fill="currentColor"/>
                                 </svg>
                             </button>
@@ -411,17 +431,17 @@ export function CheckoutPage() {
                     {/* Кнопка оплаты */}
                     <button
                         disabled={!isFormValid}
-                        className="w-full h-[56px] rounded-lg bg-[#F8C6D7] border border-[#FFFBF5] text-sm font-medium uppercase transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full h-[48px] rounded-lg bg-[#F8C6D7] border border-[#FFFBF5] text-[12px] font-medium uppercase transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Оплатить
                     </button>
 
                     {/* Ссылки */}
-                    <div className="mt-6 space-y-2">
-                        <p className="text-xs font-medium text-[#999] underline cursor-pointer">Войти в личный кабинет</p>
-                        <p className="text-xs font-medium text-[#999] underline cursor-pointer">Условия доставки</p>
-                        <p className="text-xs font-medium text-[#999] underline cursor-pointer">Условия обмена и возврата</p>
-                        <p className="text-xs font-medium text-[#999] underline cursor-pointer">Информация об оплате</p>
+                    <div className="mt-6 space-y-1.5">
+                        <p className="text-[11px] font-medium text-[#999] underline cursor-pointer">Войти в личный кабинет</p>
+                        <p className="text-[11px] font-medium text-[#999] underline cursor-pointer">Условия доставки</p>
+                        <p className="text-[11px] font-medium text-[#999] underline cursor-pointer">Условия обмена и возврата</p>
+                        <p className="text-[11px] font-medium text-[#999] underline cursor-pointer">Информация об оплате</p>
                     </div>
                 </motion.div>
             </div>
