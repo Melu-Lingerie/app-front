@@ -114,14 +114,14 @@ export function CheckoutPage() {
     }
 
     return (
-        <div className="pt-[30px] md:pt-[60px] px-4 md:px-[110px] pb-[60px]">
+        <div className="pt-[30px] md:pt-[60px] px-4 sm:px-8 md:px-[60px] lg:px-[110px] pb-[60px]">
             <h1 className="text-[28px] md:text-[36px] font-medium uppercase leading-[32px] md:leading-[38px] mb-[30px]">
                 Оформление заказа
             </h1>
 
-            <div className="flex flex-col lg:flex-row gap-8 lg:gap-[60px]">
+            <div className="flex flex-col lg:flex-row lg:justify-between gap-8">
                 {/* Левая колонка — форма */}
-                <div className="flex-1 max-w-[600px]">
+                <div className="flex-1 max-w-[600px] min-w-0">
                     {/* Разделитель */}
                     <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-[30px]" />
 
@@ -384,7 +384,7 @@ export function CheckoutPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="w-full lg:w-[220px] lg:sticky lg:top-[100px] h-fit"
+                    className="w-full lg:w-[200px] lg:flex-shrink-0 lg:sticky lg:top-[100px] h-fit"
                 >
                     <div className="flex justify-between items-baseline mb-1">
                         <h3 className="text-[14px] font-medium uppercase">Сумма заказа</h3>
