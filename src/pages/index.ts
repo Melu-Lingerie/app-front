@@ -6,3 +6,4 @@ export {CustomersPage} from './CustomersPage';
 export {GiftCertificatePage} from './GiftCertificatePage';
 export {AboutPage} from './AboutPage';
 export {ContactsPage} from './ContactsPage';
+export {CheckoutPage} from './CheckoutPage';
