@@ -14,7 +14,7 @@ export default defineConfig({
         host: true,
         proxy: {
             '/api': {
-                target: 'http://melu-bra.ru', // через nginx на продакшене
+                target: 'https://melu-bra.ru',
                 changeOrigin: true,
                 secure: false,
             }

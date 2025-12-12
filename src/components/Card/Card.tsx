@@ -151,17 +151,6 @@ export const Card = ({
                     </ul>
                 </div>
 
-                {/* Add to Cart button - always shown */}
-                <button
-                    type="button"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/catalog/${productId}`);
-                    }}
-                    className="w-full mt-2 md:mt-3 h-[36px] md:h-[44px] border border-[#2A2A2B] dark:border-white/20 rounded-lg text-[12px] md:text-[14px] uppercase cursor-pointer hover:bg-[#F8C6D7] hover:border-[#F8C6D7] transition-colors"
-                >
-                    Добавить в корзину
-                </button>
             </div>
         </div>
     );
