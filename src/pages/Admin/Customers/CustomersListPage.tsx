@@ -88,8 +88,8 @@ export function CustomersListPage() {
             title: 'Контакты',
             render: (customer) => (
                 <div className="text-sm">
-                    <div>{customer.email}</div>
-                    <div className="text-gray-500">{customer.phone}</div>
+                    <div className="text-gray-900 dark:text-gray-100">{customer.email}</div>
+                    <div className="text-gray-500 dark:text-gray-400">{customer.phone}</div>
                 </div>
             ),
         },
@@ -140,7 +140,7 @@ export function CustomersListPage() {
                             e.stopPropagation();
                             navigate(`/admin/customers/${customer.id}`);
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Редактировать"
                     >
                         <Pencil size={16} />
@@ -150,7 +150,7 @@ export function CustomersListPage() {
                             e.stopPropagation();
                             // TODO: Send email
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Отправить email"
                     >
                         <Mail size={16} />
@@ -160,7 +160,7 @@ export function CustomersListPage() {
                             e.stopPropagation();
                             navigate(`/admin/customers/${customer.id}`);
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Просмотреть"
                     >
                         <Eye size={16} />

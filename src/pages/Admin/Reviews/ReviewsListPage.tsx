@@ -106,7 +106,7 @@ export function ReviewsListPage() {
                     <Star
                         key={star}
                         size={14}
-                        className={star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
+                        className={star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 dark:text-gray-600'}
                     />
                 ))}
             </div>
@@ -137,8 +137,8 @@ export function ReviewsListPage() {
             title: 'Автор',
             render: (review) => (
                 <div>
-                    <div>{review.authorName}</div>
-                    <div className="text-xs text-gray-500">ID: {review.authorId}</div>
+                    <div className="text-gray-900 dark:text-gray-100">{review.authorName}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">ID: {review.authorId}</div>
                 </div>
             ),
         },
@@ -167,7 +167,7 @@ export function ReviewsListPage() {
                             e.stopPropagation();
                             // TODO: Edit review
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Редактировать"
                     >
                         <Pencil size={16} />
@@ -177,7 +177,7 @@ export function ReviewsListPage() {
                             e.stopPropagation();
                             handleDelete(review.id);
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
                         title="Удалить"
                     >
                         <Trash2 size={16} />
@@ -188,7 +188,7 @@ export function ReviewsListPage() {
                                 e.stopPropagation();
                                 handlePublish(review.id);
                             }}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-green-600"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-green-600 dark:text-green-400"
                             title="Опубликовать"
                         >
                             <Check size={16} />
@@ -200,7 +200,7 @@ export function ReviewsListPage() {
                                 e.stopPropagation();
                                 handleHide(review.id);
                             }}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-orange-600"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-orange-600 dark:text-orange-400"
                             title="Скрыть"
                         >
                             <EyeOff size={16} />

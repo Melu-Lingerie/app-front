@@ -115,8 +115,8 @@ export function OrdersListPage() {
             title: 'Клиент',
             render: (order) => (
                 <div>
-                    <div>{order.customerName}</div>
-                    <div className="text-xs text-gray-500">{order.customerEmail}</div>
+                    <div className="text-gray-900 dark:text-gray-100">{order.customerName}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{order.customerEmail}</div>
                 </div>
             ),
         },
@@ -148,14 +148,14 @@ export function OrdersListPage() {
             title: 'Оплата',
             render: (order) => (
                 <div className="text-sm">
-                    <span>{paymentMethodLabels[order.paymentMethod]}</span>
-                    <span className="text-gray-400"> + </span>
+                    <span className="text-gray-900 dark:text-gray-100">{paymentMethodLabels[order.paymentMethod]}</span>
+                    <span className="text-gray-400 dark:text-gray-500"> + </span>
                     <span className={
                         order.paymentStatus === 'paid'
-                            ? 'text-green-600'
+                            ? 'text-green-600 dark:text-green-400'
                             : order.paymentStatus === 'refunded'
-                            ? 'text-orange-600'
-                            : 'text-gray-500'
+                            ? 'text-orange-600 dark:text-orange-400'
+                            : 'text-gray-500 dark:text-gray-400'
                     }>
                         {paymentStatusLabels[order.paymentStatus]}
                     </span>
@@ -173,7 +173,7 @@ export function OrdersListPage() {
                             e.stopPropagation();
                             navigate(`/admin/orders/${order.id}`);
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Редактировать"
                     >
                         <Pencil size={16} />
@@ -183,7 +183,7 @@ export function OrdersListPage() {
                             e.stopPropagation();
                             // TODO: Delete order
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
                         title="Удалить"
                     >
                         <Trash2 size={16} />
@@ -193,7 +193,7 @@ export function OrdersListPage() {
                             e.stopPropagation();
                             navigate(`/admin/orders/${order.id}`);
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Просмотреть"
                     >
                         <Eye size={16} />

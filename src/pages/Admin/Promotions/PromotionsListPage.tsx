@@ -117,7 +117,7 @@ export function PromotionsListPage() {
                             e.stopPropagation();
                             navigate(`/admin/promotions/${promo.id}/edit`);
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Редактировать"
                     >
                         <Pencil size={16} />
@@ -127,7 +127,7 @@ export function PromotionsListPage() {
                             e.stopPropagation();
                             // TODO: Delete promotion
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
                         title="Удалить"
                     >
                         <Trash2 size={16} />
@@ -137,7 +137,7 @@ export function PromotionsListPage() {
                             e.stopPropagation();
                             // TODO: Toggle status
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title={promo.status === 'active' ? 'Приостановить' : 'Активировать'}
                     >
                         {promo.status === 'active' ? (

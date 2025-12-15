@@ -154,8 +154,8 @@ export function PromotionFormPage() {
 
             <div className="space-y-8">
                 {/* Основные настройки */}
-                <section className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Основные настройки</h2>
+                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Основные настройки</h2>
                     <div className="grid grid-cols-4 gap-4">
                         <AdminInput
                             label="Название акции"
@@ -200,8 +200,8 @@ export function PromotionFormPage() {
                 </section>
 
                 {/* Условия применения */}
-                <section className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Условия применения</h2>
+                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Условия применения</h2>
                     <div className="grid grid-cols-5 gap-4">
                         <AdminSelect
                             label="Область действия"
@@ -220,7 +220,7 @@ export function PromotionFormPage() {
                             }
                         />
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                                 Лимиты использования
                             </label>
                             <div className="space-y-2">
@@ -249,7 +249,7 @@ export function PromotionFormPage() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                                 Даты активности
                             </label>
                             <div className="flex items-center gap-2">
@@ -260,7 +260,7 @@ export function PromotionFormPage() {
                                     onBlur={() => setFieldTouched('startDate')}
                                     error={getFieldError('startDate')}
                                 />
-                                <span className="text-gray-400">→</span>
+                                <span className="text-gray-400 dark:text-gray-500">→</span>
                                 <AdminInput
                                     type="date"
                                     value={formData.endDate}
@@ -282,8 +282,8 @@ export function PromotionFormPage() {
                 </section>
 
                 {/* Промокоды */}
-                <section className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Промокоды</h2>
+                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Промокоды</h2>
                     <div className="grid grid-cols-5 gap-4">
                         <div>
                             <AdminInput
@@ -306,7 +306,7 @@ export function PromotionFormPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                                 Лимиты использования
                             </label>
                             <div className="space-y-2">
@@ -315,12 +315,12 @@ export function PromotionFormPage() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                                 Даты активности
                             </label>
                             <div className="flex items-center gap-2">
                                 <AdminInput type="date" />
-                                <span className="text-gray-400">→</span>
+                                <span className="text-gray-400 dark:text-gray-500">→</span>
                                 <AdminInput type="date" />
                             </div>
                         </div>
@@ -345,10 +345,10 @@ export function PromotionFormPage() {
                             {formData.promoCodes.map((promo, index) => (
                                 <span
                                     key={index}
-                                    className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm"
+                                    className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-900 dark:text-gray-100"
                                 >
                                     {promo.code}
-                                    <button onClick={() => removePromoCode(index)}>
+                                    <button onClick={() => removePromoCode(index)} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
                                         <X size={14} />
                                     </button>
                                 </span>
@@ -358,8 +358,8 @@ export function PromotionFormPage() {
                 </section>
 
                 {/* Накопительная система */}
-                <section className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4">
+                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                         Накопительная система (Настройки правил)
                     </h2>
                     <div className="grid grid-cols-4 gap-4">
@@ -386,7 +386,7 @@ export function PromotionFormPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                                 Срок действия баллов
                             </label>
                             <div className="flex items-center gap-2">
@@ -395,7 +395,7 @@ export function PromotionFormPage() {
                                     value=""
                                     onChange={() => {}}
                                 />
-                                <span className="text-gray-400">→</span>
+                                <span className="text-gray-400 dark:text-gray-500">→</span>
                                 <AdminInput
                                     type="date"
                                     value=""
@@ -403,11 +403,11 @@ export function PromotionFormPage() {
                                 />
                             </div>
                         </div>
-                        <div className="p-3 bg-gray-50 rounded-lg">
-                            <div className="text-sm text-gray-500">
+                        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
                                 Курс баллов к рублю (1 балл = X руб.)
                             </div>
-                            <div className="font-medium">
+                            <div className="font-medium text-gray-900 dark:text-gray-100">
                                 1 балл = {loyaltySettings.pointsToRubleRate} руб.
                             </div>
                         </div>

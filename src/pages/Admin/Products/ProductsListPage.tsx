@@ -58,7 +58,7 @@ export function ProductsListPage() {
             title: 'Фото',
             width: '80px',
             render: (product) => (
-                <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden">
+                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden">
                     {product.mainImageUrl ? (
                         <img
                             src={product.mainImageUrl}
@@ -66,7 +66,7 @@ export function ProductsListPage() {
                             className="w-full h-full object-cover"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-xs">
                             Нет
                         </div>
                     )}
@@ -79,8 +79,8 @@ export function ProductsListPage() {
             sortable: true,
             render: (product) => (
                 <div>
-                    <div className="font-medium text-gray-900">{product.name}</div>
-                    <div className="text-xs text-gray-500">ID: {product.articleNumber}</div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">{product.name}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">ID: {product.articleNumber}</div>
                 </div>
             ),
         },
@@ -107,7 +107,7 @@ export function ProductsListPage() {
                         {product.promoPrice.toLocaleString()} ₽
                     </span>
                 ) : (
-                    <span className="text-gray-400">—</span>
+                    <span className="text-gray-400 dark:text-gray-500">—</span>
                 ),
         },
         {
@@ -136,7 +136,7 @@ export function ProductsListPage() {
                             e.stopPropagation();
                             navigate(`/admin/products/${product.id}/edit`);
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Редактировать"
                     >
                         <Pencil size={16} />
@@ -146,7 +146,7 @@ export function ProductsListPage() {
                             e.stopPropagation();
                             // TODO: Delete product
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
                         title="Удалить"
                     >
                         <Trash2 size={16} />
@@ -156,7 +156,7 @@ export function ProductsListPage() {
                             e.stopPropagation();
                             window.open(`/catalog/${product.slug}`, '_blank');
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Просмотреть"
                     >
                         <Eye size={16} />
@@ -276,7 +276,7 @@ export function ProductsListPage() {
 
             {/* Select all checkbox label */}
             {selectedIds.size > 0 && (
-                <div className="mb-2 text-sm text-gray-600">
+                <div className="mb-2 text-sm text-gray-600 dark:text-gray-400">
                     Выбрано: {selectedIds.size} из {paginatedProducts.length}
                 </div>
             )}

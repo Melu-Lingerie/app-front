@@ -57,25 +57,25 @@ export function AdminModal({
             {/* Modal */}
             <div
                 ref={modalRef}
-                className={`relative bg-white rounded-xl shadow-xl w-full mx-4 max-h-[90vh] flex flex-col ${sizeStyles[size]}`}
+                className={`relative bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full mx-4 max-h-[90vh] flex flex-col ${sizeStyles[size]}`}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                     >
-                        <X size={20} className="text-gray-500" />
+                        <X size={20} className="text-gray-500 dark:text-gray-400" />
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
+                <div className="flex-1 overflow-y-auto px-6 py-4 text-gray-900 dark:text-gray-100">{children}</div>
 
                 {/* Footer */}
                 {footer && (
-                    <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+                    <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-b-xl">
                         {footer}
                     </div>
                 )}

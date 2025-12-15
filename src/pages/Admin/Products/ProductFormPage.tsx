@@ -167,8 +167,8 @@ export function ProductFormPage() {
 
             <div className="space-y-8">
                 {/* Основное */}
-                <section className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Основное</h2>
+                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Основное</h2>
                     <div className="grid grid-cols-5 gap-4">
                         <div className="col-span-1">
                             <AdminInput
@@ -198,7 +198,7 @@ export function ProductFormPage() {
                                 onBlur={() => setFieldTouched('articleNumber')}
                                 error={getFieldError('articleNumber')}
                             />
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 Автогенерация артикула
                             </p>
                         </div>
@@ -238,12 +238,12 @@ export function ProductFormPage() {
                     </div>
 
                     <div className="mt-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                             Тип модели
                         </label>
                         <div className="flex gap-4">
                             {productTypeOptions.map((option) => (
-                                <label key={option.value} className="flex items-center gap-2">
+                                <label key={option.value} className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="radio"
                                         name="productType"
@@ -257,7 +257,7 @@ export function ProductFormPage() {
                                         }
                                         className="w-4 h-4"
                                     />
-                                    <span className="text-sm">{option.label}</span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-300">{option.label}</span>
                                 </label>
                             ))}
                         </div>
@@ -302,11 +302,11 @@ export function ProductFormPage() {
                 </section>
 
                 {/* Атрибуты */}
-                <section className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Атрибуты</h2>
+                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Атрибуты</h2>
                     <div className="grid grid-cols-4 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Размерная сетка
                             </label>
                             <AdminSelect
@@ -316,7 +316,7 @@ export function ProductFormPage() {
                                 ]}
                                 placeholder="Размерная сетка"
                             />
-                            <a href="#" className="text-xs text-blue-600 mt-1 inline-block">
+                            <a href="#" className="text-xs text-blue-600 dark:text-blue-400 mt-1 inline-block hover:underline">
                                 Создать новую
                             </a>
 
@@ -341,10 +341,10 @@ export function ProductFormPage() {
                                     {formData.sizes.map((size) => (
                                         <span
                                             key={size}
-                                            className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-sm"
+                                            className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm text-gray-900 dark:text-gray-100"
                                         >
                                             {size}
-                                            <button onClick={() => removeSize(size)}>
+                                            <button onClick={() => removeSize(size)} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
                                                 <X size={14} />
                                             </button>
                                         </span>
@@ -354,7 +354,7 @@ export function ProductFormPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Цвета
                             </label>
                             <AdminSelect
@@ -381,10 +381,10 @@ export function ProductFormPage() {
                                     {formData.colors.map((color) => (
                                         <span
                                             key={color}
-                                            className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-sm"
+                                            className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm text-gray-900 dark:text-gray-100"
                                         >
                                             {color}
-                                            <button onClick={() => removeColor(color)}>
+                                            <button onClick={() => removeColor(color)} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
                                                 <X size={14} />
                                             </button>
                                         </span>
@@ -418,23 +418,23 @@ export function ProductFormPage() {
                 </section>
 
                 {/* Медиа */}
-                <section className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Медиа</h2>
-                    <p className="text-sm text-gray-600 mb-4">Фото товара на странице</p>
+                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Медиа</h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Фото товара на странице</p>
 
                     <div className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Главные фотографии
                             </label>
                             <div className="flex gap-3">
                                 {[1, 2, 3, 4, 5].map((i) => (
                                     <div
                                         key={i}
-                                        className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400"
+                                        className="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500"
                                     >
-                                        <Upload size={20} className="text-gray-400" />
-                                        <span className="text-xs text-gray-400 mt-1">
+                                        <Upload size={20} className="text-gray-400 dark:text-gray-500" />
+                                        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                                             Загрузить фото
                                         </span>
                                     </div>
@@ -443,17 +443,17 @@ export function ProductFormPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Дополнительные фотографии
                             </label>
                             <div className="flex gap-3">
                                 {[1, 2, 3, 4, 5, 6, 7].map((i) => (
                                     <div
                                         key={i}
-                                        className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400"
+                                        className="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500"
                                     >
-                                        <Upload size={20} className="text-gray-400" />
-                                        <span className="text-xs text-gray-400 mt-1">
+                                        <Upload size={20} className="text-gray-400 dark:text-gray-500" />
+                                        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                                             Загрузить фото
                                         </span>
                                     </div>
@@ -464,8 +464,8 @@ export function ProductFormPage() {
                 </section>
 
                 {/* SEO */}
-                <section className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4">SEO</h2>
+                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">SEO</h2>
                     <div className="grid grid-cols-3 gap-4">
                         <AdminInput
                             label="Мета-заголовок"
@@ -490,11 +490,11 @@ export function ProductFormPage() {
                 </section>
 
                 {/* Блок связанных элементов */}
-                <section className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold mb-4">Блок связанных элементов</h2>
+                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Блок связанных элементов</h2>
                     <div className="grid grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Похожие товары
                             </label>
                             <AdminInput
@@ -506,10 +506,10 @@ export function ProductFormPage() {
                                     (name, i) => (
                                         <div
                                             key={i}
-                                            className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                                            className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
                                         >
-                                            <span className="text-sm">{name}</span>
-                                            <button className="text-gray-400 hover:text-gray-600">
+                                            <span className="text-sm text-gray-900 dark:text-gray-100">{name}</span>
+                                            <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                                                 <Trash2 size={14} />
                                             </button>
                                         </div>
@@ -519,7 +519,7 @@ export function ProductFormPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Рекомендуемые аксессуары
                             </label>
                             <AdminInput
@@ -531,10 +531,10 @@ export function ProductFormPage() {
                                     (name, i) => (
                                         <div
                                             key={i}
-                                            className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                                            className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded"
                                         >
-                                            <span className="text-sm">{name}</span>
-                                            <button className="text-gray-400 hover:text-gray-600">
+                                            <span className="text-sm text-gray-900 dark:text-gray-100">{name}</span>
+                                            <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                                                 <Trash2 size={14} />
                                             </button>
                                         </div>

@@ -48,11 +48,11 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
             </AdminButton>
 
             {isOpen && (
-                <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="absolute top-full left-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                     <div className="p-4 space-y-4">
                         {filters.map((filter) => (
                             <div key={filter.key}>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     {filter.label}
                                 </label>
 
@@ -86,9 +86,9 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                                                             );
                                                         }
                                                     }}
-                                                    className="w-4 h-4 rounded border-gray-300"
+                                                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                                 />
-                                                <span className="text-sm text-gray-600">
+                                                <span className="text-sm text-gray-600 dark:text-gray-400">
                                                     {option.label}
                                                 </span>
                                             </label>
@@ -104,7 +104,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                                             onChange={(e) =>
                                                 onChange(`${filter.key}_from`, e.target.value)
                                             }
-                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         />
                                         <span className="text-gray-400">-</span>
                                         <input
@@ -113,7 +113,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                                             onChange={(e) =>
                                                 onChange(`${filter.key}_to`, e.target.value)
                                             }
-                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
                                 )}
@@ -127,7 +127,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                                             onChange={(e) =>
                                                 onChange(`${filter.key}_from`, e.target.value)
                                             }
-                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                         />
                                         <span className="text-gray-400">-</span>
                                         <input
@@ -137,7 +137,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                                             onChange={(e) =>
                                                 onChange(`${filter.key}_to`, e.target.value)
                                             }
-                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                         />
                                     </div>
                                 )}
@@ -146,7 +146,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                     </div>
 
                     {exportAction && (
-                        <div className="px-4 py-3 border-t border-gray-200">
+                        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                             <AdminButton
                                 variant="secondary"
                                 size="sm"
@@ -161,10 +161,10 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                         </div>
                     )}
 
-                    <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+                    <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-b-lg">
                         <button
                             onClick={onClear}
-                            className="text-sm text-gray-600 hover:text-gray-900"
+                            className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                         >
                             Сбросить
                         </button>

@@ -59,19 +59,19 @@ export function AdminPagination({
     }
 
     return (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-white">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                     Показано {startItem}-{endItem} из {totalItems}
                 </span>
 
                 {onItemsPerPageChange && (
                     <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">На странице:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">На странице:</span>
                         <select
                             value={itemsPerPage}
                             onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
-                            className="px-2 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                            className="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent"
                         >
                             {itemsPerPageOptions.map((option) => (
                                 <option key={option} value={option}>
@@ -87,7 +87,7 @@ export function AdminPagination({
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
                     aria-label="Предыдущая страница"
                 >
                     <ChevronLeft size={18} />
@@ -104,8 +104,8 @@ export function AdminPagination({
                             onClick={() => onPageChange(page)}
                             className={`min-w-[36px] h-9 px-3 rounded-lg text-sm font-medium transition-colors ${
                                 currentPage === page
-                                    ? 'bg-black text-white'
-                                    : 'hover:bg-gray-100 text-gray-700'
+                                    ? 'bg-black dark:bg-white text-white dark:text-black'
+                                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                             }`}
                         >
                             {page}
@@ -116,7 +116,7 @@ export function AdminPagination({
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
                     aria-label="Следующая страница"
                 >
                     <ChevronRight size={18} />
