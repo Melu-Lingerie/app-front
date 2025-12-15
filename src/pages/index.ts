@@ -7,3 +7,17 @@ export {GiftCertificatePage} from './GiftCertificatePage';
 export {AboutPage} from './AboutPage';
 export {ContactsPage} from './ContactsPage';
 export {CheckoutPage} from './CheckoutPage';
+
+// Admin
+export {
+    AdminLayout,
+    ProductsListPage,
+    ProductFormPage,
+    OrdersListPage,
+    OrderDetailPage,
+    CustomersListPage,
+    CustomerDetailPage,
+    PromotionsListPage,
+    PromotionFormPage,
+    ReviewsListPage,
+} from './Admin';

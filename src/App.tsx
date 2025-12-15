@@ -9,7 +9,28 @@ import {
     ScrollRestoration,
     CookieNotice,
 } from '@/components';
-import {AccountPage, CartPage, MainPage, ProductPage, CustomersPage, GiftCertificatePage, AboutPage, ContactsPage, CheckoutPage} from '@/pages';
+import {
+    AccountPage,
+    CartPage,
+    MainPage,
+    ProductPage,
+    CustomersPage,
+    GiftCertificatePage,
+    AboutPage,
+    ContactsPage,
+    CheckoutPage,
+    // Admin
+    AdminLayout,
+    ProductsListPage,
+    ProductFormPage,
+    OrdersListPage,
+    OrderDetailPage,
+    CustomersListPage,
+    CustomerDetailPage,
+    PromotionsListPage,
+    PromotionFormPage,
+    ReviewsListPage,
+} from '@/pages';
 
 function App() {
     useEffect(() => {
@@ -80,8 +101,24 @@ function App() {
                     <Route path="contacts" element={<ContactsPage />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
+
+                {/* Admin Routes */}
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<ProductsListPage />} />
+                    <Route path="products" element={<ProductsListPage />} />
+                    <Route path="products/new" element={<ProductFormPage />} />
+                    <Route path="products/:id/edit" element={<ProductFormPage />} />
+                    <Route path="orders" element={<OrdersListPage />} />
+                    <Route path="orders/:id" element={<OrderDetailPage />} />
+                    <Route path="customers" element={<CustomersListPage />} />
+                    <Route path="customers/:id" element={<CustomerDetailPage />} />
+                    <Route path="promotions" element={<PromotionsListPage />} />
+                    <Route path="promotions/new" element={<PromotionFormPage />} />
+                    <Route path="promotions/:id/edit" element={<PromotionFormPage />} />
+                    <Route path="reviews" element={<ReviewsListPage />} />
+                </Route>
             </Routes>
-            {/* ✅ CookieNotice отвечает за guest-запрос и initApp */}
+            {/* CookieNotice отвечает за guest-запрос и initApp */}
             <CookieNotice />
         </Provider>
     );
