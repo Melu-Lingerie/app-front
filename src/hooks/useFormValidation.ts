@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
 
-export type ValidationRule<T> = {
-    validate: (value: T[keyof T], formData: T) => boolean;
+export type ValidationRule = {
+    validate: (value: unknown, formData: unknown) => boolean;
     message: string;
 };
 
 export type ValidationRules<T> = {
-    [K in keyof T]?: ValidationRule<T>[];
+    [K in keyof T]?: ValidationRule[];
 };
 
 export type ValidationErrors<T> = {
@@ -17,7 +17,7 @@ interface UseFormValidationResult<T> {
     errors: ValidationErrors<T>;
     touched: Partial<Record<keyof T, boolean>>;
     isValid: boolean;
-    validateField: (field: keyof T, value: T[keyof T]) => string | undefined;
+    validateField: (field: keyof T, value: unknown) => string | undefined;
     validateForm: (data: T) => boolean;
     setFieldTouched: (field: keyof T) => void;
     setFieldError: (field: keyof T, error: string | undefined) => void;
@@ -34,7 +34,7 @@ export function useFormValidation<T extends object>(
     const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({});
 
     const validateField = useCallback(
-        (field: keyof T, value: T[keyof T]): string | undefined => {
+        (field: keyof T, value: unknown): string | undefined => {
             const fieldRules = rules[field];
             if (!fieldRules) return undefined;
 
@@ -126,7 +126,7 @@ export function useFormValidation<T extends object>(
 
 // Готовые валидаторы
 export const validators = {
-    required: (message = 'Обязательное поле'): ValidationRule<Record<string, unknown>> => ({
+    required: (message = 'Обязательное поле'): ValidationRule => ({
         validate: (value) => {
             if (value === undefined || value === null) return false;
             if (typeof value === 'string') return value.trim().length > 0;
@@ -137,7 +137,7 @@ export const validators = {
         message,
     }),
 
-    minLength: (min: number, message?: string): ValidationRule<Record<string, unknown>> => ({
+    minLength: (min: number, message?: string): ValidationRule => ({
         validate: (value) => {
             if (typeof value !== 'string') return true;
             return value.length >= min;
@@ -145,7 +145,7 @@ export const validators = {
         message: message || `Минимум ${min} символов`,
     }),
 
-    maxLength: (max: number, message?: string): ValidationRule<Record<string, unknown>> => ({
+    maxLength: (max: number, message?: string): ValidationRule => ({
         validate: (value) => {
             if (typeof value !== 'string') return true;
             return value.length <= max;
@@ -153,7 +153,7 @@ export const validators = {
         message: message || `Максимум ${max} символов`,
     }),
 
-    min: (minValue: number, message?: string): ValidationRule<Record<string, unknown>> => ({
+    min: (minValue: number, message?: string): ValidationRule => ({
         validate: (value) => {
             if (typeof value !== 'number') return true;
             return value >= minValue;
@@ -161,7 +161,7 @@ export const validators = {
         message: message || `Минимальное значение: ${minValue}`,
     }),
 
-    max: (maxValue: number, message?: string): ValidationRule<Record<string, unknown>> => ({
+    max: (maxValue: number, message?: string): ValidationRule => ({
         validate: (value) => {
             if (typeof value !== 'number') return true;
             return value <= maxValue;
@@ -169,7 +169,7 @@ export const validators = {
         message: message || `Максимальное значение: ${maxValue}`,
     }),
 
-    positive: (message = 'Значение должно быть положительным'): ValidationRule<Record<string, unknown>> => ({
+    positive: (message = 'Значение должно быть положительным'): ValidationRule => ({
         validate: (value) => {
             if (typeof value !== 'number') return true;
             return value > 0;
@@ -177,7 +177,7 @@ export const validators = {
         message,
     }),
 
-    email: (message = 'Некорректный email'): ValidationRule<Record<string, unknown>> => ({
+    email: (message = 'Некорректный email'): ValidationRule => ({
         validate: (value) => {
             if (typeof value !== 'string' || !value) return true;
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -185,7 +185,7 @@ export const validators = {
         message,
     }),
 
-    phone: (message = 'Некорректный номер телефона'): ValidationRule<Record<string, unknown>> => ({
+    phone: (message = 'Некорректный номер телефона'): ValidationRule => ({
         validate: (value) => {
             if (typeof value !== 'string' || !value) return true;
             return /^\+?[\d\s\-()]{10,}$/.test(value);
@@ -193,7 +193,7 @@ export const validators = {
         message,
     }),
 
-    url: (message = 'Некорректный URL'): ValidationRule<Record<string, unknown>> => ({
+    url: (message = 'Некорректный URL'): ValidationRule => ({
         validate: (value) => {
             if (typeof value !== 'string' || !value) return true;
             try {
@@ -206,7 +206,7 @@ export const validators = {
         message,
     }),
 
-    pattern: (regex: RegExp, message: string): ValidationRule<Record<string, unknown>> => ({
+    pattern: (regex: RegExp, message: string): ValidationRule => ({
         validate: (value) => {
             if (typeof value !== 'string') return true;
             return regex.test(value);
@@ -214,7 +214,7 @@ export const validators = {
         message,
     }),
 
-    dateBefore: (date: Date | string, message?: string): ValidationRule<Record<string, unknown>> => ({
+    dateBefore: (date: Date | string, message?: string): ValidationRule => ({
         validate: (value) => {
             if (!value) return true;
             const compareDate = typeof date === 'string' ? new Date(date) : date;
@@ -224,7 +224,7 @@ export const validators = {
         message: message || 'Дата должна быть раньше указанной',
     }),
 
-    dateAfter: (date: Date | string, message?: string): ValidationRule<Record<string, unknown>> => ({
+    dateAfter: (date: Date | string, message?: string): ValidationRule => ({
         validate: (value) => {
             if (!value) return true;
             const compareDate = typeof date === 'string' ? new Date(date) : date;
