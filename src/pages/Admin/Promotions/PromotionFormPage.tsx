@@ -8,13 +8,8 @@ import {
     AdminSelect,
 } from '../components';
 import { useFormValidation, validators } from '../../../hooks/useFormValidation';
-import type { PromotionFormData, PromotionType, DiscountType, PromotionScope, CustomerGroup, PromotionStatus } from './types';
+import type { PromotionFormData, DiscountType, PromotionScope, CustomerGroup, PromotionStatus } from './types';
 import { mockPromotions, mockLoyaltySettings } from './mockData';
-
-const typeOptions = [
-    { value: 'internal', label: 'Внутренняя' },
-    { value: 'for_client', label: 'Для клиента' },
-];
 
 const discountTypeOptions = [
     { value: 'percent', label: 'Процент (%)' },

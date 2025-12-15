@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker build:*)",
+      "Bash(docker info:*)",
+      "Bash(docker login:*)",
+      "Bash(docker push:*)",
+      "Bash(curl:*)",
+      "Bash(tar:*)",
+      "Bash(rm:*)",
+      "Bash(dir \"C:\\Users\\IVA-PC\\app-front\" /B)",
+      "Bash(xargs cat:*)",
+      "Bash(wc:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(./node_modules/.bin/tsc:*)",
+      "Bash(node ./node_modules/typescript/bin/tsc:*)",
+      "Bash(npm install)",
+      "Bash(npm run dev)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "WebFetch(domain:melu-bra.ru)",
+      "Bash(cat:*)",
+      "Bash(dir \"C:\\Users\\IVA-PC\\Desktop\\design\" /B)",
+      "Bash(mkdir:*)",
+      "Bash(findstr:*)",
+      "Bash(dir \"C:\\Users\\IVA-PC\\Desktop\\design\\админка\" /B)",
+      "Bash(dir:*)",
+      "Bash(dir \"C:\\Users\\IVA-PC\\app-backend.git\" /B)",
+      "Bash(dir \"C:\\Users\\IVA-PC\" /B)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

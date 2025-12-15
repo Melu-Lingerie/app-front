@@ -26,7 +26,7 @@ interface UseFormValidationResult<T> {
     hasError: (field: keyof T) => boolean;
 }
 
-export function useFormValidation<T extends Record<string, unknown>>(
+export function useFormValidation<T extends object>(
     rules: ValidationRules<T>,
     formData: T
 ): UseFormValidationResult<T> {

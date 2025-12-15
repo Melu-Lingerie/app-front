@@ -9,7 +9,7 @@ import {
     AdminFilters,
     AdminBadge,
 } from '../components';
-import type { Column, FilterConfig, PaginationConfig } from '../components';
+import type { Column, FilterConfig } from '../components';
 import type { Product, ProductStatus } from './types';
 import { mockProducts } from './mockData';
 
