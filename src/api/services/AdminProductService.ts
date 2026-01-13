@@ -147,7 +147,7 @@ export class AdminProductService {
     ): CancelablePromise<PageProductAdminListItemDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/products',
+            url: '/admin/products',
             query: {
                 name: params.name,
                 categoryIds: params.categoryIds,
@@ -170,7 +170,7 @@ export class AdminProductService {
     public static getProduct(productId: number): CancelablePromise<ProductAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/products/{productId}',
+            url: '/admin/products/{productId}',
             path: { productId },
             errors: {
                 401: 'Unauthorized',
@@ -188,7 +188,7 @@ export class AdminProductService {
     ): CancelablePromise<ProductAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/admin/products',
+            url: '/admin/products',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -208,7 +208,7 @@ export class AdminProductService {
     ): CancelablePromise<ProductAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/v1/admin/products/{productId}',
+            url: '/admin/products/{productId}',
             path: { productId },
             body: requestBody,
             mediaType: 'application/json',
@@ -227,7 +227,7 @@ export class AdminProductService {
     public static deleteProduct(productId: number): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/api/v1/admin/products/{productId}',
+            url: '/admin/products/{productId}',
             path: { productId },
             errors: {
                 401: 'Unauthorized',

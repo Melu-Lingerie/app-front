@@ -52,7 +52,7 @@ export class AdminUserService {
     ): CancelablePromise<PageAdminUserResponseDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/users',
+            url: '/admin/users',
             query: {
                 email: params.email,
                 phoneNumber: params.phoneNumber,
@@ -76,7 +76,7 @@ export class AdminUserService {
     public static getUser(userId: number): CancelablePromise<AdminUserResponseDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/users/{userId}',
+            url: '/admin/users/{userId}',
             path: { userId },
             errors: {
                 401: 'Unauthorized',
@@ -95,7 +95,7 @@ export class AdminUserService {
     ): CancelablePromise<AdminUserResponseDto> {
         return __request(OpenAPI, {
             method: 'PATCH',
-            url: '/api/v1/admin/users/{userId}/role',
+            url: '/admin/users/{userId}/role',
             path: { userId },
             body: requestBody,
             mediaType: 'application/json',
@@ -117,7 +117,7 @@ export class AdminUserService {
     ): CancelablePromise<AdminUserResponseDto> {
         return __request(OpenAPI, {
             method: 'PATCH',
-            url: '/api/v1/admin/users/{userId}/status',
+            url: '/admin/users/{userId}/status',
             path: { userId },
             body: requestBody,
             mediaType: 'application/json',
@@ -136,7 +136,7 @@ export class AdminUserService {
     public static forceLogout(userId: number): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/admin/users/{userId}/logout',
+            url: '/admin/users/{userId}/logout',
             path: { userId },
             errors: {
                 401: 'Unauthorized',

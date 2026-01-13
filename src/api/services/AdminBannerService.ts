@@ -42,7 +42,7 @@ export class AdminBannerService {
     public static getAllBanners(): CancelablePromise<BannerAdminResponseDto[]> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/banners',
+            url: '/admin/banners',
             errors: {
                 401: 'Unauthorized',
                 403: 'Forbidden',
@@ -56,7 +56,7 @@ export class AdminBannerService {
     public static getBanner(id: number): CancelablePromise<BannerAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/banners/{id}',
+            url: '/admin/banners/{id}',
             path: { id },
             errors: {
                 401: 'Unauthorized',
@@ -74,7 +74,7 @@ export class AdminBannerService {
     ): CancelablePromise<BannerAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/admin/banners',
+            url: '/admin/banners',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -94,7 +94,7 @@ export class AdminBannerService {
     ): CancelablePromise<BannerAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/v1/admin/banners/{id}',
+            url: '/admin/banners/{id}',
             path: { id },
             body: requestBody,
             mediaType: 'application/json',
@@ -113,7 +113,7 @@ export class AdminBannerService {
     public static deleteBanner(id: number): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/api/v1/admin/banners/{id}',
+            url: '/admin/banners/{id}',
             path: { id },
             errors: {
                 401: 'Unauthorized',
@@ -131,7 +131,7 @@ export class AdminBannerService {
     ): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/v1/admin/banners/reorder',
+            url: '/admin/banners/reorder',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

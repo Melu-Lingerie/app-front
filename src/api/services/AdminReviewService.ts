@@ -39,7 +39,7 @@ export class AdminReviewService {
     ): CancelablePromise<PageReviewAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/reviews',
+            url: '/admin/reviews',
             query: {
                 isApproved: params.isApproved,
                 productId: params.productId,
@@ -60,7 +60,7 @@ export class AdminReviewService {
     public static getReview(id: string): CancelablePromise<ReviewAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/reviews/{id}',
+            url: '/admin/reviews/{id}',
             path: { id },
             errors: {
                 401: 'Unauthorized',
@@ -76,7 +76,7 @@ export class AdminReviewService {
     public static approveReview(id: string): CancelablePromise<ReviewAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/admin/reviews/{id}/approve',
+            url: '/admin/reviews/{id}/approve',
             path: { id },
             errors: {
                 401: 'Unauthorized',
@@ -92,7 +92,7 @@ export class AdminReviewService {
     public static rejectReview(id: string): CancelablePromise<ReviewAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/admin/reviews/{id}/reject',
+            url: '/admin/reviews/{id}/reject',
             path: { id },
             errors: {
                 401: 'Unauthorized',
@@ -108,7 +108,7 @@ export class AdminReviewService {
     public static deleteReview(id: string): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/api/v1/admin/reviews/{id}',
+            url: '/admin/reviews/{id}',
             path: { id },
             errors: {
                 401: 'Unauthorized',
@@ -124,7 +124,7 @@ export class AdminReviewService {
     public static countPendingReviews(): CancelablePromise<number> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/reviews/pending-count',
+            url: '/admin/reviews/pending-count',
             errors: {
                 401: 'Unauthorized',
                 403: 'Forbidden',

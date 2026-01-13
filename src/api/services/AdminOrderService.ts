@@ -47,7 +47,7 @@ export class AdminOrderService {
         return __request(OpenAPI, {
             ...options,
             method: 'GET',
-            url: '/api/v1/admin/orders',
+            url: '/admin/orders',
             query: {
                 status,
                 page,
@@ -75,7 +75,7 @@ export class AdminOrderService {
         return __request(OpenAPI, {
             ...options,
             method: 'GET',
-            url: '/api/v1/admin/orders/pending',
+            url: '/admin/orders/pending',
             query: {
                 page,
                 size,
@@ -100,7 +100,7 @@ export class AdminOrderService {
         return __request(OpenAPI, {
             ...options,
             method: 'GET',
-            url: '/api/v1/admin/orders/{orderId}',
+            url: '/admin/orders/{orderId}',
             path: {
                 orderId,
             },
@@ -127,7 +127,7 @@ export class AdminOrderService {
         return __request(OpenAPI, {
             ...options,
             method: 'PATCH',
-            url: '/api/v1/admin/orders/{orderId}/status',
+            url: '/admin/orders/{orderId}/status',
             path: {
                 orderId,
             },
@@ -157,7 +157,7 @@ export class AdminOrderService {
         return __request(OpenAPI, {
             ...options,
             method: 'POST',
-            url: '/api/v1/admin/orders/{orderId}/ship',
+            url: '/admin/orders/{orderId}/ship',
             path: {
                 orderId,
             },
@@ -187,7 +187,7 @@ export class AdminOrderService {
         return __request(OpenAPI, {
             ...options,
             method: 'POST',
-            url: '/api/v1/admin/orders/{orderId}/cancel',
+            url: '/admin/orders/{orderId}/cancel',
             path: {
                 orderId,
             },
@@ -217,7 +217,7 @@ export class AdminOrderService {
         return __request(OpenAPI, {
             ...options,
             method: 'PUT',
-            url: '/api/v1/admin/orders/{orderId}/comment',
+            url: '/admin/orders/{orderId}/comment',
             path: {
                 orderId,
             },

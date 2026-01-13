@@ -72,7 +72,7 @@ export class AdminPromoCodeService {
     ): CancelablePromise<PagePromoCodeAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/promo-codes',
+            url: '/admin/promo-codes',
             query: {
                 isActive: params.isActive,
                 search: params.search,
@@ -92,7 +92,7 @@ export class AdminPromoCodeService {
     public static getPromoCode(id: number): CancelablePromise<PromoCodeAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/admin/promo-codes/{id}',
+            url: '/admin/promo-codes/{id}',
             path: { id },
             errors: {
                 401: 'Unauthorized',
@@ -110,7 +110,7 @@ export class AdminPromoCodeService {
     ): CancelablePromise<PromoCodeAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/admin/promo-codes',
+            url: '/admin/promo-codes',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -130,7 +130,7 @@ export class AdminPromoCodeService {
     ): CancelablePromise<PromoCodeAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/v1/admin/promo-codes/{id}',
+            url: '/admin/promo-codes/{id}',
             path: { id },
             body: requestBody,
             mediaType: 'application/json',
@@ -149,7 +149,7 @@ export class AdminPromoCodeService {
     public static deletePromoCode(id: number): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/api/v1/admin/promo-codes/{id}',
+            url: '/admin/promo-codes/{id}',
             path: { id },
             errors: {
                 401: 'Unauthorized',
@@ -165,7 +165,7 @@ export class AdminPromoCodeService {
     public static toggleActive(id: number): CancelablePromise<PromoCodeAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/admin/promo-codes/{id}/toggle-active',
+            url: '/admin/promo-codes/{id}/toggle-active',
             path: { id },
             errors: {
                 401: 'Unauthorized',
