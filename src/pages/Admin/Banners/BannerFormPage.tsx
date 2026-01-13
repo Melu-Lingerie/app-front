@@ -96,7 +96,7 @@ export function BannerFormPage() {
     const handleMediaChange = (newMedia: UploadedMedia[]) => {
         setMedia(newMedia);
         if (newMedia.length > 0) {
-            updateField('mediaId', newMedia[0].id);
+            updateField('mediaId', Number(newMedia[0].id));
         } else {
             updateField('mediaId', undefined);
         }
