@@ -1,5 +1,5 @@
 export interface UploadedMedia {
-    id: number;
+    id: string;
     url: string;
     file?: File;
 }
