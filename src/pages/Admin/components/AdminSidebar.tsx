@@ -9,8 +9,8 @@ import {
     X,
     Sun,
     Moon,
+    Image,
 } from 'lucide-react';
-import { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 
 interface NavItem {
@@ -24,28 +24,28 @@ const navItems: NavItem[] = [
     { to: '/admin/orders', icon: <ShoppingCart size={20} />, label: 'Заказы' },
     { to: '/admin/customers', icon: <Users size={20} />, label: 'Клиенты' },
     { to: '/admin/promotions', icon: <Tag size={20} />, label: 'Акции и скидки' },
+    { to: '/admin/banners', icon: <Image size={20} />, label: 'Баннеры' },
     { to: '/admin/reviews', icon: <MessageSquare size={20} />, label: 'Отзывы' },
 ];
 
 export function AdminSidebar() {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const { theme, toggleTheme } = useTheme();
+    const { theme, toggleTheme, sidebarCollapsed, toggleSidebar } = useTheme();
 
     return (
         <aside
             className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen sticky top-0 transition-all duration-300 flex flex-col ${
-                isCollapsed ? 'w-16' : 'w-64'
+                sidebarCollapsed ? 'w-16' : 'w-64'
             }`}
         >
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                {!isCollapsed && (
-                    <span className="font-semibold text-lg dark:text-white">Админ-панель</span>
+            <div className={`flex items-center p-4 border-b border-gray-200 dark:border-gray-700 ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+                {!sidebarCollapsed && (
+                    <span className="font-semibold text-lg dark:text-white whitespace-nowrap overflow-hidden">Админ-панель</span>
                 )}
                 <button
-                    onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors dark:text-gray-300"
+                    onClick={toggleSidebar}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors dark:text-gray-300 flex-shrink-0"
                 >
-                    {isCollapsed ? <Menu size={20} /> : <X size={20} />}
+                    {sidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
                 </button>
             </div>
 
@@ -55,15 +55,15 @@ export function AdminSidebar() {
                         key={item.to}
                         to={item.to}
                         className={({ isActive }) =>
-                            `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors mb-1 ${
+                            `flex items-center px-3 py-2.5 rounded-lg transition-colors mb-1 overflow-hidden ${
                                 isActive
                                     ? 'bg-black dark:bg-white text-white dark:text-black'
                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                            }`
+                            } ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`
                         }
                     >
-                        {item.icon}
-                        {!isCollapsed && <span>{item.label}</span>}
+                        <span className="flex-shrink-0">{item.icon}</span>
+                        {!sidebarCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
                     </NavLink>
                 ))}
             </nav>
@@ -72,11 +72,15 @@ export function AdminSidebar() {
             <div className="p-2 border-t border-gray-200 dark:border-gray-700">
                 <button
                     onClick={toggleTheme}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors w-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700`}
+                    className={`flex items-center px-3 py-2.5 rounded-lg transition-colors w-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 overflow-hidden ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`}
                 >
-                    {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-                    {!isCollapsed && (
-                        <span>{theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}</span>
+                    <span className="flex-shrink-0">
+                        {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                    </span>
+                    {!sidebarCollapsed && (
+                        <span className="whitespace-nowrap">
+                            {theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
+                        </span>
                     )}
                 </button>
             </div>

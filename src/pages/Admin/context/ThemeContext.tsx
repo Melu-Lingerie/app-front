@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useLayoutEffect } from 'react';
 import type { ReactNode } from 'react';
 
 type Theme = 'light' | 'dark';
@@ -7,11 +7,14 @@ interface ThemeContextType {
     theme: Theme;
     toggleTheme: () => void;
     setTheme: (theme: Theme) => void;
+    sidebarCollapsed: boolean;
+    toggleSidebar: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const THEME_STORAGE_KEY = 'admin-theme';
+const SIDEBAR_STORAGE_KEY = 'admin-sidebar-collapsed';
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setThemeState] = useState<Theme>(() => {
@@ -26,7 +29,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         return 'light';
     });
 
-    useEffect(() => {
+    const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+        if (typeof window !== 'undefined') {
+            const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY);
+            return stored === 'true';
+        }
+        return false;
+    });
+
+    useLayoutEffect(() => {
         const root = document.documentElement;
         if (theme === 'dark') {
             root.classList.add('dark');
@@ -36,6 +47,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         localStorage.setItem(THEME_STORAGE_KEY, theme);
     }, [theme]);
 
+    useEffect(() => {
+        localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarCollapsed));
+    }, [sidebarCollapsed]);
+
     const toggleTheme = () => {
         setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
     };
@@ -44,8 +59,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setThemeState(newTheme);
     };
 
+    const toggleSidebar = () => {
+        setSidebarCollapsed((prev) => !prev);
+    };
+
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, sidebarCollapsed, toggleSidebar }}>
             {children}
         </ThemeContext.Provider>
     );

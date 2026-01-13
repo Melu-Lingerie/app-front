@@ -19,5 +19,7 @@ export {
     CustomerDetailPage,
     PromotionsListPage,
     PromotionFormPage,
+    BannersListPage,
+    BannerFormPage,
     ReviewsListPage,
 } from './Admin';

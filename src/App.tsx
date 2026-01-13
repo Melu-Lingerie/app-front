@@ -30,6 +30,8 @@ import {
     PromotionsListPage,
     PromotionFormPage,
     ReviewsListPage,
+    BannersListPage,
+    BannerFormPage,
 } from '@/pages';
 
 function App() {
@@ -115,6 +117,9 @@ function App() {
                     <Route path="promotions" element={<PromotionsListPage />} />
                     <Route path="promotions/new" element={<PromotionFormPage />} />
                     <Route path="promotions/:id/edit" element={<PromotionFormPage />} />
+                    <Route path="banners" element={<BannersListPage />} />
+                    <Route path="banners/new" element={<BannerFormPage />} />
+                    <Route path="banners/:id/edit" element={<BannerFormPage />} />
                     <Route path="reviews" element={<ReviewsListPage />} />
                 </Route>
             </Routes>

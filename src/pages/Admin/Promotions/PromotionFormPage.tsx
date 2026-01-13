@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, X } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import {
     AdminHeader,
     AdminButton,
@@ -8,59 +8,36 @@ import {
     AdminSelect,
 } from '../components';
 import { useFormValidation, validators } from '../../../hooks/useFormValidation';
-import type { PromotionFormData, DiscountType, PromotionScope, CustomerGroup, PromotionStatus } from './types';
-import { mockPromotions, mockLoyaltySettings } from './mockData';
+import type { PromoCodeFormData, DiscountType } from './types';
+import { AdminPromoCodeService } from '../../../api/services/AdminPromoCodeService';
 
 const discountTypeOptions = [
-    { value: 'percent', label: 'Процент (%)' },
-    { value: 'fixed_amount', label: 'Фиксированная сумма' },
-    { value: 'gift', label: 'Подарок' },
+    { value: 'PERCENTAGE', label: 'Процент (%)' },
+    { value: 'FIXED', label: 'Фиксированная сумма (₽)' },
 ];
 
-const scopeOptions = [
-    { value: 'all_order', label: 'На весь заказ' },
-    { value: 'categories', label: 'На определенные категории' },
-    { value: 'products', label: 'На конкретные товары' },
-];
-
-const customerGroupOptions = [
-    { value: 'all', label: 'Все клиенты' },
-    { value: 'new_only', label: 'Только новые' },
-];
-
-const statusOptions = [
-    { value: 'active', label: 'Активна' },
-    { value: 'scheduled', label: 'Запланирована' },
-    { value: 'paused', label: 'Приостановлена' },
-];
-
-const defaultFormData: PromotionFormData = {
-    name: '',
-    type: 'for_client',
-    discountType: 'percent',
+const defaultFormData: PromoCodeFormData = {
+    code: '',
+    description: '',
+    discountType: 'PERCENTAGE',
     discountValue: 0,
-    scope: 'all_order',
-    customerGroup: 'all',
-    startDate: '',
-    endDate: '',
-    status: 'active',
-    promoCodes: [],
+    minOrderAmount: undefined,
+    maxDiscountAmount: undefined,
+    maxUses: undefined,
+    maxUsesPerUser: undefined,
+    validFrom: '',
+    validTo: '',
+    isActive: true,
 };
 
 const validationRules = {
-    name: [
-        validators.required('Название акции обязательно'),
-        validators.minLength(2, 'Минимум 2 символа'),
+    code: [
+        validators.required('Код промокода обязателен'),
+        validators.minLength(3, 'Минимум 3 символа'),
     ],
     discountValue: [
         validators.required('Укажите размер скидки'),
         validators.positive('Скидка должна быть положительной'),
-    ],
-    startDate: [
-        validators.required('Укажите дату начала'),
-    ],
-    endDate: [
-        validators.required('Укажите дату окончания'),
     ],
 };
 
@@ -69,33 +46,36 @@ export function PromotionFormPage() {
     const { id } = useParams();
     const isEditing = Boolean(id);
 
-    const existingPromotion = isEditing
-        ? mockPromotions.find((p) => p.id === Number(id))
-        : null;
+    const [formData, setFormData] = useState<PromoCodeFormData>(defaultFormData);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    const [formData, setFormData] = useState<PromotionFormData>(() => {
-        if (existingPromotion) {
-            return {
-                ...defaultFormData,
-                name: existingPromotion.name,
-                type: existingPromotion.type,
-                discountType: existingPromotion.discountType,
-                discountValue: existingPromotion.discountValue,
-                minOrderAmount: existingPromotion.minOrderAmount,
-                scope: existingPromotion.scope,
-                customerGroup: existingPromotion.customerGroup,
-                usageLimitTotal: existingPromotion.usageLimitTotal,
-                usageLimitPerCustomer: existingPromotion.usageLimitPerCustomer,
-                startDate: existingPromotion.startDate,
-                endDate: existingPromotion.endDate,
-                status: existingPromotion.status,
-            };
+    useEffect(() => {
+        if (isEditing && id) {
+            setIsLoading(true);
+            AdminPromoCodeService.getPromoCode(Number(id))
+                .then((promo) => {
+                    setFormData({
+                        code: promo.code,
+                        description: promo.description || '',
+                        discountType: promo.discountType,
+                        discountValue: promo.discountValue,
+                        minOrderAmount: promo.minOrderAmount || undefined,
+                        maxDiscountAmount: promo.maxDiscountAmount || undefined,
+                        maxUses: promo.maxUses || undefined,
+                        maxUsesPerUser: promo.maxUsesPerUser || undefined,
+                        validFrom: promo.validFrom ? promo.validFrom.split('T')[0] : '',
+                        validTo: promo.validTo ? promo.validTo.split('T')[0] : '',
+                        isActive: promo.isActive,
+                    });
+                })
+                .catch((error) => {
+                    console.error('Failed to load promo code:', error);
+                    navigate('/admin/promotions');
+                })
+                .finally(() => setIsLoading(false));
         }
-        return defaultFormData;
-    });
-
-    const [loyaltySettings, setLoyaltySettings] = useState(mockLoyaltySettings);
-    const [newPromoCode, setNewPromoCode] = useState('');
+    }, [id, isEditing, navigate]);
 
     const {
         getFieldError,
@@ -103,44 +83,52 @@ export function PromotionFormPage() {
         validateForm,
     } = useFormValidation(validationRules, formData);
 
-    const updateField = <K extends keyof PromotionFormData>(
+    const updateField = <K extends keyof PromoCodeFormData>(
         field: K,
-        value: PromotionFormData[K]
+        value: PromoCodeFormData[K]
     ) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
-    const addPromoCode = () => {
-        if (newPromoCode.trim()) {
-            updateField('promoCodes', [
-                ...formData.promoCodes,
-                { code: newPromoCode.trim() },
-            ]);
-            setNewPromoCode('');
-        }
-    };
-
-    const removePromoCode = (index: number) => {
-        updateField(
-            'promoCodes',
-            formData.promoCodes.filter((_, i) => i !== index)
-        );
-    };
-
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!validateForm(formData)) {
             return;
         }
-        console.log('Submit form:', formData);
-        console.log('Loyalty settings:', loyaltySettings);
-        navigate('/admin/promotions');
+
+        setIsSaving(true);
+        try {
+            const requestData = {
+                ...formData,
+                validFrom: formData.validFrom ? `${formData.validFrom}T00:00:00` : undefined,
+                validTo: formData.validTo ? `${formData.validTo}T23:59:59` : undefined,
+            };
+
+            if (isEditing && id) {
+                await AdminPromoCodeService.updatePromoCode(Number(id), requestData);
+            } else {
+                await AdminPromoCodeService.createPromoCode(requestData);
+            }
+            navigate('/admin/promotions');
+        } catch (error) {
+            console.error('Failed to save promo code:', error);
+        } finally {
+            setIsSaving(false);
+        }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="text-gray-500">Загрузка...</div>
+            </div>
+        );
+    }
 
     return (
         <div>
             <AdminHeader
-                title="Управление промо-акциями и скидками"
-                subtitle="Форма создания / редактирования акции"
+                title={isEditing ? 'Редактирование промокода' : 'Создание промокода'}
+                subtitle={isEditing ? `Код: ${formData.code}` : 'Новый промокод'}
                 actions={
                     <AdminButton
                         variant="ghost"
@@ -152,273 +140,108 @@ export function PromotionFormPage() {
                 }
             />
 
-            <div className="space-y-8">
+            <div className="space-y-6">
                 {/* Основные настройки */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Основные настройки</h2>
                     <div className="grid grid-cols-4 gap-4">
                         <AdminInput
-                            label="Название акции"
-                            placeholder="Введите название"
-                            value={formData.name}
-                            onChange={(e) => updateField('name', e.target.value)}
-                            onBlur={() => setFieldTouched('name')}
-                            error={getFieldError('name')}
+                            label="Код промокода"
+                            placeholder="SUMMER2024"
+                            value={formData.code}
+                            onChange={(e) => updateField('code', e.target.value.toUpperCase())}
+                            onBlur={() => setFieldTouched('code')}
+                            error={getFieldError('code')}
+                            disabled={isEditing}
                         />
                         <AdminSelect
                             label="Тип скидки"
                             options={discountTypeOptions}
                             value={formData.discountType}
-                            onChange={(e) =>
-                                updateField('discountType', e.target.value as DiscountType)
-                            }
+                            onChange={(e) => updateField('discountType', e.target.value as DiscountType)}
                         />
                         <AdminInput
-                            label="Размер скидки"
+                            label={formData.discountType === 'PERCENTAGE' ? 'Размер скидки (%)' : 'Размер скидки (₽)'}
                             type="number"
-                            placeholder="20%"
+                            placeholder={formData.discountType === 'PERCENTAGE' ? '20' : '500'}
                             value={formData.discountValue || ''}
-                            onChange={(e) =>
-                                updateField('discountValue', Number(e.target.value))
-                            }
+                            onChange={(e) => updateField('discountValue', Number(e.target.value))}
                             onBlur={() => setFieldTouched('discountValue')}
                             error={getFieldError('discountValue')}
                         />
                         <AdminInput
-                            label="Минимальная сумма заказа"
+                            label="Мин. сумма заказа (₽)"
                             type="number"
-                            placeholder="3 990 ₽"
+                            placeholder="3000"
                             value={formData.minOrderAmount || ''}
-                            onChange={(e) =>
-                                updateField(
-                                    'minOrderAmount',
-                                    e.target.value ? Number(e.target.value) : undefined
-                                )
-                            }
+                            onChange={(e) => updateField('minOrderAmount', e.target.value ? Number(e.target.value) : undefined)}
                         />
                     </div>
-                </section>
 
-                {/* Условия применения */}
-                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Условия применения</h2>
-                    <div className="grid grid-cols-5 gap-4">
-                        <AdminSelect
-                            label="Область действия"
-                            options={scopeOptions}
-                            value={formData.scope}
-                            onChange={(e) =>
-                                updateField('scope', e.target.value as PromotionScope)
-                            }
-                        />
-                        <AdminSelect
-                            label="Группы клиентов"
-                            options={customerGroupOptions}
-                            value={formData.customerGroup}
-                            onChange={(e) =>
-                                updateField('customerGroup', e.target.value as CustomerGroup)
-                            }
-                        />
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Лимиты использования
-                            </label>
-                            <div className="space-y-2">
-                                <AdminInput
-                                    placeholder="В общем 1300 раз"
-                                    type="number"
-                                    value={formData.usageLimitTotal || ''}
-                                    onChange={(e) =>
-                                        updateField(
-                                            'usageLimitTotal',
-                                            e.target.value ? Number(e.target.value) : undefined
-                                        )
-                                    }
-                                />
-                                <AdminInput
-                                    placeholder="На клиента 1 раз"
-                                    type="number"
-                                    value={formData.usageLimitPerCustomer || ''}
-                                    onChange={(e) =>
-                                        updateField(
-                                            'usageLimitPerCustomer',
-                                            e.target.value ? Number(e.target.value) : undefined
-                                        )
-                                    }
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Даты активности
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <AdminInput
-                                    type="date"
-                                    value={formData.startDate}
-                                    onChange={(e) => updateField('startDate', e.target.value)}
-                                    onBlur={() => setFieldTouched('startDate')}
-                                    error={getFieldError('startDate')}
-                                />
-                                <span className="text-gray-400 dark:text-gray-500">→</span>
-                                <AdminInput
-                                    type="date"
-                                    value={formData.endDate}
-                                    onChange={(e) => updateField('endDate', e.target.value)}
-                                    onBlur={() => setFieldTouched('endDate')}
-                                    error={getFieldError('endDate')}
-                                />
-                            </div>
-                        </div>
-                        <AdminSelect
-                            label="Статус"
-                            options={statusOptions}
-                            value={formData.status}
-                            onChange={(e) =>
-                                updateField('status', e.target.value as PromotionStatus)
-                            }
-                        />
-                    </div>
-                </section>
-
-                {/* Промокоды */}
-                <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Промокоды</h2>
-                    <div className="grid grid-cols-5 gap-4">
-                        <div>
+                    <div className="grid grid-cols-4 gap-4 mt-4">
+                        <div className="col-span-2">
                             <AdminInput
-                                label="Код"
-                                placeholder="Придумайте код"
-                                value={newPromoCode}
-                                onChange={(e) => setNewPromoCode(e.target.value)}
+                                label="Описание"
+                                placeholder="Скидка на летнюю коллекцию"
+                                value={formData.description || ''}
+                                onChange={(e) => updateField('description', e.target.value)}
                             />
                         </div>
-                        <div>
-                            <AdminSelect
-                                label="Привязка к акции"
-                                options={[{ value: 'current', label: 'Акция из списка' }]}
-                                placeholder="Акция из списка"
-                            />
+                        {formData.discountType === 'PERCENTAGE' && (
                             <AdminInput
-                                placeholder="Поиск по названию акции"
-                                showSearchIcon
-                                className="mt-2"
+                                label="Макс. скидка (₽)"
+                                type="number"
+                                placeholder="1000"
+                                value={formData.maxDiscountAmount || ''}
+                                onChange={(e) => updateField('maxDiscountAmount', e.target.value ? Number(e.target.value) : undefined)}
                             />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Лимиты использования
-                            </label>
-                            <div className="space-y-2">
-                                <AdminInput placeholder="В общем 1300 раз" type="number" />
-                                <AdminInput placeholder="На клиента 1 раз" type="number" />
-                            </div>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Даты активности
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <AdminInput type="date" />
-                                <span className="text-gray-400 dark:text-gray-500">→</span>
-                                <AdminInput type="date" />
-                            </div>
-                        </div>
-                        <AdminSelect
-                            label="Статус"
-                            options={[
-                                { value: 'active', label: 'Активна' },
-                                { value: 'inactive', label: 'Неактивна' },
-                            ]}
-                        />
+                        )}
                     </div>
-
-                    <div className="mt-4">
-                        <AdminButton variant="secondary" onClick={addPromoCode}>
-                            Добавить промокод
-                        </AdminButton>
-                    </div>
-
-                    {/* Список добавленных промокодов */}
-                    {formData.promoCodes.length > 0 && (
-                        <div className="mt-4 flex flex-wrap gap-2">
-                            {formData.promoCodes.map((promo, index) => (
-                                <span
-                                    key={index}
-                                    className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-900 dark:text-gray-100"
-                                >
-                                    {promo.code}
-                                    <button onClick={() => removePromoCode(index)} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
-                                        <X size={14} />
-                                    </button>
-                                </span>
-                            ))}
-                        </div>
-                    )}
                 </section>
 
-                {/* Накопительная система */}
+                {/* Лимиты и даты */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                        Накопительная система (Настройки правил)
-                    </h2>
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Лимиты и период действия</h2>
                     <div className="grid grid-cols-4 gap-4">
                         <AdminInput
-                            label="Процент от суммы заказа"
-                            placeholder="Придумайте код"
-                            value={loyaltySettings.percentFromOrder}
-                            onChange={(e) =>
-                                setLoyaltySettings((prev) => ({
-                                    ...prev,
-                                    percentFromOrder: Number(e.target.value),
-                                }))
-                            }
+                            label="Макс. использований (всего)"
+                            type="number"
+                            placeholder="1000"
+                            value={formData.maxUses || ''}
+                            onChange={(e) => updateField('maxUses', e.target.value ? Number(e.target.value) : undefined)}
                         />
-                        <div>
-                            <AdminSelect
-                                label="Минимальная сумма"
-                                options={[{ value: 'list', label: 'Акция из списка' }]}
-                            />
-                            <AdminInput
-                                placeholder="Поиск по названию акции"
-                                showSearchIcon
-                                className="mt-2"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                                Срок действия баллов
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <AdminInput
-                                    type="date"
-                                    value=""
-                                    onChange={() => {}}
-                                />
-                                <span className="text-gray-400 dark:text-gray-500">→</span>
-                                <AdminInput
-                                    type="date"
-                                    value=""
-                                    onChange={() => {}}
-                                />
-                            </div>
-                        </div>
-                        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                                Курс баллов к рублю (1 балл = X руб.)
-                            </div>
-                            <div className="font-medium text-gray-900 dark:text-gray-100">
-                                1 балл = {loyaltySettings.pointsToRubleRate} руб.
-                            </div>
-                        </div>
+                        <AdminInput
+                            label="Макс. на пользователя"
+                            type="number"
+                            placeholder="1"
+                            value={formData.maxUsesPerUser || ''}
+                            onChange={(e) => updateField('maxUsesPerUser', e.target.value ? Number(e.target.value) : undefined)}
+                        />
+                        <AdminInput
+                            label="Дата начала"
+                            type="date"
+                            value={formData.validFrom || ''}
+                            onChange={(e) => updateField('validFrom', e.target.value)}
+                        />
+                        <AdminInput
+                            label="Дата окончания"
+                            type="date"
+                            value={formData.validTo || ''}
+                            onChange={(e) => updateField('validTo', e.target.value)}
+                        />
                     </div>
                 </section>
 
                 {/* Footer Actions */}
                 <div className="flex items-center gap-3 pb-8">
-                    <AdminButton onClick={handleSubmit}>Сохранить</AdminButton>
-                    <AdminButton variant="secondary" onClick={handleSubmit}>
-                        Сохранить и добавить ещё
+                    <AdminButton onClick={handleSubmit} disabled={isSaving}>
+                        {isSaving ? 'Сохранение...' : 'Сохранить'}
+                    </AdminButton>
+                    <AdminButton
+                        variant="secondary"
+                        onClick={() => navigate('/admin/promotions')}
+                    >
+                        Отмена
                     </AdminButton>
                 </div>
             </div>

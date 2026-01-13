@@ -1,54 +1,49 @@
-export type PromotionType = 'internal' | 'for_client';
-export type DiscountType = 'percent' | 'fixed_amount' | 'gift';
-export type PromotionStatus = 'active' | 'scheduled' | 'completed' | 'paused';
-export type PromotionScope = 'all_order' | 'categories' | 'products';
-export type CustomerGroup = 'all' | 'new_only';
+export type DiscountType = 'PERCENTAGE' | 'FIXED';
 
 export interface PromoCode {
     id: number;
     code: string;
-    promotionId: number;
-    promotionName: string;
-    status: 'active' | 'inactive';
-    usedCount: number;
-}
-
-export interface Promotion {
-    id: number;
-    name: string;
-    type: PromotionType;
+    description?: string;
     discountType: DiscountType;
     discountValue: number;
     minOrderAmount?: number;
-    scope: PromotionScope;
-    customerGroup: CustomerGroup;
-    usageLimitTotal?: number;
-    usageLimitPerCustomer?: number;
+    maxDiscountAmount?: number;
+    maxUses?: number;
     usedCount: number;
-    startDate: string;
-    endDate: string;
-    status: PromotionStatus;
+    maxUsesPerUser?: number;
+    validFrom?: string;
+    validTo?: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
-export interface LoyaltySettings {
-    percentFromOrder: number;
-    minOrderAmount: number;
-    pointsValidityDays: number;
-    pointsToRubleRate: number;
-}
-
-export interface PromotionFormData {
-    name: string;
-    type: PromotionType;
+export interface PromoCodeFormData {
+    code: string;
+    description?: string;
     discountType: DiscountType;
     discountValue: number;
     minOrderAmount?: number;
-    scope: PromotionScope;
-    customerGroup: CustomerGroup;
-    usageLimitTotal?: number;
-    usageLimitPerCustomer?: number;
-    startDate: string;
-    endDate: string;
-    status: PromotionStatus;
-    promoCodes: { code: string; usageLimit?: number }[];
+    maxDiscountAmount?: number;
+    maxUses?: number;
+    maxUsesPerUser?: number;
+    validFrom?: string;
+    validTo?: string;
+    isActive?: boolean;
+}
+
+// Computed status based on dates and isActive
+export type PromoCodeStatus = 'active' | 'scheduled' | 'expired' | 'inactive';
+
+export function getPromoCodeStatus(promo: PromoCode): PromoCodeStatus {
+    if (!promo.isActive) return 'inactive';
+
+    const now = new Date();
+    const validFrom = promo.validFrom ? new Date(promo.validFrom) : null;
+    const validTo = promo.validTo ? new Date(promo.validTo) : null;
+
+    if (validFrom && now < validFrom) return 'scheduled';
+    if (validTo && now > validTo) return 'expired';
+
+    return 'active';
 }

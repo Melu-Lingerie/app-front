@@ -1,34 +1,70 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash2 } from 'lucide-react';
+import { ArrowLeft, Trash2, Loader2 } from 'lucide-react';
 import {
     AdminHeader,
     AdminButton,
 } from '../components';
-import { mockOrders } from './mockData';
-import type { PaymentStatus } from './types';
+import { AdminOrderService } from '@/api/services/AdminOrderService';
+import type { OrderResponseDto } from '@/api/models/OrderResponseDto';
+import type { DeliveryMethod } from '@/api/models/CheckoutRequestDto';
+import type { OrderStatus } from '@/api/models/CheckoutResponseDto';
 
-const deliveryMethodLabels = {
-    courier: 'Курьер',
-    cdek_point: 'Пункт СДЭК',
-    pickup_point: 'Пункты выдачи',
+const deliveryMethodLabels: Record<DeliveryMethod, string> = {
+    COURIER: 'Курьер',
+    CDEK_PVZ: 'Пункт СДЭК',
+    PICKUP: 'Пункты выдачи',
 };
 
-const paymentStatusLabels: Record<PaymentStatus, string> = {
-    paid: 'Оплачен',
-    unpaid: 'Не оплачен',
-    refunded: 'Возврат',
+const orderStatusLabels: Record<OrderStatus, string> = {
+    PENDING: 'Ожидает оплаты',
+    PAID: 'Оплачен',
+    SHIPPED: 'Отправлен',
+    DELIVERED: 'Доставлен',
+    CANCELLED: 'Отменён',
 };
 
 export function OrderDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [order, setOrder] = useState<OrderResponseDto | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const order = mockOrders.find((o) => o.id === Number(id));
+    useEffect(() => {
+        if (!id) {
+            setError('ID заказа не указан');
+            setLoading(false);
+            return;
+        }
 
-    if (!order) {
+        setLoading(true);
+        AdminOrderService.getOrder(Number(id))
+            .then((data) => {
+                setOrder(data);
+                setError(null);
+            })
+            .catch((err) => {
+                console.error('Failed to load order:', err);
+                setError('Не удалось загрузить заказ');
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            </div>
+        );
+    }
+
+    if (error || !order) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400">Заказ не найден</p>
+                <p className="text-gray-500 dark:text-gray-400">{error || 'Заказ не найден'}</p>
                 <AdminButton
                     variant="outline"
                     onClick={() => navigate('/admin/orders')}
@@ -39,6 +75,24 @@ export function OrderDetailPage() {
             </div>
         );
     }
+
+    const formatAddress = () => {
+        const addr = order.deliveryAddress;
+        const parts = [addr.city, addr.address, addr.deliveryPointName].filter(Boolean);
+        return parts.join(', ') || 'Не указан';
+    };
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
+    const isPaid = order.status !== 'PENDING' && order.status !== 'CANCELLED';
 
     return (
         <div>
@@ -78,7 +132,7 @@ export function OrderDetailPage() {
                                 </div>
                                 <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <div className="text-xs text-gray-500 dark:text-gray-400">Дата заказа</div>
-                                    <div className="font-medium text-gray-900 dark:text-gray-100">{order.createdAt}</div>
+                                    <div className="font-medium text-gray-900 dark:text-gray-100">{formatDate(order.createdAt)}</div>
                                 </div>
                                 <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <div className="text-xs text-gray-500 dark:text-gray-400">Общая сумма</div>
@@ -97,15 +151,15 @@ export function OrderDetailPage() {
                             <div className="space-y-2">
                                 <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <div className="text-xs text-gray-500 dark:text-gray-400">Имя</div>
-                                    <div className="font-medium text-gray-900 dark:text-gray-100">{order.customerName}</div>
+                                    <div className="font-medium text-gray-900 dark:text-gray-100">{order.deliveryAddress.recipientName}</div>
                                 </div>
                                 <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <div className="text-xs text-gray-500 dark:text-gray-400">Телефон</div>
-                                    <div className="font-medium text-gray-900 dark:text-gray-100">{order.customerPhone}</div>
+                                    <div className="font-medium text-gray-900 dark:text-gray-100">{order.deliveryAddress.recipientPhone}</div>
                                 </div>
                                 <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <div className="text-xs text-gray-500 dark:text-gray-400">E-mail</div>
-                                    <div className="font-medium text-gray-900 dark:text-gray-100">{order.customerEmail}</div>
+                                    <div className="font-medium text-gray-900 dark:text-gray-100">{order.deliveryAddress.recipientEmail || '-'}</div>
                                 </div>
                             </div>
                         </div>
@@ -119,15 +173,23 @@ export function OrderDetailPage() {
                                 <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <div className="text-xs text-gray-500 dark:text-gray-400">Способ доставки</div>
                                     <div className="font-medium text-gray-900 dark:text-gray-100">
-                                        {deliveryMethodLabels[order.deliveryMethod]}
+                                        {deliveryMethodLabels[order.deliveryMethod] || order.deliveryMethod}
                                     </div>
                                 </div>
                                 <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <div className="text-xs text-gray-500 dark:text-gray-400">Адрес</div>
                                     <div className="font-medium text-sm text-gray-900 dark:text-gray-100">
-                                        {order.deliveryAddress}
+                                        {formatAddress()}
                                     </div>
                                 </div>
+                                {order.cdekTrackingNumber && (
+                                    <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400">Трек-номер СДЭК</div>
+                                        <div className="font-medium text-gray-900 dark:text-gray-100">
+                                            {order.cdekTrackingNumber}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -137,19 +199,27 @@ export function OrderDetailPage() {
                             <div className="space-y-2">
                                 <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                                        Статус (Оплачен/Не оплачен)
+                                        Статус заказа
                                     </div>
                                     <div className="font-medium text-gray-900 dark:text-gray-100">
-                                        {paymentStatusLabels[order.paymentStatus]}
+                                        {orderStatusLabels[order.status] || order.status}
                                     </div>
                                 </div>
-                                {order.paymentTransactionId && (
+                                <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                                        Статус оплаты
+                                    </div>
+                                    <div className="font-medium text-gray-900 dark:text-gray-100">
+                                        {isPaid ? 'Оплачен' : 'Не оплачен'}
+                                    </div>
+                                </div>
+                                {order.paidAt && (
                                     <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                         <div className="text-xs text-gray-500 dark:text-gray-400">
-                                            ID транзакции
+                                            Дата оплаты
                                         </div>
                                         <div className="font-medium text-gray-900 dark:text-gray-100">
-                                            {order.paymentTransactionId}
+                                            {formatDate(order.paidAt)}
                                         </div>
                                     </div>
                                 )}
@@ -211,12 +281,17 @@ export function OrderDetailPage() {
                                                 </td>
                                                 <td className="py-3 text-sm text-gray-900 dark:text-gray-100">
                                                     {item.productName}
+                                                    {(item.color || item.size) && (
+                                                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                            {[item.color, item.size].filter(Boolean).join(' / ')}
+                                                        </div>
+                                                    )}
                                                 </td>
                                                 <td className="py-3 text-sm text-gray-500 dark:text-gray-400">
-                                                    ID: {item.articleNumber}
+                                                    {item.articleNumber}
                                                 </td>
                                                 <td className="py-3 text-sm text-gray-900 dark:text-gray-100">
-                                                    {item.price.toLocaleString()} ₽
+                                                    {item.unitPrice.toLocaleString()} ₽
                                                 </td>
                                                 <td className="py-3 text-sm text-gray-900 dark:text-gray-100">
                                                     {item.quantity} шт.
@@ -257,9 +332,15 @@ export function OrderDetailPage() {
                                     <span className="text-gray-500 dark:text-gray-400">Стоимость доставки</span>
                                     <span className="text-gray-900 dark:text-gray-100">{order.deliveryCost.toLocaleString()} ₽</span>
                                 </div>
+                                {order.discountAmount > 0 && (
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-500 dark:text-gray-400">Скидка</span>
+                                        <span className="text-green-600 dark:text-green-400">-{order.discountAmount.toLocaleString()} ₽</span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between font-semibold text-lg pt-2 border-t border-gray-200 dark:border-gray-700">
                                     <span className="text-gray-900 dark:text-gray-100">Общая сумма</span>
-                                    <span className="text-gray-900 dark:text-gray-100">{order.totalAmount.toLocaleString()}₽</span>
+                                    <span className="text-gray-900 dark:text-gray-100">{order.totalAmount.toLocaleString()} ₽</span>
                                 </div>
                             </div>
                         </div>

@@ -13,5 +13,8 @@ export { CustomersListPage, CustomerDetailPage } from './Customers';
 // Promotions
 export { PromotionsListPage, PromotionFormPage } from './Promotions';
 
+// Banners
+export { BannersListPage, BannerFormPage } from './Banners';
+
 // Reviews
 export { ReviewsListPage } from './Reviews';

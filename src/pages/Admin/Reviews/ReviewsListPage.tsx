@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Pencil, Trash2, Check, EyeOff, Download, Star } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Trash2, Check, X, Download, Star } from 'lucide-react';
 import {
     AdminHeader,
     AdminTable,
@@ -11,12 +11,13 @@ import {
 } from '../components';
 import type { Column, FilterConfig } from '../components';
 import type { Review, ReviewStatus } from './types';
-import { mockReviews } from './mockData';
+import { getReviewStatus } from './types';
+import { AdminReviewService } from '../../../api/services/AdminReviewService';
 
 const statusLabels: Record<ReviewStatus, string> = {
     moderation: 'На модерации',
     published: 'Опубликован',
-    hidden: 'Скрыт',
+    hidden: 'Отклонён',
 };
 
 const statusVariants: Record<ReviewStatus, 'warning' | 'success' | 'error'> = {
@@ -27,19 +28,8 @@ const statusVariants: Record<ReviewStatus, 'warning' | 'success' | 'error'> = {
 
 const filterConfigs: FilterConfig[] = [
     {
-        key: 'category',
-        label: 'По товару/категории',
-        type: 'select',
-        options: [
-            { value: '1', label: 'Трусы' },
-            { value: '2', label: 'Бюстгальтеры' },
-            { value: '3', label: 'Боди' },
-            { value: '4', label: 'Комплекты' },
-        ],
-    },
-    {
         key: 'rating',
-        label: 'По рейтингу (1-5 звёзд)',
+        label: 'По рейтингу',
         type: 'select',
         options: [
             { value: '1', label: '1 звезда' },
@@ -49,54 +39,109 @@ const filterConfigs: FilterConfig[] = [
             { value: '5', label: '5 звёзд' },
         ],
     },
-    {
-        key: 'date',
-        label: 'По дате регистрации',
-        type: 'date-range',
-    },
-    {
-        key: 'photo',
-        label: 'С фото/без фото',
-        type: 'select',
-        options: [
-            { value: 'with', label: 'С фото' },
-            { value: 'without', label: 'Без фото' },
-        ],
-    },
 ];
 
 const statusSelectOptions = [
     { value: 'all', label: 'Все отзывы' },
     { value: 'moderation', label: 'На модерации' },
     { value: 'published', label: 'Опубликованные' },
-    { value: 'hidden', label: 'Скрытые' },
+    { value: 'hidden', label: 'Отклонённые' },
 ];
 
 export function ReviewsListPage() {
-    const [reviews, setReviews] = useState<Review[]>(mockReviews);
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
     const [filterValues, setFilterValues] = useState<Record<string, unknown>>({});
     const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [pendingCount, setPendingCount] = useState(0);
+    const [pagination, setPagination] = useState({
+        page: 0,
+        size: 10,
+        totalElements: 0,
+        totalPages: 0,
+    });
 
-    const handlePublish = (reviewId: number) => {
-        setReviews((prev) =>
-            prev.map((review) =>
-                review.id === reviewId ? { ...review, status: 'published' as ReviewStatus } : review
-            )
-        );
+    const fetchReviews = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            // Map status filter to isApproved parameter
+            let isApproved: boolean | undefined;
+            if (statusFilter === 'published') isApproved = true;
+            else if (statusFilter === 'hidden') isApproved = false;
+            // 'moderation' and 'all' don't set isApproved
+
+            const response = await AdminReviewService.searchReviews({
+                search: searchQuery || undefined,
+                isApproved: statusFilter === 'moderation' ? undefined : isApproved,
+                page: pagination.page,
+                size: pagination.size,
+            });
+
+            // For moderation filter, we need to filter client-side since API doesn't support null
+            let filteredContent = response.content;
+            if (statusFilter === 'moderation') {
+                filteredContent = response.content.filter(r => r.isApproved === null);
+            }
+
+            setReviews(filteredContent);
+            setPagination(prev => ({
+                ...prev,
+                totalElements: response.totalElements,
+                totalPages: response.totalPages,
+            }));
+        } catch (error) {
+            console.error('Failed to fetch reviews:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [searchQuery, statusFilter, pagination.page, pagination.size]);
+
+    const fetchPendingCount = useCallback(async () => {
+        try {
+            const count = await AdminReviewService.countPendingReviews();
+            setPendingCount(count);
+        } catch (error) {
+            console.error('Failed to fetch pending count:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchReviews();
+        fetchPendingCount();
+    }, [fetchReviews, fetchPendingCount]);
+
+    const handleApprove = async (reviewId: string) => {
+        try {
+            await AdminReviewService.approveReview(reviewId);
+            fetchReviews();
+            fetchPendingCount();
+        } catch (error) {
+            console.error('Failed to approve review:', error);
+        }
     };
 
-    const handleHide = (reviewId: number) => {
-        setReviews((prev) =>
-            prev.map((review) =>
-                review.id === reviewId ? { ...review, status: 'hidden' as ReviewStatus } : review
-            )
-        );
+    const handleReject = async (reviewId: string) => {
+        try {
+            await AdminReviewService.rejectReview(reviewId);
+            fetchReviews();
+            fetchPendingCount();
+        } catch (error) {
+            console.error('Failed to reject review:', error);
+        }
     };
 
-    const handleDelete = (reviewId: number) => {
-        setReviews((prev) => prev.filter((review) => review.id !== reviewId));
+    const handleDelete = async (reviewId: string) => {
+        if (!confirm('Вы уверены, что хотите удалить отзыв?')) return;
+
+        try {
+            await AdminReviewService.deleteReview(reviewId);
+            fetchReviews();
+            fetchPendingCount();
+        } catch (error) {
+            console.error('Failed to delete review:', error);
+        }
     };
 
     const renderStars = (rating: number) => {
@@ -111,6 +156,10 @@ export function ReviewsListPage() {
                 ))}
             </div>
         );
+    };
+
+    const formatDate = (dateStr: string) => {
+        return new Date(dateStr).toLocaleDateString('ru-RU');
     };
 
     const columns: Column<Review>[] = [
@@ -137,127 +186,84 @@ export function ReviewsListPage() {
             title: 'Автор',
             render: (review) => (
                 <div>
-                    <div className="text-gray-900 dark:text-gray-100">{review.authorName}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">ID: {review.authorId}</div>
+                    <div className="text-gray-900 dark:text-gray-100">{review.reviewerName}</div>
+                    {review.isVerifiedPurchase && (
+                        <div className="text-xs text-green-600 dark:text-green-400">Покупка подтверждена</div>
+                    )}
                 </div>
             ),
         },
         {
-            key: 'date',
+            key: 'createdAt',
             title: 'Дата',
             sortable: true,
+            render: (review) => formatDate(review.createdAt),
         },
         {
             key: 'status',
             title: 'Статус',
-            render: (review) => (
-                <AdminBadge variant={statusVariants[review.status]}>
-                    {statusLabels[review.status]}
-                </AdminBadge>
-            ),
+            render: (review) => {
+                const status = getReviewStatus(review);
+                return (
+                    <AdminBadge variant={statusVariants[status]}>
+                        {statusLabels[status]}
+                    </AdminBadge>
+                );
+            },
         },
         {
             key: 'actions',
             title: 'Действия',
-            width: '120px',
-            render: (review) => (
-                <div className="flex items-center gap-1">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            // TODO: Edit review
-                        }}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                        title="Редактировать"
-                    >
-                        <Pencil size={16} />
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(review.id);
-                        }}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
-                        title="Удалить"
-                    >
-                        <Trash2 size={16} />
-                    </button>
-                    {review.status !== 'published' && (
+            width: '140px',
+            render: (review) => {
+                const status = getReviewStatus(review);
+                return (
+                    <div className="flex items-center gap-1">
+                        {status !== 'published' && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleApprove(review.id);
+                                }}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-green-600 dark:text-green-400"
+                                title="Одобрить"
+                            >
+                                <Check size={16} />
+                            </button>
+                        )}
+                        {status !== 'hidden' && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReject(review.id);
+                                }}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-orange-600 dark:text-orange-400"
+                                title="Отклонить"
+                            >
+                                <X size={16} />
+                            </button>
+                        )}
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handlePublish(review.id);
+                                handleDelete(review.id);
                             }}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-green-600 dark:text-green-400"
-                            title="Опубликовать"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
+                            title="Удалить"
                         >
-                            <Check size={16} />
+                            <Trash2 size={16} />
                         </button>
-                    )}
-                    {review.status !== 'hidden' && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleHide(review.id);
-                            }}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-orange-600 dark:text-orange-400"
-                            title="Скрыть"
-                        >
-                            <EyeOff size={16} />
-                        </button>
-                    )}
-                </div>
-            ),
+                    </div>
+                );
+            },
         },
     ];
-
-    const filteredReviews = reviews.filter((review) => {
-        if (searchQuery) {
-            const search = searchQuery.toLowerCase();
-            if (
-                !review.productName.toLowerCase().includes(search) &&
-                !review.reviewText.toLowerCase().includes(search) &&
-                !review.authorName.toLowerCase().includes(search)
-            ) {
-                return false;
-            }
-        }
-        if (statusFilter !== 'all' && review.status !== statusFilter) {
-            return false;
-        }
-        return true;
-    });
-
-    const handleBulkAction = (action: 'delete' | 'hide' | 'publish') => {
-        if (action === 'delete') {
-            setReviews((prev) =>
-                prev.filter((review) => !selectedIds.has(review.id))
-            );
-        } else if (action === 'hide') {
-            setReviews((prev) =>
-                prev.map((review) =>
-                    selectedIds.has(review.id)
-                        ? { ...review, status: 'hidden' as ReviewStatus }
-                        : review
-                )
-            );
-        } else if (action === 'publish') {
-            setReviews((prev) =>
-                prev.map((review) =>
-                    selectedIds.has(review.id)
-                        ? { ...review, status: 'published' as ReviewStatus }
-                        : review
-                )
-            );
-        }
-        setSelectedIds(new Set());
-    };
 
     return (
         <div>
             <AdminHeader
                 title="Управление отзывами"
-                subtitle="Основная таблица отзывов"
+                subtitle={pendingCount > 0 ? `${pendingCount} на модерации` : 'Все отзывы проверены'}
             />
 
             {/* Toolbar */}
@@ -292,23 +298,16 @@ export function ReviewsListPage() {
                             <AdminButton
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleBulkAction('delete')}
+                                icon={<Check size={16} />}
                             >
-                                Удалить
+                                Одобрить
                             </AdminButton>
                             <AdminButton
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleBulkAction('hide')}
+                                icon={<X size={16} />}
                             >
-                                Скрыть
-                            </AdminButton>
-                            <AdminButton
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleBulkAction('publish')}
-                            >
-                                Опубликовать
+                                Отклонить
                             </AdminButton>
                         </>
                     )}
@@ -325,12 +324,40 @@ export function ReviewsListPage() {
             {/* Table */}
             <AdminTable
                 columns={columns}
-                data={filteredReviews}
+                data={reviews}
                 getRowId={(review) => review.id}
                 selectable
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
+                isLoading={isLoading}
             />
+
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                    <span className="text-sm text-gray-500">
+                        Показано {reviews.length} из {pagination.totalElements}
+                    </span>
+                    <div className="flex gap-2">
+                        <AdminButton
+                            variant="outline"
+                            size="sm"
+                            disabled={pagination.page === 0}
+                            onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                        >
+                            Назад
+                        </AdminButton>
+                        <AdminButton
+                            variant="outline"
+                            size="sm"
+                            disabled={pagination.page >= pagination.totalPages - 1}
+                            onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                        >
+                            Вперёд
+                        </AdminButton>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

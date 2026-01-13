@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Mail, Eye, Download, Gift } from 'lucide-react';
+import { Pencil, Mail, Eye, Download, UserX, RefreshCw } from 'lucide-react';
 import {
     AdminHeader,
     AdminTable,
@@ -10,78 +10,134 @@ import {
     AdminBadge,
 } from '../components';
 import type { Column, FilterConfig } from '../components';
-import type { Customer, CustomerStatus } from './types';
-import { mockCustomers } from './mockData';
+import { AdminUserService } from '@/api/services/AdminUserService';
+import type { AdminUserResponseDto, UserStatus, UserRole } from '@/api/services/AdminUserService';
 
-const statusLabels: Record<CustomerStatus, string> = {
-    active: 'Активен',
-    inactive: 'Неактивен',
-    deleted: 'Удален',
+const statusLabels: Record<UserStatus, string> = {
+    ACTIVE: 'Активен',
+    BLOCKED: 'Заблокирован',
+    DELETED: 'Удален',
 };
 
-const statusVariants: Record<CustomerStatus, 'success' | 'warning' | 'error'> = {
-    active: 'success',
-    inactive: 'warning',
-    deleted: 'error',
+const statusVariants: Record<UserStatus, 'success' | 'warning' | 'error'> = {
+    ACTIVE: 'success',
+    BLOCKED: 'warning',
+    DELETED: 'error',
+};
+
+const roleLabels: Record<UserRole, string> = {
+    USER: 'Пользователь',
+    ADMIN: 'Администратор',
 };
 
 const filterConfigs: FilterConfig[] = [
     {
-        key: 'registrationDate',
-        label: 'По дате регистрации',
-        type: 'date-range',
-    },
-    {
-        key: 'ordersCount',
-        label: 'По количеству заказов',
-        type: 'number-range',
-    },
-    {
-        key: 'purchaseAmount',
-        label: 'По сумме покупок',
-        type: 'number-range',
-    },
-    {
-        key: 'subscription',
-        label: 'По наличию подписки',
+        key: 'status',
+        label: 'По статусу',
         type: 'select',
         options: [
-            { value: 'active', label: 'Активна' },
-            { value: 'inactive', label: 'Не активна' },
+            { value: 'ACTIVE', label: 'Активен' },
+            { value: 'BLOCKED', label: 'Заблокирован' },
+            { value: 'DELETED', label: 'Удалён' },
         ],
     },
     {
-        key: 'status',
-        label: 'По статусу аккаунта',
+        key: 'role',
+        label: 'По роли',
         type: 'select',
         options: [
-            { value: 'active', label: 'Активен' },
-            { value: 'deleted', label: 'Удалён' },
+            { value: 'USER', label: 'Пользователь' },
+            { value: 'ADMIN', label: 'Администратор' },
         ],
     },
 ];
 
 export function CustomersListPage() {
     const navigate = useNavigate();
-    const [customers] = useState<Customer[]>(mockCustomers);
+    const [customers, setCustomers] = useState<AdminUserResponseDto[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
     const [filterValues, setFilterValues] = useState<Record<string, unknown>>({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [totalItems, setTotalItems] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
-    const columns: Column<Customer>[] = [
+    const fetchCustomers = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const statusFilter = filterValues.status as UserStatus | undefined;
+            const roleFilter = filterValues.role as UserRole | undefined;
+
+            const response = await AdminUserService.searchUsers({
+                email: searchQuery || undefined,
+                status: statusFilter,
+                role: roleFilter,
+                page: currentPage - 1,
+                size: itemsPerPage,
+            });
+            setCustomers(response.content);
+            setTotalItems(response.totalElements);
+            setTotalPages(response.totalPages);
+        } catch (err) {
+            console.error('Failed to fetch customers:', err);
+            setError('Не удалось загрузить клиентов');
+            setCustomers([]);
+        } finally {
+            setLoading(false);
+        }
+    }, [currentPage, itemsPerPage, filterValues.status, filterValues.role, searchQuery]);
+
+    useEffect(() => {
+        fetchCustomers();
+    }, [fetchCustomers]);
+
+    const handleBlockUser = async (userId: number, currentStatus: UserStatus) => {
+        const newStatus = currentStatus === 'BLOCKED' ? 'ACTIVE' : 'BLOCKED';
+        const action = newStatus === 'BLOCKED' ? 'заблокировать' : 'разблокировать';
+
+        if (!confirm(`Вы уверены, что хотите ${action} пользователя?`)) return;
+
+        try {
+            await AdminUserService.updateStatus(userId, { status: newStatus });
+            fetchCustomers();
+        } catch (err) {
+            console.error('Failed to update user status:', err);
+            alert('Не удалось обновить статус пользователя');
+        }
+    };
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+    };
+
+    const columns: Column<AdminUserResponseDto>[] = [
         {
-            key: 'customerId',
+            key: 'id',
             title: '№ Клиента',
             sortable: true,
             render: (customer) => (
-                <span className="font-medium text-blue-600">ID: {customer.customerId}</span>
+                <span className="font-medium text-blue-600 dark:text-blue-400">ID: {customer.id}</span>
             ),
         },
         {
             key: 'name',
             title: 'Имя и фамилия',
             sortable: true,
-            render: (customer) => `${customer.firstName} ${customer.lastName}`,
+            render: (customer) => (
+                <span>
+                    {customer.firstName || customer.lastName
+                        ? `${customer.firstName || ''} ${customer.lastName || ''}`.trim()
+                        : '—'}
+                </span>
+            ),
         },
         {
             key: 'contacts',
@@ -89,36 +145,26 @@ export function CustomersListPage() {
             render: (customer) => (
                 <div className="text-sm">
                     <div className="text-gray-900 dark:text-gray-100">{customer.email}</div>
-                    <div className="text-gray-500 dark:text-gray-400">{customer.phone}</div>
+                    {customer.phoneNumber && (
+                        <div className="text-gray-500 dark:text-gray-400">{customer.phoneNumber}</div>
+                    )}
                 </div>
             ),
         },
         {
-            key: 'registrationDate',
-            title: 'Дата регистрации',
-            sortable: true,
-        },
-        {
-            key: 'ordersCount',
-            title: 'Кол-во заказов',
-            sortable: true,
-            render: (customer) => `${customer.ordersCount} заказов`,
-        },
-        {
-            key: 'totalPurchaseAmount',
-            title: 'Общая сумма покупок',
-            sortable: true,
+            key: 'role',
+            title: 'Роль',
             render: (customer) => (
-                <span className="font-medium">
-                    {customer.totalPurchaseAmount.toLocaleString()} ₽
-                </span>
+                <AdminBadge variant={customer.role === 'ADMIN' ? 'warning' : 'default'}>
+                    {roleLabels[customer.role]}
+                </AdminBadge>
             ),
         },
         {
-            key: 'bonusPoints',
-            title: 'Бонусные баллы',
+            key: 'createdAt',
+            title: 'Дата регистрации',
             sortable: true,
-            render: (customer) => `${customer.bonusPoints} баллов`,
+            render: (customer) => formatDate(customer.createdAt),
         },
         {
             key: 'status',
@@ -141,14 +187,14 @@ export function CustomersListPage() {
                             navigate(`/admin/customers/${customer.id}`);
                         }}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                        title="Редактировать"
+                        title="Просмотреть"
                     >
-                        <Pencil size={16} />
+                        <Eye size={16} />
                     </button>
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            // TODO: Send email
+                            window.location.href = `mailto:${customer.email}`;
                         }}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         title="Отправить email"
@@ -158,53 +204,52 @@ export function CustomersListPage() {
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/admin/customers/${customer.id}`);
+                            handleBlockUser(customer.id, customer.status);
                         }}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                        title="Просмотреть"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
+                        title={customer.status === 'BLOCKED' ? 'Разблокировать' : 'Заблокировать'}
                     >
-                        <Eye size={16} />
+                        <UserX size={16} />
                     </button>
                 </div>
             ),
         },
     ];
 
-    const filteredCustomers = customers.filter((customer) => {
-        if (searchQuery) {
-            const search = searchQuery.toLowerCase();
-            if (
-                !customer.firstName.toLowerCase().includes(search) &&
-                !customer.lastName.toLowerCase().includes(search) &&
-                !customer.email.toLowerCase().includes(search) &&
-                !customer.phone.includes(search)
-            ) {
-                return false;
-            }
-        }
-        return true;
-    });
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        setSelectedIds(new Set());
+    };
+
+    const handleItemsPerPageChange = (newItemsPerPage: number) => {
+        setItemsPerPage(newItemsPerPage);
+        setCurrentPage(1);
+    };
 
     return (
         <div>
             <AdminHeader
                 title="Управление клиентами"
                 subtitle="Таблица клиентов"
-                actions={
-                    <AdminButton
-                        icon={<Plus size={18} />}
-                        onClick={() => navigate('/admin/customers/new')}
-                    >
-                        Добавить клиента
-                    </AdminButton>
-                }
             />
+
+            {error && (
+                <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg">
+                    {error}
+                    <button
+                        onClick={fetchCustomers}
+                        className="ml-4 underline hover:no-underline"
+                    >
+                        Повторить
+                    </button>
+                </div>
+            )}
 
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                     <AdminInput
-                        placeholder="Имя, email, телефон"
+                        placeholder="Email, телефон"
                         showSearchIcon
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -218,21 +263,12 @@ export function CustomersListPage() {
                         }
                         onClear={() => setFilterValues({})}
                     />
-                    <AdminButton variant="outline">
-                        Редактировать
+                    <AdminButton variant="outline" onClick={fetchCustomers} icon={<RefreshCw size={16} />}>
+                        Обновить
                     </AdminButton>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {selectedIds.size > 0 && (
-                        <AdminButton
-                            variant="outline"
-                            size="sm"
-                            icon={<Gift size={16} />}
-                        >
-                            Начислить бонусы
-                        </AdminButton>
-                    )}
                     <AdminButton
                         variant="ghost"
                         size="sm"
@@ -240,25 +276,28 @@ export function CustomersListPage() {
                     >
                         Экспорт данных
                     </AdminButton>
-                    <AdminButton
-                        variant="ghost"
-                        size="sm"
-                        icon={<Mail size={16} />}
-                    >
-                        Отправить email
-                    </AdminButton>
                 </div>
             </div>
 
             {/* Table */}
             <AdminTable
                 columns={columns}
-                data={filteredCustomers}
+                data={customers}
                 getRowId={(customer) => customer.id}
                 selectable
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
                 onRowClick={(customer) => navigate(`/admin/customers/${customer.id}`)}
+                loading={loading}
+                emptyMessage="Клиенты не найдены"
+                pagination={{
+                    currentPage,
+                    totalPages,
+                    totalItems,
+                    itemsPerPage,
+                    onPageChange: handlePageChange,
+                    onItemsPerPageChange: handleItemsPerPageChange,
+                }}
             />
         </div>
     );

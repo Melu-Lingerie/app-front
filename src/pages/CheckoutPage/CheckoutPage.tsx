@@ -1,8 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { type RootState } from '@/store';
 import { motion } from 'framer-motion';
+import { OrderService } from '@/api/services/OrderService';
+import { DeliveryService } from '@/api/services/DeliveryService';
+import type { TariffResponseDto, DeliveryPointResponseDto } from '@/api/models/DeliveryDto';
+import type { PaymentMethod, DeliveryMethod } from '@/api/models/CheckoutRequestDto';
 
 // Иконка СБП
 const SbpIcon = () => (
@@ -44,17 +48,19 @@ const YandexDeliveryLogo = () => (
 );
 
 type DeliveryType = 'pickup' | 'courier';
-type PaymentMethod = 'sbp' | 'card' | 'installments';
-type DeliveryService = 'cdek' | 'yandex';
+type PaymentMethodUI = 'sbp' | 'card' | 'installments';
 
 // Форматирование чисел
 const numberFormat = (value: number): string => {
     return value.toLocaleString('ru-RU');
 };
 
+// Средний вес товара в граммах (для расчета доставки)
+const AVERAGE_ITEM_WEIGHT = 300;
+
 export function CheckoutPage() {
     const navigate = useNavigate();
-    const { items, itemsCount } = useSelector((state: RootState) => state.cart);
+    const { items, itemsCount, cartId } = useSelector((state: RootState) => state.cart);
     const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
     // Форма получателя
@@ -69,34 +75,157 @@ export function CheckoutPage() {
 
     // Доставка
     const [city, setCity] = useState('');
-    const [deliveryType, setDeliveryType] = useState<DeliveryType>('courier');
-    const [deliveryService, setDeliveryService] = useState<DeliveryService>('cdek');
+    const [deliveryType, setDeliveryType] = useState<DeliveryType>('pickup');
     const [postalCode, setPostalCode] = useState('');
     const [address, setAddress] = useState('');
     const [comment, setComment] = useState('');
 
+    // Пункты выдачи
+    const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointResponseDto[]>([]);
+    const [selectedPoint, setSelectedPoint] = useState<DeliveryPointResponseDto | null>(null);
+    const [isLoadingPoints, setIsLoadingPoints] = useState(false);
+
+    // Тарифы доставки
+    const [tariffs, setTariffs] = useState<TariffResponseDto[]>([]);
+    const [selectedTariff, setSelectedTariff] = useState<TariffResponseDto | null>(null);
+    const [isCalculating, setIsCalculating] = useState(false);
+
     // Оплата
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('sbp');
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethodUI>('sbp');
 
     // Промокод
     const [promoCode, setPromoCode] = useState('');
 
-    // Расчеты (TODO: подключить CDEK API для расчета)
-    const [deliveryCost, _setDeliveryCost] = useState(0);
-    const [deliveryDays, _setDeliveryDays] = useState<number | null>(null);
-    const [isCalculating, _setIsCalculating] = useState(false);
-    // Эти сеттеры будут использоваться при интеграции с CDEK API
-    void _setDeliveryCost; void _setDeliveryDays; void _setIsCalculating;
+    // Checkout state
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     // Суммы
     const subtotal = useMemo(() => {
         return items.reduce((sum, item) => sum + (item.totalPrice ?? 0), 0);
     }, [items]);
 
+    const deliveryCost = selectedTariff?.deliverySum ?? 0;
     const total = subtotal + deliveryCost;
 
-    // Валидация
-    const isFormValid = firstName && lastName && phone && email && city && address && agreePolicy;
+    // Общий вес товаров
+    const totalWeight = useMemo(() => {
+        return items.reduce((sum, item) => sum + (item.quantity ?? 1) * AVERAGE_ITEM_WEIGHT, 0);
+    }, [items]);
+
+    // Загрузка пунктов выдачи при изменении города
+    const loadDeliveryPoints = useCallback(async (cityName: string) => {
+        if (!cityName || cityName.length < 2) {
+            setDeliveryPoints([]);
+            return;
+        }
+
+        setIsLoadingPoints(true);
+        try {
+            const points = await DeliveryService.getDeliveryPointsByCity(cityName);
+            setDeliveryPoints(points);
+        } catch (err) {
+            console.error('Failed to load delivery points:', err);
+            setDeliveryPoints([]);
+        } finally {
+            setIsLoadingPoints(false);
+        }
+    }, []);
+
+    // Расчет стоимости доставки
+    const calculateDelivery = useCallback(async (cityName: string) => {
+        if (!cityName || cityName.length < 2 || totalWeight === 0) {
+            setTariffs([]);
+            setSelectedTariff(null);
+            return;
+        }
+
+        setIsCalculating(true);
+        try {
+            const result = await DeliveryService.calculateDeliveryCost({
+                city: cityName,
+                weight: totalWeight,
+            });
+            setTariffs(result);
+            // Автоматически выбираем первый тариф
+            if (result.length > 0) {
+                setSelectedTariff(result[0]);
+            }
+        } catch (err) {
+            console.error('Failed to calculate delivery:', err);
+            setTariffs([]);
+            setSelectedTariff(null);
+        } finally {
+            setIsCalculating(false);
+        }
+    }, [totalWeight]);
+
+    // Debounced city search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (city.length >= 2) {
+                loadDeliveryPoints(city);
+                calculateDelivery(city);
+            }
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [city, loadDeliveryPoints, calculateDelivery]);
+
+    // Валидация формы
+    const isFormValid = useMemo(() => {
+        const baseValid = firstName && lastName && phone && email && city && agreePolicy && selectedTariff;
+
+        if (deliveryType === 'pickup') {
+            return baseValid && selectedPoint;
+        } else {
+            return baseValid && address;
+        }
+    }, [firstName, lastName, phone, email, city, agreePolicy, selectedTariff, deliveryType, selectedPoint, address]);
+
+    // Обработка оформления заказа
+    const handleCheckout = async () => {
+        if (!isFormValid || !cartId || !selectedTariff) return;
+
+        setIsSubmitting(true);
+        setError(null);
+
+        try {
+            // Маппинг UI типов в API типы
+            const apiPaymentMethod: PaymentMethod = paymentMethod === 'sbp' ? 'SBP' : 'CARD';
+            const apiDeliveryMethod: DeliveryMethod = deliveryType === 'pickup' ? 'CDEK_POINT' : 'CDEK_COURIER';
+
+            const response = await OrderService.checkout({
+                cartId,
+                paymentMethod: apiPaymentMethod,
+                deliveryMethod: apiDeliveryMethod,
+                city,
+                address: deliveryType === 'courier' ? address : selectedPoint?.address,
+                postalCode: postalCode || undefined,
+                deliveryPointCode: deliveryType === 'pickup' ? selectedPoint?.code : undefined,
+                deliveryPointName: deliveryType === 'pickup' ? selectedPoint?.name : undefined,
+                recipientName: `${firstName} ${lastName}`,
+                recipientPhone: phone,
+                recipientEmail: email || undefined,
+                promoCode: promoCode || undefined,
+                customerComment: comment || undefined,
+                tariffCode: selectedTariff.tariffCode,
+            });
+
+            // Если есть URL для оплаты - редиректим
+            if (response.confirmationUrl) {
+                window.location.href = response.confirmationUrl;
+            } else {
+                // Иначе переходим на страницу заказа
+                navigate(`/account/orders/${response.orderId}`);
+            }
+        } catch (err) {
+            console.error('Checkout failed:', err);
+            setError('Не удалось оформить заказ. Попробуйте еще раз.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     if (itemsCount === 0) {
         return (
@@ -118,6 +247,12 @@ export function CheckoutPage() {
             <h1 className="text-[28px] md:text-[36px] font-medium uppercase leading-[32px] md:leading-[38px] mb-[30px]">
                 Оформление заказа
             </h1>
+
+            {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                    {error}
+                </div>
+            )}
 
             <div className="flex flex-col lg:flex-row gap-8 lg:gap-[60px]">
                 {/* Левая колонка — форма */}
@@ -247,26 +382,67 @@ export function CheckoutPage() {
                                     </button>
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Индекс</label>
-                                <input
-                                    type="text"
-                                    value={postalCode}
-                                    onChange={(e) => setPostalCode(e.target.value)}
-                                    placeholder="XXX XXX"
-                                    className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-sm font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Адрес</label>
-                                <input
-                                    type="text"
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    placeholder="Введите вашу улицу, дом, квартиру"
-                                    className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-sm font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
-                                />
-                            </div>
+
+                            {/* Пункты выдачи для самовывоза */}
+                            {deliveryType === 'pickup' && (
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium uppercase mb-2">Пункт выдачи</label>
+                                    {isLoadingPoints ? (
+                                        <div className="text-sm text-[#999]">Загрузка пунктов выдачи...</div>
+                                    ) : deliveryPoints.length > 0 ? (
+                                        <div className="max-h-60 overflow-y-auto border border-[#CCC] dark:border-white/10">
+                                            {deliveryPoints.map((point) => (
+                                                <button
+                                                    key={point.code}
+                                                    type="button"
+                                                    onClick={() => setSelectedPoint(point)}
+                                                    className={`w-full p-4 text-left border-b border-[#CCC] dark:border-white/10 last:border-b-0 transition-colors ${
+                                                        selectedPoint?.code === point.code
+                                                            ? 'bg-[#F8C6D7]/20'
+                                                            : 'hover:bg-[#F7F7F7] dark:hover:bg-white/5'
+                                                    }`}
+                                                >
+                                                    <div className="text-sm font-medium">{point.name}</div>
+                                                    <div className="text-xs text-[#999] mt-1">{point.address}</div>
+                                                    {point.workTime && (
+                                                        <div className="text-xs text-[#999] mt-1">{point.workTime}</div>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : city.length >= 2 ? (
+                                        <div className="text-sm text-[#999]">Пункты выдачи не найдены</div>
+                                    ) : (
+                                        <div className="text-sm text-[#999]">Введите город для поиска пунктов выдачи</div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Адрес для курьера */}
+                            {deliveryType === 'courier' && (
+                                <>
+                                    <div>
+                                        <label className="block text-sm font-medium uppercase mb-2">Индекс</label>
+                                        <input
+                                            type="text"
+                                            value={postalCode}
+                                            onChange={(e) => setPostalCode(e.target.value)}
+                                            placeholder="XXX XXX"
+                                            className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-sm font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium uppercase mb-2">Адрес</label>
+                                        <input
+                                            type="text"
+                                            value={address}
+                                            onChange={(e) => setAddress(e.target.value)}
+                                            placeholder="Введите вашу улицу, дом, квартиру"
+                                            className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-sm font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                        />
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <div className="mt-4">
@@ -291,46 +467,67 @@ export function CheckoutPage() {
                             )}
                         </p>
 
-                        {/* Службы доставки */}
+                        {/* Тарифы доставки */}
                         <div className="mt-6">
-                            <label className="block text-sm font-medium uppercase mb-4">Службы доставки</label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[75px] gap-y-4">
-                                {/* CDEK */}
+                            <label className="block text-sm font-medium uppercase mb-4">Тарифы доставки</label>
+                            {isCalculating ? (
+                                <div className="text-sm text-[#999]">Расчет стоимости доставки...</div>
+                            ) : tariffs.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {tariffs.map((tariff) => (
+                                        <button
+                                            key={tariff.tariffCode}
+                                            type="button"
+                                            onClick={() => setSelectedTariff(tariff)}
+                                            className={`w-full h-auto min-h-14 flex items-center px-3 py-3 border transition-colors bg-[#FAFAFA] dark:bg-transparent ${
+                                                selectedTariff?.tariffCode === tariff.tariffCode
+                                                    ? 'border-[#2A2A2B] dark:border-white'
+                                                    : 'border-[#CCC] dark:border-white/20'
+                                            }`}
+                                        >
+                                            <div className="w-20 h-9 bg-[#F5F5F5] dark:bg-white/10 flex items-center justify-center mr-3 flex-shrink-0">
+                                                <CdekLogo />
+                                            </div>
+                                            <div className="flex-1 text-left">
+                                                <div className="text-sm font-medium">{tariff.tariffName}</div>
+                                                <div className="text-xs text-[#999]">
+                                                    {tariff.periodMin}-{tariff.periodMax} дн.
+                                                </div>
+                                            </div>
+                                            <span className="text-sm font-medium ml-2">
+                                                {numberFormat(tariff.deliverySum)} ₽
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : city.length >= 2 ? (
+                                <div className="text-sm text-[#999]">Тарифы не найдены для данного города</div>
+                            ) : (
                                 <button
                                     type="button"
-                                    onClick={() => setDeliveryService('cdek')}
-                                    className={`w-96 h-14 flex items-center px-3 border transition-colors bg-[#FAFAFA] dark:bg-transparent ${
-                                        deliveryService === 'cdek'
-                                            ? 'border-[#2A2A2B] dark:border-white'
-                                            : 'border-[#CCC] dark:border-white/20'
-                                    }`}
+                                    disabled
+                                    className="w-96 h-14 flex items-center px-3 border border-[#CCC] dark:border-white/20 bg-[#FAFAFA] dark:bg-transparent"
                                 >
                                     <div className="w-32 h-9 bg-[#F5F5F5] dark:bg-white/10 flex items-center justify-center mr-3">
                                         <CdekLogo />
                                     </div>
-                                    <span className="text-sm font-medium uppercase">CDEK</span>
-                                    <span className="text-sm font-medium ml-2">
-                                        {isCalculating ? '...' : `${numberFormat(deliveryCost || 1290)} ₽`}
-                                    </span>
-                                    <span className="text-xs font-medium text-[#999] ml-2">
-                                        {deliveryDays ? `${deliveryDays} дн.` : '4 дня'}
-                                    </span>
+                                    <span className="text-sm font-medium text-[#999]">Введите город</span>
                                 </button>
+                            )}
+                        </div>
 
-                                {/* Yandex - неактивна */}
-                                <button
-                                    type="button"
-                                    disabled
-                                    className="w-96 h-14 flex items-center px-3 border border-[rgba(23,23,23,0.3)] dark:border-white/10 bg-[rgba(250,250,250,0.3)] text-[rgba(23,23,23,0.3)] cursor-not-allowed"
-                                >
-                                    <div className="w-32 h-9 bg-[rgba(245,245,245,0.3)] dark:bg-white/5 flex items-center justify-center mr-3">
-                                        <YandexDeliveryLogo />
-                                    </div>
-                                    <span className="text-sm font-medium uppercase">YANDEX</span>
-                                    <span className="text-sm font-medium ml-2">1 290 ₽</span>
-                                    <span className="text-xs font-medium ml-2">4 дня</span>
-                                </button>
-                            </div>
+                        {/* Яндекс доставка - неактивна */}
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                disabled
+                                className="w-96 h-14 flex items-center px-3 border border-[rgba(23,23,23,0.3)] dark:border-white/10 bg-[rgba(250,250,250,0.3)] text-[rgba(23,23,23,0.3)] cursor-not-allowed"
+                            >
+                                <div className="w-32 h-9 bg-[rgba(245,245,245,0.3)] dark:bg-white/5 flex items-center justify-center mr-3">
+                                    <YandexDeliveryLogo />
+                                </div>
+                                <span className="text-sm font-medium uppercase">Скоро</span>
+                            </button>
                         </div>
                     </section>
 
@@ -356,11 +553,15 @@ export function CheckoutPage() {
                                 <span className="text-sm font-medium uppercase ml-3">Система быстрых платежей</span>
                             </button>
 
-                            {/* Банковская карта - неактивна */}
+                            {/* Банковская карта */}
                             <button
                                 type="button"
-                                disabled
-                                className="w-96 h-14 flex items-center px-5 border border-[rgba(23,23,23,0.3)] dark:border-white/10 bg-[rgba(250,250,250,0.3)] text-[rgba(23,23,23,0.3)] cursor-not-allowed"
+                                onClick={() => setPaymentMethod('card')}
+                                className={`w-96 h-14 flex items-center px-5 border transition-colors bg-[#FAFAFA] dark:bg-transparent ${
+                                    paymentMethod === 'card'
+                                        ? 'border-[#2A2A2B] dark:border-white'
+                                        : 'border-[#CCC] dark:border-white/20'
+                                }`}
                             >
                                 <span className="text-sm font-medium uppercase">Банковской картой</span>
                             </button>
@@ -372,7 +573,7 @@ export function CheckoutPage() {
                                 className="w-96 h-14 flex items-center px-5 border border-[rgba(23,23,23,0.3)] dark:border-white/10 bg-[rgba(250,250,250,0.3)] text-[rgba(23,23,23,0.3)] cursor-not-allowed"
                             >
                                 <DolyamiLogo />
-                                <span className="text-sm font-medium uppercase ml-2">Сервис долями</span>
+                                <span className="text-sm font-medium uppercase ml-2">Скоро</span>
                             </button>
                         </div>
                     </section>
@@ -397,7 +598,9 @@ export function CheckoutPage() {
                         </div>
                         <div className="flex justify-between text-xs font-medium text-[#999]">
                             <span>Доставка:</span>
-                            <span>{deliveryCost === 0 ? '0 ₽' : `${numberFormat(deliveryCost)} ₽`}</span>
+                            <span>
+                                {isCalculating ? '...' : deliveryCost === 0 ? 'Выберите тариф' : `${numberFormat(deliveryCost)} ₽`}
+                            </span>
                         </div>
                     </div>
 
@@ -431,15 +634,22 @@ export function CheckoutPage() {
 
                     {/* Кнопка оплаты */}
                     <button
-                        disabled={!isFormValid}
-                        className="w-full h-14 rounded-lg bg-[#F8C6D7] border border-[#FFFBF5] text-sm font-medium uppercase transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={handleCheckout}
+                        disabled={!isFormValid || isSubmitting}
+                        className="w-full h-14 rounded-lg bg-[#F8C6D7] border border-[#FFFBF5] text-sm font-medium uppercase transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
-                        Оплатить
+                        {isSubmitting ? (
+                            <span className="animate-pulse">Оформление...</span>
+                        ) : (
+                            'Оплатить'
+                        )}
                     </button>
 
                     {/* Ссылки */}
                     <div className="mt-[120px] space-y-2">
-                        <p className="text-xs font-medium text-[#999] underline cursor-pointer">Войти в личный кабинет</p>
+                        <p className="text-xs font-medium text-[#999] underline cursor-pointer" onClick={() => navigate('/account')}>
+                            Войти в личный кабинет
+                        </p>
                         <p className="text-xs font-medium text-[#999] underline cursor-pointer">Условия доставки</p>
                         <p className="text-xs font-medium text-[#999] underline cursor-pointer">Условия обмена и возврата</p>
                         <p className="text-xs font-medium text-[#999] underline cursor-pointer">Информация об оплате</p>

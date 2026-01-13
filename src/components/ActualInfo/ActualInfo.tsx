@@ -36,9 +36,8 @@ export const ActualInfo = () => {
     const fetchBanners = useCallback(async () => {
         try {
             setLoading(true);
-            const res = await MainPageControllerService.toBannerMainPageFacadeDto({ signal });
-            const sorted = [...res].sort((a, b) => a.order - b.order);
-            setBanners(sorted);
+            const banners = await MainPageControllerService.toBannerMainPageFacadeDto({ signal });
+            setBanners(banners);
             setLoaded({});
             setFailed({});
             setCurrentIndex(0);

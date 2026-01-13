@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Download, Pause, Play } from 'lucide-react';
+import { Plus, Pencil, Trash2, Pause, Play } from 'lucide-react';
 import {
     AdminHeader,
     AdminTable,
@@ -11,66 +11,129 @@ import {
     AdminSelect,
 } from '../components';
 import type { Column, FilterConfig } from '../components';
-import type { Promotion, PromotionStatus, DiscountType } from './types';
-import { mockPromotions } from './mockData';
+import type { PromoCode, PromoCodeStatus, DiscountType } from './types';
+import { getPromoCodeStatus } from './types';
+import { AdminPromoCodeService } from '../../../api/services/AdminPromoCodeService';
 
-const statusLabels: Record<PromotionStatus, string> = {
-    active: 'Активна',
-    scheduled: 'Запланирована',
-    completed: 'Завершена',
-    paused: 'Приостановлена',
+const statusLabels: Record<PromoCodeStatus, string> = {
+    active: 'Активен',
+    scheduled: 'Запланирован',
+    expired: 'Истёк',
+    inactive: 'Неактивен',
 };
 
-const statusVariants: Record<PromotionStatus, 'success' | 'warning' | 'error' | 'default'> = {
+const statusVariants: Record<PromoCodeStatus, 'success' | 'warning' | 'error' | 'default'> = {
     active: 'success',
     scheduled: 'default',
-    completed: 'warning',
-    paused: 'error',
+    expired: 'warning',
+    inactive: 'error',
 };
 
 const discountTypeLabels: Record<DiscountType, string> = {
-    percent: 'Скидка',
-    fixed_amount: 'Фиксированная сумма',
-    gift: 'Подарок',
+    PERCENTAGE: 'Процент',
+    FIXED: 'Фиксированная сумма',
 };
 
 const filterConfigs: FilterConfig[] = [
     {
-        key: 'type',
+        key: 'discountType',
         label: 'По типу',
         type: 'select',
         options: [
-            { value: 'percent', label: 'Скидка' },
-            { value: 'fixed_amount', label: 'Фиксированная сумма' },
-            { value: 'gift', label: 'Подарок' },
+            { value: 'PERCENTAGE', label: 'Процент' },
+            { value: 'FIXED', label: 'Фиксированная сумма' },
         ],
     },
     {
-        key: 'status',
+        key: 'isActive',
         label: 'По статусу',
         type: 'select',
         options: [
-            { value: 'active', label: 'Активна' },
-            { value: 'scheduled', label: 'Запланирована' },
-            { value: 'completed', label: 'Завершена' },
-            { value: 'paused', label: 'Приостановлена' },
+            { value: 'true', label: 'Активные' },
+            { value: 'false', label: 'Неактивные' },
         ],
     },
 ];
 
 export function PromotionsListPage() {
     const navigate = useNavigate();
-    const [promotions] = useState<Promotion[]>(mockPromotions);
+    const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
     const [filterValues, setFilterValues] = useState<Record<string, unknown>>({});
-    const [viewMode, setViewMode] = useState<'promotions' | 'promocodes'>('promotions');
+    const [pagination, setPagination] = useState({
+        page: 0,
+        size: 10,
+        totalElements: 0,
+        totalPages: 0,
+    });
 
-    const columns: Column<Promotion>[] = [
+    const fetchPromoCodes = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const isActiveFilter = filterValues.isActive as string | undefined;
+            const response = await AdminPromoCodeService.searchPromoCodes({
+                search: searchQuery || undefined,
+                isActive: isActiveFilter ? isActiveFilter === 'true' : undefined,
+                page: pagination.page,
+                size: pagination.size,
+            });
+            setPromoCodes(response.content);
+            setPagination(prev => ({
+                ...prev,
+                totalElements: response.totalElements,
+                totalPages: response.totalPages,
+            }));
+        } catch (error) {
+            console.error('Failed to fetch promo codes:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [searchQuery, filterValues, pagination.page, pagination.size]);
+
+    useEffect(() => {
+        fetchPromoCodes();
+    }, [fetchPromoCodes]);
+
+    const handleDelete = async (id: number) => {
+        if (!confirm('Вы уверены, что хотите удалить промокод?')) return;
+
+        try {
+            await AdminPromoCodeService.deletePromoCode(id);
+            fetchPromoCodes();
+        } catch (error) {
+            console.error('Failed to delete promo code:', error);
+        }
+    };
+
+    const handleToggleActive = async (id: number) => {
+        try {
+            await AdminPromoCodeService.toggleActive(id);
+            fetchPromoCodes();
+        } catch (error) {
+            console.error('Failed to toggle promo code status:', error);
+        }
+    };
+
+    const formatDate = (dateStr?: string) => {
+        if (!dateStr) return '—';
+        return new Date(dateStr).toLocaleDateString('ru-RU');
+    };
+
+    const columns: Column<PromoCode>[] = [
         {
-            key: 'name',
-            title: 'Название акции',
+            key: 'code',
+            title: 'Код',
             sortable: true,
+            render: (promo) => (
+                <span className="font-mono font-medium">{promo.code}</span>
+            ),
+        },
+        {
+            key: 'description',
+            title: 'Описание',
+            render: (promo) => promo.description || '—',
         },
         {
             key: 'discountType',
@@ -81,30 +144,36 @@ export function PromotionsListPage() {
             key: 'discountValue',
             title: 'Размер скидки',
             render: (promo) =>
-                promo.discountType === 'percent'
+                promo.discountType === 'PERCENTAGE'
                     ? `${promo.discountValue}%`
-                    : promo.discountType === 'fixed_amount'
-                    ? `${promo.discountValue} ₽`
-                    : '—',
+                    : `${promo.discountValue} ₽`,
         },
         {
             key: 'period',
-            title: 'Период активности',
-            render: (promo) => `${promo.startDate} / ${promo.endDate}`,
+            title: 'Период',
+            render: (promo) => `${formatDate(promo.validFrom)} — ${formatDate(promo.validTo)}`,
         },
         {
             key: 'status',
             title: 'Статус',
-            render: (promo) => (
-                <AdminBadge variant={statusVariants[promo.status]}>
-                    {statusLabels[promo.status]}
-                </AdminBadge>
-            ),
+            render: (promo) => {
+                const status = getPromoCodeStatus(promo);
+                return (
+                    <AdminBadge variant={statusVariants[status]}>
+                        {statusLabels[status]}
+                    </AdminBadge>
+                );
+            },
         },
         {
             key: 'usedCount',
             title: 'Использовано',
-            render: (promo) => `${promo.usedCount} раз`,
+            render: (promo) => (
+                <span>
+                    {promo.usedCount}
+                    {promo.maxUses ? ` / ${promo.maxUses}` : ''}
+                </span>
+            ),
         },
         {
             key: 'actions',
@@ -125,7 +194,7 @@ export function PromotionsListPage() {
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            // TODO: Delete promotion
+                            handleDelete(promo.id);
                         }}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
                         title="Удалить"
@@ -135,12 +204,12 @@ export function PromotionsListPage() {
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            // TODO: Toggle status
+                            handleToggleActive(promo.id);
                         }}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                        title={promo.status === 'active' ? 'Приостановить' : 'Активировать'}
+                        title={promo.isActive ? 'Деактивировать' : 'Активировать'}
                     >
-                        {promo.status === 'active' ? (
+                        {promo.isActive ? (
                             <Pause size={16} />
                         ) : (
                             <Play size={16} />
@@ -151,27 +220,17 @@ export function PromotionsListPage() {
         },
     ];
 
-    const filteredPromotions = promotions.filter((promo) => {
-        if (searchQuery) {
-            const search = searchQuery.toLowerCase();
-            if (!promo.name.toLowerCase().includes(search)) {
-                return false;
-            }
-        }
-        return true;
-    });
-
     return (
         <div>
             <AdminHeader
-                title="Управление промо-акциями и скидками"
-                subtitle="Основная таблица акций"
+                title="Управление промокодами"
+                subtitle="Основная таблица промокодов"
                 actions={
                     <AdminButton
                         icon={<Plus size={18} />}
                         onClick={() => navigate('/admin/promotions/new')}
                     >
-                        Создать акцию
+                        Создать промокод
                     </AdminButton>
                 }
             />
@@ -180,7 +239,7 @@ export function PromotionsListPage() {
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                     <AdminInput
-                        placeholder="Поиск по названию акции"
+                        placeholder="Поиск по коду"
                         showSearchIcon
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -194,17 +253,6 @@ export function PromotionsListPage() {
                         }
                         onClear={() => setFilterValues({})}
                     />
-                    <AdminSelect
-                        options={[
-                            { value: 'promotions', label: 'Таблица' },
-                            { value: 'promocodes', label: 'Промокоды' },
-                        ]}
-                        value={viewMode}
-                        onChange={(e) =>
-                            setViewMode(e.target.value as 'promotions' | 'promocodes')
-                        }
-                        className="w-36"
-                    />
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -215,7 +263,7 @@ export function PromotionsListPage() {
                                 size="sm"
                                 icon={<Pause size={16} />}
                             >
-                                Приостановить
+                                Деактивировать
                             </AdminButton>
                             <AdminButton
                                 variant="outline"
@@ -226,26 +274,47 @@ export function PromotionsListPage() {
                             </AdminButton>
                         </>
                     )}
-                    <AdminButton
-                        variant="ghost"
-                        size="sm"
-                        icon={<Download size={16} />}
-                    >
-                        Экспорт статистики
-                    </AdminButton>
                 </div>
             </div>
 
             {/* Table */}
             <AdminTable
                 columns={columns}
-                data={filteredPromotions}
+                data={promoCodes}
                 getRowId={(promo) => promo.id}
                 selectable
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
                 onRowClick={(promo) => navigate(`/admin/promotions/${promo.id}/edit`)}
+                isLoading={isLoading}
             />
+
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                    <span className="text-sm text-gray-500">
+                        Показано {promoCodes.length} из {pagination.totalElements}
+                    </span>
+                    <div className="flex gap-2">
+                        <AdminButton
+                            variant="outline"
+                            size="sm"
+                            disabled={pagination.page === 0}
+                            onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                        >
+                            Назад
+                        </AdminButton>
+                        <AdminButton
+                            variant="outline"
+                            size="sm"
+                            disabled={pagination.page >= pagination.totalPages - 1}
+                            onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                        >
+                            Вперёд
+                        </AdminButton>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

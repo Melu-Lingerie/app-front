@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Eye, FileText, Bell } from 'lucide-react';
 import {
@@ -10,20 +10,9 @@ import {
     AdminSelect,
 } from '../components';
 import type { Column, FilterConfig } from '../components';
-import type { Order, OrderStatus, PaymentStatus } from './types';
-import { mockOrders } from './mockData';
-
-const paymentStatusLabels: Record<PaymentStatus, string> = {
-    paid: 'Оплачен',
-    unpaid: 'Не оплачен',
-    refunded: 'Возврат',
-};
-
-const paymentMethodLabels = {
-    card: 'Карта',
-    sbp: 'СБП',
-    cash_on_delivery: 'При получении',
-};
+import type { OrderStatus, OrderListItem } from './types';
+import { orderStatusLabels, paymentMethodLabels, deliveryMethodLabels } from './types';
+import { AdminOrderService } from '@/api/services/AdminOrderService';
 
 const filterConfigs: FilterConfig[] = [
     {
@@ -31,11 +20,11 @@ const filterConfigs: FilterConfig[] = [
         label: 'По статусу',
         type: 'select',
         options: [
-            { value: 'new', label: 'Новый' },
-            { value: 'confirmed', label: 'Подтвержден' },
-            { value: 'processing', label: 'В обработке' },
-            { value: 'delivered', label: 'Доставлен' },
-            { value: 'cancelled', label: 'Отменен' },
+            { value: 'NEW', label: 'Новый' },
+            { value: 'PAID', label: 'Оплачен' },
+            { value: 'SHIPPED', label: 'Отправлен' },
+            { value: 'DELIVERED', label: 'Доставлен' },
+            { value: 'CANCELLED', label: 'Отменён' },
         ],
     },
     {
@@ -48,9 +37,8 @@ const filterConfigs: FilterConfig[] = [
         label: 'По способу доставки',
         type: 'select',
         options: [
-            { value: 'courier', label: 'Курьер' },
-            { value: 'cdek_point', label: 'Пункт СДЭК' },
-            { value: 'pickup_point', label: 'Пункты выдачи' },
+            { value: 'CDEK_COURIER', label: 'Курьер СДЭК' },
+            { value: 'CDEK_POINT', label: 'Пункт СДЭК' },
         ],
     },
     {
@@ -58,66 +46,118 @@ const filterConfigs: FilterConfig[] = [
         label: 'По способу оплаты',
         type: 'select',
         options: [
-            { value: 'card', label: 'Картой банка' },
-            { value: 'sbp', label: 'СБП' },
-            { value: 'cash_on_delivery', label: 'После получения' },
+            { value: 'CARD', label: 'Картой банка' },
+            { value: 'SBP', label: 'СБП' },
         ],
-    },
-    {
-        key: 'amount',
-        label: 'По сумме (диапазон)',
-        type: 'number-range',
     },
 ];
 
 const statusSelectOptions = [
-    { value: 'new', label: 'Новый' },
-    { value: 'confirmed', label: 'Подтвержден' },
-    { value: 'processing', label: 'В обработке' },
-    { value: 'delivered', label: 'Доставлен' },
-    { value: 'cancelled', label: 'Отменен' },
+    { value: 'NEW', label: 'Новый' },
+    { value: 'PAID', label: 'Оплачен' },
+    { value: 'SHIPPED', label: 'Отправлен' },
+    { value: 'DELIVERED', label: 'Доставлен' },
+    { value: 'CANCELLED', label: 'Отменён' },
 ];
 
 export function OrdersListPage() {
     const navigate = useNavigate();
-    const [orders, setOrders] = useState<Order[]>(mockOrders);
+    const [orders, setOrders] = useState<OrderListItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
     const [filterValues, setFilterValues] = useState<Record<string, unknown>>({});
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [totalItems, setTotalItems] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
-    const handleStatusChange = (orderId: number, newStatus: OrderStatus) => {
-        setOrders((prev) =>
-            prev.map((order) =>
-                order.id === orderId ? { ...order, status: newStatus } : order
-            )
-        );
+    // Fetch orders from API
+    const fetchOrders = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const statusFilter = filterValues.status as OrderStatus | undefined;
+            const response = await AdminOrderService.getOrders(
+                statusFilter,
+                currentPage - 1, // API uses 0-based pagination
+                itemsPerPage
+            );
+            setOrders(response.content as OrderListItem[]);
+            setTotalItems(response.totalElements);
+            setTotalPages(response.totalPages);
+        } catch (err) {
+            console.error('Failed to fetch orders:', err);
+            setError('Не удалось загрузить заказы');
+            setOrders([]);
+        } finally {
+            setLoading(false);
+        }
+    }, [currentPage, itemsPerPage, filterValues.status]);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]);
+
+    const handleStatusChange = async (orderId: number, newStatus: OrderStatus) => {
+        try {
+            await AdminOrderService.updateStatus(orderId, { status: newStatus });
+            // Update local state
+            setOrders((prev) =>
+                prev.map((order) =>
+                    order.id === orderId ? { ...order, status: newStatus } : order
+                )
+            );
+        } catch (err) {
+            console.error('Failed to update status:', err);
+            alert('Не удалось обновить статус заказа');
+        }
     };
 
-    const columns: Column<Order>[] = [
+    const handleCancelOrder = async (orderId: number) => {
+        const reason = prompt('Укажите причину отмены:');
+        if (!reason) return;
+
+        try {
+            await AdminOrderService.cancelOrder(orderId, { reason });
+            fetchOrders();
+        } catch (err) {
+            console.error('Failed to cancel order:', err);
+            alert('Не удалось отменить заказ');
+        }
+    };
+
+    // Format date for display
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+    };
+
+    const columns: Column<OrderListItem>[] = [
         {
             key: 'orderNumber',
             title: '№ заказа',
             sortable: true,
             render: (order) => (
-                <span className="font-medium">ID: {order.orderNumber}</span>
+                <span className="font-medium">{order.orderNumber}</span>
             ),
         },
         {
             key: 'createdAt',
             title: 'Дата',
             sortable: true,
-            render: (order) => order.createdAt,
+            render: (order) => formatDate(order.createdAt),
         },
         {
-            key: 'customer',
-            title: 'Клиент',
+            key: 'itemsCount',
+            title: 'Товаров',
             render: (order) => (
-                <div>
-                    <div className="text-gray-900 dark:text-gray-100">{order.customerName}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">{order.customerEmail}</div>
-                </div>
+                <span>{order.itemsCount} шт.</span>
             ),
         },
         {
@@ -148,17 +188,18 @@ export function OrdersListPage() {
             title: 'Оплата',
             render: (order) => (
                 <div className="text-sm">
-                    <span className="text-gray-900 dark:text-gray-100">{paymentMethodLabels[order.paymentMethod]}</span>
-                    <span className="text-gray-400 dark:text-gray-500"> + </span>
-                    <span className={
-                        order.paymentStatus === 'paid'
-                            ? 'text-green-600 dark:text-green-400'
-                            : order.paymentStatus === 'refunded'
-                            ? 'text-orange-600 dark:text-orange-400'
-                            : 'text-gray-500 dark:text-gray-400'
-                    }>
-                        {paymentStatusLabels[order.paymentStatus]}
+                    <span className="text-gray-900 dark:text-gray-100">
+                        {paymentMethodLabels[order.paymentMethod]}
                     </span>
+                </div>
+            ),
+        },
+        {
+            key: 'delivery',
+            title: 'Доставка',
+            render: (order) => (
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {deliveryMethodLabels[order.deliveryMethod]}
                 </div>
             ),
         },
@@ -181,10 +222,13 @@ export function OrdersListPage() {
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            // TODO: Delete order
+                            if (confirm('Вы уверены, что хотите отменить заказ?')) {
+                                handleCancelOrder(order.id);
+                            }
                         }}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
-                        title="Удалить"
+                        title="Отменить заказ"
+                        disabled={order.status === 'CANCELLED' || order.status === 'DELIVERED'}
                     >
                         <Trash2 size={16} />
                     </button>
@@ -203,29 +247,14 @@ export function OrdersListPage() {
         },
     ];
 
-    const filteredOrders = useMemo(() => {
-        return orders.filter((order) => {
-            if (searchQuery) {
-                const search = searchQuery.toLowerCase();
-                if (
-                    !order.orderNumber.toLowerCase().includes(search) &&
-                    !order.customerEmail.toLowerCase().includes(search) &&
-                    !order.customerPhone.includes(search)
-                ) {
-                    return false;
-                }
-            }
-            return true;
-        });
-    }, [orders, searchQuery]);
-
-    // Пагинация
-    const totalItems = filteredOrders.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    const paginatedOrders = useMemo(() => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        return filteredOrders.slice(startIndex, startIndex + itemsPerPage);
-    }, [filteredOrders, currentPage, itemsPerPage]);
+    // Filter orders by search query (client-side for now)
+    const filteredOrders = orders.filter((order) => {
+        if (searchQuery) {
+            const search = searchQuery.toLowerCase();
+            return order.orderNumber.toLowerCase().includes(search);
+        }
+        return true;
+    });
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -252,11 +281,23 @@ export function OrdersListPage() {
                 }
             />
 
+            {error && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                    {error}
+                    <button
+                        onClick={fetchOrders}
+                        className="ml-4 underline hover:no-underline"
+                    >
+                        Повторить
+                    </button>
+                </div>
+            )}
+
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                     <AdminInput
-                        placeholder="№ заказа, email или телефон клиента"
+                        placeholder="№ заказа"
                         showSearchIcon
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -273,12 +314,11 @@ export function OrdersListPage() {
                             label: 'Экспорт в Excel',
                             onClick: () => {
                                 console.log('Export to Excel');
-                                // TODO: Implement Excel export
                             },
                         }}
                     />
-                    <AdminButton variant="outline">
-                        Редактировать заказ
+                    <AdminButton variant="outline" onClick={fetchOrders}>
+                        Обновить
                     </AdminButton>
                 </div>
 
@@ -290,7 +330,7 @@ export function OrdersListPage() {
                                 size="sm"
                                 onClick={() => {}}
                             >
-                                Изменить статус
+                                Изменить статус ({selectedIds.size})
                             </AdminButton>
                         </>
                     )}
@@ -306,7 +346,7 @@ export function OrdersListPage() {
                         size="sm"
                         icon={<Bell size={16} />}
                     >
-                        Отправить уведомление
+                        Уведомление
                     </AdminButton>
                 </div>
             </div>
@@ -314,12 +354,14 @@ export function OrdersListPage() {
             {/* Table */}
             <AdminTable
                 columns={columns}
-                data={paginatedOrders}
+                data={filteredOrders}
                 getRowId={(order) => order.id}
                 selectable
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
                 onRowClick={(order) => navigate(`/admin/orders/${order.id}`)}
+                loading={loading}
+                emptyMessage="Заказы не найдены"
                 pagination={{
                     currentPage,
                     totalPages,

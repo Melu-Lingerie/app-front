@@ -12,3 +12,5 @@ export { AdminModal } from './AdminModal';
 export { AdminBadge } from './AdminBadge';
 export { AdminTextarea } from './AdminTextarea';
 export { AdminPagination } from './AdminPagination';
+export { MediaUploader } from './MediaUploader';
+export type { MediaUploaderProps, UploadedMedia } from './MediaUploader';

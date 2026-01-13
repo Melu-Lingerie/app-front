@@ -1,26 +1,21 @@
-export type ReviewStatus = 'moderation' | 'published' | 'hidden';
-
 export interface Review {
-    id: number;
+    id: string; // UUID
     productId: number;
     productName: string;
-    reviewText: string;
+    userId: number;
+    reviewerName: string;
     rating: number;
-    authorId: number;
-    authorName: string;
-    date: string;
-    status: ReviewStatus;
-    hasPhoto: boolean;
-    photoUrls?: string[];
+    reviewText: string;
+    isVerifiedPurchase: boolean;
+    isApproved: boolean | null; // null = pending, true = approved, false = rejected
+    createdAt: string;
 }
 
-export interface ReviewFilters {
-    search?: string;
-    productId?: number;
-    categoryId?: number;
-    rating?: number[];
-    dateFrom?: string;
-    dateTo?: string;
-    hasPhoto?: boolean;
-    status?: ReviewStatus;
+// Computed status based on isApproved
+export type ReviewStatus = 'moderation' | 'published' | 'hidden';
+
+export function getReviewStatus(review: Review): ReviewStatus {
+    if (review.isApproved === null) return 'moderation';
+    if (review.isApproved === true) return 'published';
+    return 'hidden';
 }
