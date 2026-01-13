@@ -1,7 +1,7 @@
 import {clearUser, setAuthenticated, setUserData, setUserId} from './userSlice';
 import { createAsyncThunk, configureStore } from '@reduxjs/toolkit';
-import cartReducer, { fetchCart } from './cartSlice';
-import wishlistReducer, { fetchWishlist } from './wishlistSlice';
+import cartReducer, { fetchCart, setCartId } from './cartSlice';
+import wishlistReducer, { fetchWishlist, setWishlistId } from './wishlistSlice';
 import appReducer from './appSlice';
 import userReducer from './userSlice';
 import {Service, UserManagementService} from '@/api';
@@ -183,10 +183,10 @@ export const logoutAndReinit = createAsyncThunk<void, { callServerLogout?: boole
             const data = res.ok ? await res.json() : {};
 
             if (data?.cartId) {
-                dispatch((await import('./cartSlice')).setCartId(data.cartId));
+                dispatch(setCartId(data.cartId));
             }
             if (data?.wishlistId) {
-                dispatch((await import('./wishlistSlice')).setWishlistId(data.wishlistId));
+                dispatch(setWishlistId(data.wishlistId));
             }
             await dispatch(initApp({ userId: data?.userId ?? 0, skipSilentRefresh: true }));
         } catch {
