@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { OrderResponseDto, OrderListResponseDto, PageOrderListResponseDto } from '../models/OrderResponseDto';
+import type { OrderResponseDto, PageOrderListResponseDto } from '../models/OrderResponseDto';
 import type { OrderStatus } from '../models/CheckoutResponseDto';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';

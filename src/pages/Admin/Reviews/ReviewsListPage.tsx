@@ -329,7 +329,7 @@ export function ReviewsListPage() {
                 selectable
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
-                isLoading={isLoading}
+                loading={isLoading}
             />
 
             {/* Pagination */}

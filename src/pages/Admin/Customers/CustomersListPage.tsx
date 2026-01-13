@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Pencil, Mail, Eye, Download, UserX, RefreshCw } from 'lucide-react';
+import { Mail, Eye, Download, UserX, RefreshCw } from 'lucide-react';
 import {
     AdminHeader,
     AdminTable,
@@ -289,7 +289,6 @@ export function CustomersListPage() {
                 onSelectionChange={setSelectedIds}
                 onRowClick={(customer) => navigate(`/admin/customers/${customer.id}`)}
                 loading={loading}
-                emptyMessage="Клиенты не найдены"
                 pagination={{
                     currentPage,
                     totalPages,

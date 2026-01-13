@@ -206,7 +206,6 @@ export function BannersListPage() {
                 getRowId={(banner) => banner.id}
                 onRowClick={(banner) => navigate(`/admin/banners/${banner.id}/edit`)}
                 loading={loading}
-                emptyMessage="Баннеры не найдены"
             />
 
             {/* Delete Confirmation Modal */}

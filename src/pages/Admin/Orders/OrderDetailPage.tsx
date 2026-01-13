@@ -11,13 +11,12 @@ import type { DeliveryMethod } from '@/api/models/CheckoutRequestDto';
 import type { OrderStatus } from '@/api/models/CheckoutResponseDto';
 
 const deliveryMethodLabels: Record<DeliveryMethod, string> = {
-    COURIER: 'Курьер',
-    CDEK_PVZ: 'Пункт СДЭК',
-    PICKUP: 'Пункты выдачи',
+    CDEK_COURIER: 'Курьер СДЭК',
+    CDEK_POINT: 'Пункт СДЭК',
 };
 
 const orderStatusLabels: Record<OrderStatus, string> = {
-    PENDING: 'Ожидает оплаты',
+    NEW: 'Новый',
     PAID: 'Оплачен',
     SHIPPED: 'Отправлен',
     DELIVERED: 'Доставлен',
@@ -92,7 +91,7 @@ export function OrderDetailPage() {
         });
     };
 
-    const isPaid = order.status !== 'PENDING' && order.status !== 'CANCELLED';
+    const isPaid = order.status !== 'NEW' && order.status !== 'CANCELLED';
 
     return (
         <div>

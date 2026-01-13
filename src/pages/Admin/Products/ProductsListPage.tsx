@@ -334,7 +334,6 @@ export function ProductsListPage() {
                 onSelectionChange={setSelectedIds}
                 onRowClick={(product) => navigate(`/admin/products/${product.id}/edit`)}
                 loading={loading}
-                emptyMessage="Товары не найдены"
                 pagination={{
                     currentPage,
                     totalPages,

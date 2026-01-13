@@ -11,7 +11,7 @@ import {
 } from '../components';
 import type { Column, FilterConfig } from '../components';
 import type { OrderStatus, OrderListItem } from './types';
-import { orderStatusLabels, paymentMethodLabels, deliveryMethodLabels } from './types';
+import { paymentMethodLabels, deliveryMethodLabels } from './types';
 import { AdminOrderService } from '@/api/services/AdminOrderService';
 
 const filterConfigs: FilterConfig[] = [
@@ -361,7 +361,6 @@ export function OrdersListPage() {
                 onSelectionChange={setSelectedIds}
                 onRowClick={(order) => navigate(`/admin/orders/${order.id}`)}
                 loading={loading}
-                emptyMessage="Заказы не найдены"
                 pagination={{
                     currentPage,
                     totalPages,

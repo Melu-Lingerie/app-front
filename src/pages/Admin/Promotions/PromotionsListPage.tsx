@@ -8,7 +8,6 @@ import {
     AdminInput,
     AdminFilters,
     AdminBadge,
-    AdminSelect,
 } from '../components';
 import type { Column, FilterConfig } from '../components';
 import type { PromoCode, PromoCodeStatus, DiscountType } from './types';
@@ -286,7 +285,7 @@ export function PromotionsListPage() {
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
                 onRowClick={(promo) => navigate(`/admin/promotions/${promo.id}/edit`)}
-                isLoading={isLoading}
+                loading={isLoading}
             />
 
             {/* Pagination */}
