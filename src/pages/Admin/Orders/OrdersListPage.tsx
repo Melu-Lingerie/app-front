@@ -294,35 +294,37 @@ export function OrdersListPage() {
             )}
 
             {/* Toolbar */}
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <AdminInput
                         placeholder="№ заказа"
                         showSearchIcon
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-72"
+                        className="w-full sm:w-72"
                     />
-                    <AdminFilters
-                        filters={filterConfigs}
-                        values={filterValues}
-                        onChange={(key, value) =>
-                            setFilterValues((prev) => ({ ...prev, [key]: value }))
-                        }
-                        onClear={() => setFilterValues({})}
-                        exportAction={{
-                            label: 'Экспорт в Excel',
-                            onClick: () => {
-                                console.log('Export to Excel');
-                            },
-                        }}
-                    />
-                    <AdminButton variant="outline" onClick={fetchOrders}>
-                        Обновить
-                    </AdminButton>
+                    <div className="flex items-center gap-2">
+                        <AdminFilters
+                            filters={filterConfigs}
+                            values={filterValues}
+                            onChange={(key, value) =>
+                                setFilterValues((prev) => ({ ...prev, [key]: value }))
+                            }
+                            onClear={() => setFilterValues({})}
+                            exportAction={{
+                                label: 'Экспорт в Excel',
+                                onClick: () => {
+                                    console.log('Export to Excel');
+                                },
+                            }}
+                        />
+                        <AdminButton variant="outline" onClick={fetchOrders}>
+                            Обновить
+                        </AdminButton>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     {selectedIds.size > 0 && (
                         <>
                             <AdminButton

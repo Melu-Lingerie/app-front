@@ -144,7 +144,7 @@ export function PromotionFormPage() {
                 {/* Основные настройки */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Основные настройки</h2>
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <AdminInput
                             label="Код промокода"
                             placeholder="SUMMER2024"
@@ -178,8 +178,8 @@ export function PromotionFormPage() {
                         />
                     </div>
 
-                    <div className="grid grid-cols-4 gap-4 mt-4">
-                        <div className="col-span-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+                        <div className="sm:col-span-2">
                             <AdminInput
                                 label="Описание"
                                 placeholder="Скидка на летнюю коллекцию"
@@ -202,7 +202,7 @@ export function PromotionFormPage() {
                 {/* Лимиты и даты */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Лимиты и период действия</h2>
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <AdminInput
                             label="Макс. использований (всего)"
                             type="number"
@@ -233,7 +233,7 @@ export function PromotionFormPage() {
                 </section>
 
                 {/* Footer Actions */}
-                <div className="flex items-center gap-3 pb-8">
+                <div className="flex flex-wrap items-center gap-3 pb-8">
                     <AdminButton onClick={handleSubmit} disabled={isSaving}>
                         {isSaving ? 'Сохранение...' : 'Сохранить'}
                     </AdminButton>

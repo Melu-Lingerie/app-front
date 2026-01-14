@@ -37,7 +37,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
             <AdminButton
                 variant="outline"
                 onClick={() => setIsOpen(!isOpen)}
-                icon={<ChevronDown size={16} className={isOpen ? 'rotate-180' : ''} />}
+                icon={<ChevronDown size={16} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />}
             >
                 Фильтры
                 {activeFiltersCount > 0 && (
@@ -48,8 +48,8 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
             </AdminButton>
 
             {isOpen && (
-                <div className="absolute top-full left-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                    <div className="p-4 space-y-4">
+                <div className="absolute top-full left-0 sm:left-auto sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                    <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
                         {filters.map((filter) => (
                             <div key={filter.key}>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -97,7 +97,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                                 )}
 
                                 {filter.type === 'date-range' && (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                         <input
                                             type="date"
                                             value={(values[`${filter.key}_from`] as string) || ''}
@@ -106,7 +106,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                                             }
                                             className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         />
-                                        <span className="text-gray-400">-</span>
+                                        <span className="text-gray-400 text-center">-</span>
                                         <input
                                             type="date"
                                             value={(values[`${filter.key}_to`] as string) || ''}
@@ -119,7 +119,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                                 )}
 
                                 {filter.type === 'number-range' && (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                         <input
                                             type="number"
                                             placeholder="От"
@@ -129,7 +129,7 @@ export function AdminFilters({ filters, values, onChange, onClear, exportAction 
                                             }
                                             className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                         />
-                                        <span className="text-gray-400">-</span>
+                                        <span className="text-gray-400 text-center">-</span>
                                         <input
                                             type="number"
                                             placeholder="До"

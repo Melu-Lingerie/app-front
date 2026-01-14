@@ -9,6 +9,9 @@ interface ThemeContextType {
     setTheme: (theme: Theme) => void;
     sidebarCollapsed: boolean;
     toggleSidebar: () => void;
+    mobileMenuOpen: boolean;
+    setMobileMenuOpen: (open: boolean) => void;
+    toggleMobileMenu: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -37,6 +40,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         return false;
     });
 
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
     useLayoutEffect(() => {
         const root = document.documentElement;
         if (theme === 'dark') {
@@ -63,8 +68,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setSidebarCollapsed((prev) => !prev);
     };
 
+    const toggleMobileMenu = () => {
+        setMobileMenuOpen((prev) => !prev);
+    };
+
+    // Close mobile menu on resize to desktop
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 1024) {
+                setMobileMenuOpen(false);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, sidebarCollapsed, toggleSidebar }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, sidebarCollapsed, toggleSidebar, mobileMenuOpen, setMobileMenuOpen, toggleMobileMenu }}>
             {children}
         </ThemeContext.Provider>
     );

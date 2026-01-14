@@ -169,7 +169,7 @@ export function ProductFormPage() {
                 {/* Основное */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Основное</h2>
-                    <div className="grid grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                         <div className="col-span-1">
                             <AdminInput
                                 label="Товар"
@@ -241,7 +241,7 @@ export function ProductFormPage() {
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                             Тип модели
                         </label>
-                        <div className="flex gap-4">
+                        <div className="flex flex-wrap gap-4">
                             {productTypeOptions.map((option) => (
                                 <label key={option.value} className="flex items-center gap-2 cursor-pointer">
                                     <input
@@ -263,7 +263,7 @@ export function ProductFormPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-4 mt-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
                         <AdminInput
                             label="Базовая цена"
                             type="number"
@@ -304,7 +304,7 @@ export function ProductFormPage() {
                 {/* Атрибуты */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Атрибуты</h2>
-                    <div className="grid grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Размерная сетка
@@ -427,15 +427,15 @@ export function ProductFormPage() {
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Главные фотографии
                             </label>
-                            <div className="flex gap-3">
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
                                 {[1, 2, 3, 4, 5].map((i) => (
                                     <div
                                         key={i}
-                                        className="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500"
+                                        className="aspect-square border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500"
                                     >
                                         <Upload size={20} className="text-gray-400 dark:text-gray-500" />
-                                        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                            Загрузить фото
+                                        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 text-center px-1">
+                                            Загрузить
                                         </span>
                                     </div>
                                 ))}
@@ -446,15 +446,15 @@ export function ProductFormPage() {
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Дополнительные фотографии
                             </label>
-                            <div className="flex gap-3">
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3">
                                 {[1, 2, 3, 4, 5, 6, 7].map((i) => (
                                     <div
                                         key={i}
-                                        className="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500"
+                                        className="aspect-square border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500"
                                     >
                                         <Upload size={20} className="text-gray-400 dark:text-gray-500" />
-                                        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                            Загрузить фото
+                                        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 text-center px-1">
+                                            Загрузить
                                         </span>
                                     </div>
                                 ))}
@@ -466,7 +466,7 @@ export function ProductFormPage() {
                 {/* SEO */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">SEO</h2>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <AdminInput
                             label="Мета-заголовок"
                             placeholder="Заголовок товара"
@@ -492,7 +492,7 @@ export function ProductFormPage() {
                 {/* Блок связанных элементов */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Блок связанных элементов</h2>
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Похожие товары
@@ -546,7 +546,7 @@ export function ProductFormPage() {
                 </section>
 
                 {/* Footer Actions */}
-                <div className="flex items-center gap-3 pb-8">
+                <div className="flex flex-wrap items-center gap-3 pb-8">
                     <AdminButton onClick={handleSubmit}>Сохранить</AdminButton>
                     <AdminButton variant="secondary" onClick={handleSubmit}>
                         Сохранить и добавить ещё

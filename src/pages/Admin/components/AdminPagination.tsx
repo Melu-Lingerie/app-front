@@ -59,8 +59,8 @@ export function AdminPagination({
     }
 
     return (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-            <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                     Показано {startItem}-{endItem} из {totalItems}
                 </span>
@@ -93,25 +93,33 @@ export function AdminPagination({
                     <ChevronLeft size={18} />
                 </button>
 
-                {getPageNumbers().map((page, index) =>
-                    page === 'ellipsis' ? (
-                        <span key={`ellipsis-${index}`} className="px-2 text-gray-400">
-                            ...
-                        </span>
-                    ) : (
-                        <button
-                            key={page}
-                            onClick={() => onPageChange(page)}
-                            className={`min-w-[36px] h-9 px-3 rounded-lg text-sm font-medium transition-colors ${
-                                currentPage === page
-                                    ? 'bg-black dark:bg-white text-white dark:text-black'
-                                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-                            }`}
-                        >
-                            {page}
-                        </button>
-                    )
-                )}
+                {/* Mobile: show current/total */}
+                <span className="sm:hidden px-3 text-sm text-gray-600 dark:text-gray-400">
+                    {currentPage} / {totalPages}
+                </span>
+
+                {/* Desktop: show page numbers */}
+                <div className="hidden sm:flex items-center gap-1">
+                    {getPageNumbers().map((page, index) =>
+                        page === 'ellipsis' ? (
+                            <span key={`ellipsis-${index}`} className="px-2 text-gray-400">
+                                ...
+                            </span>
+                        ) : (
+                            <button
+                                key={page}
+                                onClick={() => onPageChange(page)}
+                                className={`min-w-[36px] h-9 px-3 rounded-lg text-sm font-medium transition-colors ${
+                                    currentPage === page
+                                        ? 'bg-black dark:bg-white text-white dark:text-black'
+                                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                }`}
+                            >
+                                {page}
+                            </button>
+                        )
+                    )}
+                </div>
 
                 <button
                     onClick={() => onPageChange(currentPage + 1)}

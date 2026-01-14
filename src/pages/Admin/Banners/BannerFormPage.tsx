@@ -159,7 +159,7 @@ export function BannerFormPage() {
                         Основная информация
                     </h2>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <AdminInput
                             label="Заголовок"
                             placeholder="Введите заголовок баннера"
@@ -208,7 +208,7 @@ export function BannerFormPage() {
                 </section>
 
                 {/* Footer Actions */}
-                <div className="flex items-center gap-3 pb-8">
+                <div className="flex flex-wrap items-center gap-3 pb-8">
                     <AdminButton onClick={handleSubmit} disabled={saving}>
                         {saving ? 'Сохранение...' : 'Сохранить'}
                     </AdminButton>
