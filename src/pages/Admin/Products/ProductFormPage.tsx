@@ -306,7 +306,7 @@ export function ProductFormPage() {
                             placeholder="Описание товара"
                             value={formData.description}
                             onChange={(e) => updateField('description', e.target.value)}
-                            rows={3}
+                            rows={8}
                         />
                     </div>
 

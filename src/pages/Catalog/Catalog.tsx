@@ -240,23 +240,25 @@ export const Catalog = () => {
             />
 
             {/* Контент */}
-            <div className="grid grid-cols-1 md:grid-cols-4 relative">
+            <div className="flex relative">
                 {/* === Sidebar (скрыт на мобилке) === */}
-                <div className="hidden md:block col-span-1 border-r border-[#CCC] dark:border-white/10 z-40 sticky top-[50px] h-[calc(100vh-50px)] overflow-y-auto">
-                    <FilterSidebar
-                        minVal={localMinVal}
-                        maxVal={localMaxVal}
-                        selectedTypes={filters.types}
-                        selectedSizes={filters.sizes ?? []}
-                        selectedColors={filters.colors ?? []}
-                        toggleFilterValue={toggleFilterValue}
-                        setMinVal={setLocalMinVal}
-                        setMaxVal={setLocalMaxVal}
-                        onPriceCommit={flushPrice}
-                    />
-                </div>
+                <aside className="hidden md:block w-1/4 flex-shrink-0">
+                    <div className="sticky top-[50px] h-[calc(100vh-50px)] overflow-y-auto border-r border-[#CCC] dark:border-white/10">
+                        <FilterSidebar
+                            minVal={localMinVal}
+                            maxVal={localMaxVal}
+                            selectedTypes={filters.types}
+                            selectedSizes={filters.sizes ?? []}
+                            selectedColors={filters.colors ?? []}
+                            toggleFilterValue={toggleFilterValue}
+                            setMinVal={setLocalMinVal}
+                            setMaxVal={setLocalMaxVal}
+                            onPriceCommit={flushPrice}
+                        />
+                    </div>
+                </aside>
 
-                <div className="col-span-1 md:col-span-3">
+                <div className="flex-1">
                     <div className="grid grid-cols-2 md:grid-cols-3 relative">
 
                         {/* === ВЕРХНИЙ sentinel === */}
