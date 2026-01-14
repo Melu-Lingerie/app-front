@@ -242,7 +242,7 @@ export const Catalog = () => {
             {/* Контент */}
             <div className="grid grid-cols-1 md:grid-cols-4 relative">
                 {/* === Sidebar (скрыт на мобилке) === */}
-                <div className="hidden md:block col-span-1 border-r border-b border-[#CCC] dark:border-white/10 z-40 sticky top-[58px] h-[calc(100vh-58px)] overflow-y-auto">
+                <div className="hidden md:block col-span-1 border-r border-[#CCC] dark:border-white/10 z-40 sticky top-[50px] h-[calc(100vh-50px)] overflow-y-auto">
                     <FilterSidebar
                         minVal={localMinVal}
                         maxVal={localMaxVal}

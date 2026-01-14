@@ -9,6 +9,6 @@ export const PRODUCT_STATUS_MAP: Record<SortOption, 'AVAILABLE' | 'NEW' | 'SOON'
 };
 
 export const PAGE_SIZE = 18;
-export const HEADER_OFFSET = 70;
+export const HEADER_OFFSET = 50;
 export const PRICE_MIN = 0;
 export const PRICE_MAX = 90000;

@@ -3,8 +3,8 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 
 // Types
-export type ProductStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
-export type ProductType = 'SIMPLE' | 'VARIABLE';
+export type ProductStatus = 'AVAILABLE' | 'NOT_AVAILABLE' | 'NEW' | 'SOON';
+export type ProductType = 'STANDARD' | 'SET';
 
 export type ProductAdminListItemDto = {
     id: number;

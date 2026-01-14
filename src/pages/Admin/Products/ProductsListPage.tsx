@@ -14,15 +14,17 @@ import { AdminProductService } from '@/api/services/AdminProductService';
 import type { ProductAdminListItemDto, ProductStatus } from '@/api/services/AdminProductService';
 
 const statusLabels: Record<ProductStatus, string> = {
-    ACTIVE: 'В продаже',
-    DRAFT: 'Черновик',
-    ARCHIVED: 'В архиве',
+    AVAILABLE: 'В наличии',
+    NOT_AVAILABLE: 'Нет в наличии',
+    NEW: 'Новинка',
+    SOON: 'Скоро',
 };
 
 const statusVariants: Record<ProductStatus, 'success' | 'warning' | 'error'> = {
-    ACTIVE: 'success',
-    DRAFT: 'warning',
-    ARCHIVED: 'error',
+    AVAILABLE: 'success',
+    NOT_AVAILABLE: 'error',
+    NEW: 'warning',
+    SOON: 'warning',
 };
 
 const filterConfigs: FilterConfig[] = [
@@ -31,9 +33,10 @@ const filterConfigs: FilterConfig[] = [
         label: 'По статусу',
         type: 'select',
         options: [
-            { value: 'ACTIVE', label: 'В продаже' },
-            { value: 'DRAFT', label: 'Черновик' },
-            { value: 'ARCHIVED', label: 'В архиве' },
+            { value: 'AVAILABLE', label: 'В наличии' },
+            { value: 'NOT_AVAILABLE', label: 'Нет в наличии' },
+            { value: 'NEW', label: 'Новинка' },
+            { value: 'SOON', label: 'Скоро' },
         ],
     },
     {

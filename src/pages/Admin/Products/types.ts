@@ -1,12 +1,22 @@
-export type ProductStatus = 'active' | 'inactive' | 'out_of_stock';
-export type ProductType = 'bustier' | 'panties' | 'body' | 'set';
+export type ProductStatus = 'AVAILABLE' | 'NOT_AVAILABLE' | 'NEW' | 'SOON';
+export type ProductType = 'STANDARD' | 'SET';
+
+export interface ProductVariantMedia {
+    id: number;
+    mediaId: number;
+    mediaUrl?: string;
+    sortOrder: number;
+}
 
 export interface ProductVariant {
     id: number;
-    colorName: string;
-    size: string;
+    colorName?: string;
+    size?: string;
     stockQuantity: number;
     isAvailable: boolean;
+    price?: number;
+    sortOrder: number;
+    media: ProductVariantMedia[];
 }
 
 export interface Product {
@@ -14,17 +24,18 @@ export interface Product {
     name: string;
     articleNumber: string;
     slug: string;
-    description: string;
-    categoryId: number;
-    categoryName: string;
+    description?: string;
+    categoryId?: number;
+    categoryName?: string;
     collectionId?: number;
     collectionName?: string;
     productType: ProductType;
-    basePrice: number;
+    basePrice?: number;
     promoPrice?: number;
-    stockQuantity: number;
+    totalStock: number;
     status: ProductStatus;
-    mainImageUrl?: string;
+    mainMediaId?: number;
+    mainMediaUrl?: string;
     material?: string;
     careInstructions?: string;
     metaTitle?: string;
@@ -44,19 +55,27 @@ export interface ProductFormData {
     productType: ProductType;
     basePrice: number;
     promoPrice?: number;
-    stockQuantity: number;
     status: ProductStatus;
     material?: string;
     careInstructions?: string;
     metaTitle?: string;
     metaDescription?: string;
     metaKeywords?: string;
-    colors: string[];
-    sizes: string[];
-    mainPhotos: File[];
-    additionalPhotos: File[];
-    relatedProductIds: number[];
-    accessoryProductIds: number[];
+    mainMediaId?: number;
+    mainMediaUrl?: string;
+    variants: ProductVariantFormData[];
+}
+
+export interface ProductVariantFormData {
+    id?: number;
+    colorName?: string;
+    size?: string;
+    stockQuantity: number;
+    isAvailable: boolean;
+    price?: number;
+    sortOrder: number;
+    mediaIds: number[];
+    mediaUrls: string[];
 }
 
 export interface ProductFilters {
