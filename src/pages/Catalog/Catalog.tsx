@@ -240,25 +240,23 @@ export const Catalog = () => {
             />
 
             {/* Контент */}
-            <div className="flex relative">
+            <div className="grid grid-cols-1 md:grid-cols-4 relative">
                 {/* === Sidebar (скрыт на мобилке) === */}
-                <aside className="hidden md:block w-1/4 flex-shrink-0">
-                    <div className="sticky top-[50px] h-[calc(100vh-50px)] overflow-y-auto border-r border-[#CCC] dark:border-white/10">
-                        <FilterSidebar
-                            minVal={localMinVal}
-                            maxVal={localMaxVal}
-                            selectedTypes={filters.types}
-                            selectedSizes={filters.sizes ?? []}
-                            selectedColors={filters.colors ?? []}
-                            toggleFilterValue={toggleFilterValue}
-                            setMinVal={setLocalMinVal}
-                            setMaxVal={setLocalMaxVal}
-                            onPriceCommit={flushPrice}
-                        />
-                    </div>
-                </aside>
+                <div className="hidden md:block col-span-1 border-r border-[#CCC] dark:border-white/10 z-40 sticky top-[50px] h-[calc(100vh-50px)] overflow-y-auto">
+                    <FilterSidebar
+                        minVal={localMinVal}
+                        maxVal={localMaxVal}
+                        selectedTypes={filters.types}
+                        selectedSizes={filters.sizes ?? []}
+                        selectedColors={filters.colors ?? []}
+                        toggleFilterValue={toggleFilterValue}
+                        setMinVal={setLocalMinVal}
+                        setMaxVal={setLocalMaxVal}
+                        onPriceCommit={flushPrice}
+                    />
+                </div>
 
-                <div className="flex-1">
+                <div className="col-span-1 md:col-span-3">
                     <div className="grid grid-cols-2 md:grid-cols-3 relative">
 
                         {/* === ВЕРХНИЙ sentinel === */}
@@ -377,17 +375,17 @@ export const Catalog = () => {
                                 </p>
 
                                 {/* 🔘 Кнопка в фирменном цвете */}
-                                    <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.97 }}
-                                        onClick={handleReset}
-                                        className="px-6 py-2.5 rounded-lg text-sm font-medium text-white transition-colors shadow-sm cursor-pointer"
-                                        style={{
-                                            backgroundColor: '#F8C6D7',
-                                        }}
-                                    >
-                                        Сбросить фильтры
-                                    </motion.button>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    onClick={handleReset}
+                                    className="px-6 py-2.5 rounded-lg text-sm font-medium text-white transition-colors shadow-sm cursor-pointer"
+                                    style={{
+                                        backgroundColor: '#F8C6D7',
+                                    }}
+                                >
+                                    Сбросить фильтры
+                                </motion.button>
                             </motion.div>
                         )}
 
