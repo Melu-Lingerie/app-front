@@ -1,29 +1,40 @@
 import {useState} from 'react';
 import {DoubleSlider} from '@/components';
 import {FilterAccordion} from './FilterAccordion.tsx';
+import type {CategoryOption} from '@/pages/Catalog/hooks/useCatalogFilterOptions.ts';
 
 interface Props {
     minVal: number;
     maxVal: number;
+    priceMin: number;
+    priceMax: number;
+    categories: CategoryOption[];
+    availableSizes: string[];
+    availableColors: string[];
     selectedTypes: string[];
     setMinVal: (val: number) => void;
     setMaxVal: (val: number) => void;
     selectedSizes: string[];
     selectedColors: string[];
     toggleFilterValue: (key: 'types' | 'sizes' | 'colors', value: string) => void;
-    onPriceCommit?: (values: { min: number; max: number }) => void; // 👈 добавили
+    onPriceCommit?: (values: { min: number; max: number }) => void;
 }
 
 export const FilterSidebar = ({
                                   minVal,
                                   maxVal,
+                                  priceMin,
+                                  priceMax,
+                                  categories,
+                                  availableSizes,
+                                  availableColors,
                                   selectedTypes,
                                   setMinVal,
                                   setMaxVal,
                                   toggleFilterValue,
                                   selectedSizes,
                                   selectedColors,
-                                  onPriceCommit, // 👈 добавили
+                                  onPriceCommit,
                               }: Props) => {
     const [isPriceOpen, setIsPriceOpen] = useState(false);
     const [isTypeOpen, setIsTypeOpen] = useState(false);
@@ -46,16 +57,16 @@ export const FilterSidebar = ({
                                 <p>{`ДО ${maxVal} ₽`}</p>
                             </div>
                             <DoubleSlider
+                                min={priceMin}
+                                max={priceMax}
                                 valueMin={minVal}
                                 valueMax={maxVal}
                                 step={100}
                                 onChange={({ min, max }) => {
-                                    // локальные апдейты (в Catalog эти сеттеры уже могут запускать дебаунс записи в URL)
                                     setMinVal(min);
                                     setMaxVal(max);
                                 }}
                                 onCommit={({ min, max }) => {
-                                    // финальный коммит — Catalog сделает flush в queryString
                                     onPriceCommit?.({ min, max });
                                 }}
                             />
@@ -64,67 +75,73 @@ export const FilterSidebar = ({
                 </FilterAccordion>
 
                 {/* Тип товара */}
-                <FilterAccordion
-                    title="ТИП ТОВАРА"
-                    isOpen={isTypeOpen}
-                    onToggle={() => setIsTypeOpen(!isTypeOpen)}
-                >
-                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                        {['трусики', 'сорочки', 'бра'].map((type) => (
-                            <label key={type} className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedTypes.includes(type)}
-                                    onChange={() => toggleFilterValue('types', type)}
-                                    className="accent-[#2A2A2B]"
-                                />
-                                {type}
-                            </label>
-                        ))}
-                    </div>
-                </FilterAccordion>
+                {categories.length > 0 && (
+                    <FilterAccordion
+                        title="ТИП ТОВАРА"
+                        isOpen={isTypeOpen}
+                        onToggle={() => setIsTypeOpen(!isTypeOpen)}
+                    >
+                        <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
+                            {categories.map((cat) => (
+                                <label key={cat.id} className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedTypes.includes(cat.name.toLowerCase())}
+                                        onChange={() => toggleFilterValue('types', cat.name.toLowerCase())}
+                                        className="accent-[#2A2A2B]"
+                                    />
+                                    {cat.name.toLowerCase()}
+                                </label>
+                            ))}
+                        </div>
+                    </FilterAccordion>
+                )}
 
                 {/* Размер */}
-                <FilterAccordion
-                    title="РАЗМЕР"
-                    isOpen={isSizeOpen}
-                    onToggle={() => setIsSizeOpen(!isSizeOpen)}
-                >
-                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                        {['S', 'M', 'L'].map((size) => (
-                            <label key={size} className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedSizes.includes(size)}
-                                    onChange={() => toggleFilterValue('sizes', size)}
-                                    className="accent-[#2A2A2B]"
-                                />
-                                {size}
-                            </label>
-                        ))}
-                    </div>
-                </FilterAccordion>
+                {availableSizes.length > 0 && (
+                    <FilterAccordion
+                        title="РАЗМЕР"
+                        isOpen={isSizeOpen}
+                        onToggle={() => setIsSizeOpen(!isSizeOpen)}
+                    >
+                        <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
+                            {availableSizes.map((size) => (
+                                <label key={size} className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedSizes.includes(size)}
+                                        onChange={() => toggleFilterValue('sizes', size)}
+                                        className="accent-[#2A2A2B]"
+                                    />
+                                    {size}
+                                </label>
+                            ))}
+                        </div>
+                    </FilterAccordion>
+                )}
 
                 {/* Цвета */}
-                <FilterAccordion
-                    title="ЦВЕТА"
-                    isOpen={isColorOpen}
-                    onToggle={() => setIsColorOpen(!isColorOpen)}
-                >
-                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                        {['black', 'white'].map((color) => (
-                            <label key={color} className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedColors.includes(color)}
-                                    onChange={() => toggleFilterValue('colors', color)}
-                                    className="accent-[#2A2A2B]"
-                                />
-                                {color.toUpperCase()}
-                            </label>
-                        ))}
-                    </div>
-                </FilterAccordion>
+                {availableColors.length > 0 && (
+                    <FilterAccordion
+                        title="ЦВЕТА"
+                        isOpen={isColorOpen}
+                        onToggle={() => setIsColorOpen(!isColorOpen)}
+                    >
+                        <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
+                            {availableColors.map((color) => (
+                                <label key={color} className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedColors.includes(color)}
+                                        onChange={() => toggleFilterValue('colors', color)}
+                                        className="accent-[#2A2A2B]"
+                                    />
+                                    {color.toUpperCase()}
+                                </label>
+                            ))}
+                        </div>
+                    </FilterAccordion>
+                )}
             </div>
         </div>
     );

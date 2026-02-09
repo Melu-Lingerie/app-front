@@ -11,11 +11,9 @@ import { ProductSkeleton } from './ProductSkeleton';
 import { useCatalogFilters } from '@/pages/Catalog/hooks/useCatalogFilters.ts';
 import { useCatalogData } from '@/pages/Catalog/hooks/useCatalogData.ts';
 import { usePriceFilter } from '@/pages/Catalog/hooks/usePriceFilter.ts';
+import { useCatalogFilterOptions } from '@/pages/Catalog/hooks/useCatalogFilterOptions.ts';
 import {
     type ListKey,
-    MAPPED_SELECTED_TYPES,
-    PRICE_MAX,
-    PRICE_MIN,
     SORT_OPTIONS,
     type SortOption,
 } from '@/pages/Catalog/constants';
@@ -24,8 +22,11 @@ export const Catalog = () => {
     const [, setSearchParams] = useSearchParams();
     const initialized = useSelector(selectAppInitialized);
 
+    // === динамические опции фильтров с бекенда ===
+    const { options: filterOptions, categoryMap } = useCatalogFilterOptions();
+
     // === фильтры из query ===
-    const { filters, updateQuery } = useCatalogFilters(MAPPED_SELECTED_TYPES);
+    const { filters, updateQuery } = useCatalogFilters(categoryMap);
     const { types, sizes, colors } = filters;
 
     const {
@@ -50,14 +51,13 @@ export const Catalog = () => {
     const toggleFilterValue = useCallback(
         (key: ListKey, value: string) => {
             if (key === 'types') {
-                const typedValue = value as keyof typeof MAPPED_SELECTED_TYPES;
-                const updatedKeys = types.includes(typedValue)
-                    ? types.filter((v) => v !== typedValue)
-                    : [...types, typedValue];
+                const updatedKeys = types.includes(value)
+                    ? types.filter((v) => v !== value)
+                    : [...types, value];
 
                 const mappedTypes = updatedKeys
-                    .filter((t): t is keyof typeof MAPPED_SELECTED_TYPES => t in MAPPED_SELECTED_TYPES)
-                    .map((t) => String(MAPPED_SELECTED_TYPES[t]));
+                    .filter((t) => t in categoryMap)
+                    .map((t) => String(categoryMap[t]));
 
                 updateQuery({ types: mappedTypes, page: 0 });
                 return;
@@ -70,7 +70,7 @@ export const Catalog = () => {
 
             updateQuery({ [key]: next, page: 0 });
         },
-        [types, sizes, colors, updateQuery],
+        [types, sizes, colors, updateQuery, categoryMap],
     );
 
     const handleSortChange = useCallback(
@@ -94,7 +94,7 @@ export const Catalog = () => {
 
     // === счётчик активных фильтров ===
     const filterChanges =
-        (filters.minVal !== PRICE_MIN || filters.maxVal !== PRICE_MAX ? 1 : 0) +
+        (filters.minVal !== filterOptions.minPrice || filters.maxVal !== filterOptions.maxPrice ? 1 : 0) +
         (filters.types.length ? 1 : 0) +
         (filters.colors.length ? 1 : 0) +
         (filters.sizes.length ? 1 : 0);
@@ -117,6 +117,11 @@ export const Catalog = () => {
                 // Mobile filter props
                 minVal={localMinVal}
                 maxVal={localMaxVal}
+                priceMin={filterOptions.minPrice}
+                priceMax={filterOptions.maxPrice}
+                categories={filterOptions.categories}
+                availableSizes={filterOptions.sizes}
+                availableColors={filterOptions.colors}
                 selectedSizes={filters.sizes ?? []}
                 selectedColors={filters.colors ?? []}
                 setMinVal={setLocalMinVal}
@@ -131,6 +136,11 @@ export const Catalog = () => {
                     <FilterSidebar
                         minVal={localMinVal}
                         maxVal={localMaxVal}
+                        priceMin={filterOptions.minPrice}
+                        priceMax={filterOptions.maxPrice}
+                        categories={filterOptions.categories}
+                        availableSizes={filterOptions.sizes}
+                        availableColors={filterOptions.colors}
                         selectedTypes={filters.types}
                         selectedSizes={filters.sizes ?? []}
                         selectedColors={filters.colors ?? []}

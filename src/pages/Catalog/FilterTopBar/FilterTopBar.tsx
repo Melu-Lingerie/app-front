@@ -4,6 +4,7 @@ import type {SortOption} from '@/pages/Catalog/constants';
 import {ChevronDown, SlidersHorizontal, X} from 'lucide-react';
 import { DoubleSlider } from '@/components';
 import { FilterAccordion } from '../FilterSidebar/FilterAccordion.tsx';
+import type {CategoryOption} from '@/pages/Catalog/hooks/useCatalogFilterOptions.ts';
 
 interface FilterTopBarProps {
     filterChanges: number;
@@ -16,6 +17,11 @@ interface FilterTopBarProps {
     // Mobile filter props
     minVal?: number;
     maxVal?: number;
+    priceMin?: number;
+    priceMax?: number;
+    categories?: CategoryOption[];
+    availableSizes?: string[];
+    availableColors?: string[];
     selectedSizes?: string[];
     selectedColors?: string[];
     setMinVal?: (val: number) => void;
@@ -34,6 +40,11 @@ export const FilterTopBar = ({
                                  // Mobile filter props
                                  minVal = 0,
                                  maxVal = 90000,
+                                 priceMin = 0,
+                                 priceMax = 90000,
+                                 categories = [],
+                                 availableSizes = [],
+                                 availableColors = [],
                                  selectedSizes = [],
                                  selectedColors = [],
                                  setMinVal,
@@ -224,6 +235,8 @@ export const FilterTopBar = ({
                                             <p>{`ДО ${maxVal} ₽`}</p>
                                         </div>
                                         <DoubleSlider
+                                            min={priceMin}
+                                            max={priceMax}
                                             valueMin={minVal}
                                             valueMax={maxVal}
                                             step={100}
@@ -246,15 +259,15 @@ export const FilterTopBar = ({
                                 onToggle={() => setIsTypeOpen(!isTypeOpen)}
                             >
                                 <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                                    {['трусики', 'сорочки', 'бра'].map((type) => (
-                                        <label key={type} className="flex items-center gap-2 cursor-pointer">
+                                    {categories.map((cat) => (
+                                        <label key={cat.id} className="flex items-center gap-2 cursor-pointer">
                                             <input
                                                 type="checkbox"
-                                                checked={selectedTypes.includes(type)}
-                                                onChange={() => toggleFn('types', type)}
+                                                checked={selectedTypes.includes(cat.name.toLowerCase())}
+                                                onChange={() => toggleFn('types', cat.name.toLowerCase())}
                                                 className="accent-[#2A2A2B]"
                                             />
-                                            {type}
+                                            {cat.name.toLowerCase()}
                                         </label>
                                     ))}
                                 </div>
@@ -267,7 +280,7 @@ export const FilterTopBar = ({
                                 onToggle={() => setIsSizeOpen(!isSizeOpen)}
                             >
                                 <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                                    {['S', 'M', 'L'].map((size) => (
+                                    {availableSizes.map((size) => (
                                         <label key={size} className="flex items-center gap-2 cursor-pointer">
                                             <input
                                                 type="checkbox"
@@ -288,7 +301,7 @@ export const FilterTopBar = ({
                                 onToggle={() => setIsColorOpen(!isColorOpen)}
                             >
                                 <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                                    {['black', 'white'].map((color) => (
+                                    {availableColors.map((color) => (
                                         <label key={color} className="flex items-center gap-2 cursor-pointer">
                                             <input
                                                 type="checkbox"
