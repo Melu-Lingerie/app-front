@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import qs from 'qs';
-import {PRICE_MAX, PRICE_MIN, type SortOption} from '@/pages/Catalog/constants';
+import {PAGE_SIZE_DEFAULT, PAGE_SIZE_MAX, PAGE_SIZE_MIN, PRICE_MAX, PRICE_MIN, type SortOption} from '@/pages/Catalog/constants';
 
 export const useCatalogFilters = (MAPPED_SELECTED_TYPES: Record<string, number>) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -37,8 +37,10 @@ export const useCatalogFilters = (MAPPED_SELECTED_TYPES: Record<string, number>)
                 : [];
 
         const page = parsedParams.page ? Math.max(Number(parsedParams.page), 0) : 0;
+        const rawSize = parsedParams.pageSize ? Number(parsedParams.pageSize) : PAGE_SIZE_DEFAULT;
+        const pageSize = Math.min(Math.max(rawSize, PAGE_SIZE_MIN), PAGE_SIZE_MAX);
 
-        return { minVal, maxVal, types: resolvedTypes, sizes, colors, sort, page };
+        return { minVal, maxVal, types: resolvedTypes, sizes, colors, sort, page, pageSize };
     }, [parsedParams, MAPPED_SELECTED_TYPES]);
 
     const updateQuery = useCallback(

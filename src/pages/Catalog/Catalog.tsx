@@ -14,7 +14,6 @@ import { usePriceFilter } from '@/pages/Catalog/hooks/usePriceFilter.ts';
 import {
     type ListKey,
     MAPPED_SELECTED_TYPES,
-    PAGE_SIZE,
     PRICE_MAX,
     PRICE_MIN,
     SORT_OPTIONS,
@@ -146,7 +145,7 @@ export const Catalog = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 relative">
                         {/* === Контент === */}
                         {loading || !initialized
-                            ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                            ? Array.from({ length: filters.pageSize }).map((_, i) => (
                                 <ProductSkeleton withBorder key={`skeleton-${i}`} />
                             ))
                             : goods.map((item, index) => (

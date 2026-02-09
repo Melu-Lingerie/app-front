@@ -11,7 +11,6 @@ import { selectAppInitialized } from '@/store/appSlice.ts';
 import { useSelector } from 'react-redux';
 import {
     MAPPED_SELECTED_TYPES,
-    PAGE_SIZE,
     PRICE_MAX,
     PRICE_MIN,
     PRODUCT_STATUS_MAP,
@@ -27,6 +26,7 @@ export const useCatalogData = (filters: {
     colors: string[];
     sort: SortOption;
     page: number;
+    pageSize: number;
 }) => {
     const { addNotification } = useNotifications();
     const initialized = useSelector(selectAppInitialized);
@@ -54,7 +54,7 @@ export const useCatalogData = (filters: {
                 filters.colors?.length ? filters.colors : undefined,
                 status !== 'AVAILABLE' ? status : undefined,
                 page,
-                PAGE_SIZE,
+                filters.pageSize,
                 undefined,
                 { signal },
             )) as unknown as Required<PageProductCatalogResponseDto>;
