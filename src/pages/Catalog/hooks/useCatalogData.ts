@@ -50,6 +50,7 @@ export const useCatalogData = (filters: {
     const initialLoadingDoneRef = useRef(false);
     const blockUpObserverUntilReadyRef = useRef(true);
     const isInitialLoadingRef = useRef(false);
+    const loadVersionRef = useRef(0);
     const CACHE_KEY = 'catalog_cache_v1';
 
     // навигация (фикс для reload vs back/forward)
@@ -164,6 +165,7 @@ export const useCatalogData = (filters: {
     const loadInitial = useCallback(async () => {
         if (isInitialLoadingRef.current) return;
         isInitialLoadingRef.current = true;
+        const version = loadVersionRef.current;
 
         const navType = navTypeRef.current; // 'back_forward' | 'reload' | 'navigate'
         const isBackForward = navType === 'back_forward';
@@ -176,6 +178,7 @@ export const useCatalogData = (filters: {
         if (isBackForward) {
             const cached = readCache();
             if (cached && JSON.stringify(cached.filters) === JSON.stringify(filters) && cached.goods?.length) {
+                if (loadVersionRef.current !== version) return;
                 setGoods(cached.goods);
                 setMinPage(cached.minPage);
                 setMaxPage(cached.maxPage);
@@ -204,6 +207,7 @@ export const useCatalogData = (filters: {
             const results: ProductCatalogResponseDto[] = [];
             for (const p of pagesToLoad) {
                 const res = await fetchPage(p);
+                if (loadVersionRef.current !== version) return;
                 if (res.content?.length) results.push(...res.content);
                 setHasMore(!res.last);
             }
@@ -214,10 +218,13 @@ export const useCatalogData = (filters: {
             // подготовим кэш (используем только при back/forward)
             saveCache({ scrollY: 0 });
         } catch (e) {
+            if (loadVersionRef.current !== version) return;
             if (!isAbortError(e)) addNotification('Не удалось загрузить каталог', 'error');
         } finally {
-            setLoading(false);
-            isInitialLoadingRef.current = false;
+            if (loadVersionRef.current === version) {
+                setLoading(false);
+                isInitialLoadingRef.current = false;
+            }
         }
     }, [fetchPage, filters, addNotification, saveCache, setGoods, setHasMore, setLoading, setMinPage, setMaxPage]);
 
@@ -373,6 +380,8 @@ export const useCatalogData = (filters: {
     // === run initial (на маунт и при смене фильтров) ===
     useEffect(() => {
         // при reload/navigate — кэш не используем (loadInitial сам почистит/прочитает по navType)
+        loadVersionRef.current += 1;
+        isInitialLoadingRef.current = false;
         setMinPage(0);
         setMaxPage(0);
         void (async () => {

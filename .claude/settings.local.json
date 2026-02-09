@@ -27,7 +27,11 @@
       "Bash(dir \"C:\\Users\\IVA-PC\\Desktop\\design\\админка\" /B)",
       "Bash(dir:*)",
       "Bash(dir \"C:\\Users\\IVA-PC\\app-backend.git\" /B)",
-      "Bash(dir \"C:\\Users\\IVA-PC\" /B)"
+      "Bash(dir \"C:\\Users\\IVA-PC\" /B)",
+      "Bash(npx vite build)",
+      "Bash(git checkout:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(xargs:*)"
     ],
     "deny": [],
     "ask": []

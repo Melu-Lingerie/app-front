@@ -4,7 +4,7 @@ import {Footer} from '../Footer';
 
 export const Layout = () =>
     (
-        <div className="overflow-x-hidden">
+        <div className="overflow-x-clip">
             <Header/>
             <main className="pt-[50px]">
                 <Outlet/>
