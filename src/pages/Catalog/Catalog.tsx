@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -6,12 +6,12 @@ import { selectAppInitialized } from '@/store/appSlice.ts';
 import { Card, Spinner } from '@/components';
 import { FilterSidebar } from './FilterSidebar';
 import { FilterTopBar } from './FilterTopBar';
+import { Pagination } from './Pagination';
 import { ProductSkeleton } from './ProductSkeleton';
 import { useCatalogFilters } from '@/pages/Catalog/hooks/useCatalogFilters.ts';
 import { useCatalogData } from '@/pages/Catalog/hooks/useCatalogData.ts';
 import { usePriceFilter } from '@/pages/Catalog/hooks/usePriceFilter.ts';
 import {
-    HEADER_OFFSET,
     type ListKey,
     MAPPED_SELECTED_TYPES,
     PAGE_SIZE,
@@ -22,24 +22,8 @@ import {
 } from '@/pages/Catalog/constants';
 
 export const Catalog = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [, setSearchParams] = useSearchParams();
     const initialized = useSelector(selectAppInitialized);
-
-    // --- управление стартовой страницей и синхронизацией URL ---
-    const initialPageRef = useRef<number | null>(null);
-    const didInitialScrollRef = useRef(false);
-    const suppressUrlSyncRef = useRef(true); // блокируем обновление ?page до начального скролла
-
-    if (initialPageRef.current === null) {
-        const raw = searchParams.get('page');
-        const p = raw == null ? null : Number(raw);
-        // Не скроллим, если страницы нет или она 0
-        initialPageRef.current = p != null && Number.isFinite(p) && p > 0 ? p : null;
-        if (initialPageRef.current === null) {
-            // если скролла не будет — сразу разрешаем синхронизацию URL
-            suppressUrlSyncRef.current = false;
-        }
-    }
 
     // === фильтры из query ===
     const { filters, updateQuery } = useCatalogFilters(MAPPED_SELECTED_TYPES);
@@ -48,12 +32,7 @@ export const Catalog = () => {
     const {
         goods,
         loading,
-        loadingDown,
-        loadingUp,
-        hasMore,
-        topSentinelRef,
-        bottomSentinelRef,
-        minPage,
+        totalPages,
     } = useCatalogData(filters);
 
     // === управление фильтром цены ===
@@ -102,104 +81,17 @@ export const Catalog = () => {
 
     const handleReset = useCallback(() => {
         const params = new URLSearchParams();
-        params.set('page', '0');
         setSearchParams(params, { replace: true });
-        requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }));
+        window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
     }, [setSearchParams]);
 
-    // === anchors для синхронизации ?page ===
-    const anchorsRef = useRef<(HTMLDivElement | null)[]>([]);
-    const setPageAnchor = useCallback(
-        (absolutePage: number) => (el: HTMLDivElement | null) => {
-            anchorsRef.current[absolutePage] = el; // индексируем реальным номером страницы
+    const handlePageChange = useCallback(
+        (page: number) => {
+            updateQuery({ page });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         },
-        [],
+        [updateQuery],
     );
-
-    // === обновление ?page при скролле ===
-    useEffect(() => {
-        if (!initialized) return;
-
-        let ticking = false;
-        const handleScroll = () => {
-            if (suppressUrlSyncRef.current) return;
-            if (ticking) return;
-            ticking = true;
-
-            requestAnimationFrame(() => {
-                const y = window.scrollY + HEADER_OFFSET + 1;
-
-                // работаем только с реально существующими якорями
-                const entries = anchorsRef.current
-                    .map((el, page) => ({ el, page }))
-                    .filter((x): x is { el: HTMLDivElement; page: number } => !!x.el)
-                    .sort((a, b) => a.page - b.page);
-
-                if (!entries.length) {
-                    ticking = false;
-                    return;
-                }
-
-                let current = entries[0].page;
-                for (const { el, page } of entries) {
-                    const top = el.getBoundingClientRect().top + window.scrollY;
-                    if (top <= y) current = page;
-                    else break;
-                }
-
-                const url = new URL(window.location.href);
-                const prev = Number(url.searchParams.get('page') ?? '0');
-                if (prev !== current) {
-                    url.searchParams.set('page', String(current));
-                    window.history.replaceState(window.history.state, '', url.toString());
-                }
-                ticking = false;
-            });
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [initialized]);
-
-    // === постраничная разбивка текущих goods ===
-    const pages = useMemo(() => {
-        const count = Math.ceil(goods.length / PAGE_SIZE);
-        return Array.from({ length: count }, (_, i) =>
-            goods.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
-        );
-    }, [goods]);
-
-    // === начальная прокрутка к странице из ?page ===
-    useEffect(() => {
-        if (!initialized) return;
-        if (didInitialScrollRef.current) return;
-
-        const desired = initialPageRef.current;
-        // если страницы нет или это 0 — ничего не скроллим
-        if (desired == null) {
-            suppressUrlSyncRef.current = false;
-            didInitialScrollRef.current = true;
-            return;
-        }
-
-        const el = anchorsRef.current[desired];
-
-        // ждём пока появится якорь нужной страницы
-        if (!el) return;
-
-        suppressUrlSyncRef.current = true;
-
-        const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-
-        requestAnimationFrame(() => {
-            window.scrollTo({ top, behavior: 'auto' });
-            // даём браузеру один кадр, чтобы обновить scrollY
-            requestAnimationFrame(() => {
-                didInitialScrollRef.current = true;
-                suppressUrlSyncRef.current = false;
-            });
-        });
-    }, [initialized, pages.length, minPage]);
 
     // === счётчик активных фильтров ===
     const filterChanges =
@@ -207,12 +99,6 @@ export const Catalog = () => {
         (filters.types.length ? 1 : 0) +
         (filters.colors.length ? 1 : 0) +
         (filters.sizes.length ? 1 : 0);
-
-    useEffect(() => {
-        const prev = history.scrollRestoration;
-        history.scrollRestoration = 'manual';
-        return () => { history.scrollRestoration = prev as any; };
-    }, []);
 
     // === UI ===
     return (
@@ -258,48 +144,25 @@ export const Catalog = () => {
 
                 <div className="col-span-1 md:col-span-3">
                     <div className="grid grid-cols-2 md:grid-cols-3 relative">
-
-                        {/* === ВЕРХНИЙ sentinel === */}
-                        <div ref={topSentinelRef} className="col-span-2 md:col-span-3 h-0 opacity-0" />
-
-                        {/* === ВЕРХНИЙ ЛОАДЕР (в потоке, не absolute) === */}
-                        {loadingUp && (
-                            <div className="col-span-2 md:col-span-3 flex justify-center items-center py-6">
-                                <Spinner size={48} className="text-gray-500" />
-                            </div>
-                        )}
-
                         {/* === Контент === */}
                         {loading || !initialized
                             ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
                                 <ProductSkeleton withBorder key={`skeleton-${i}`} />
                             ))
-                            : pages.map((page, pIdx) => {
-                                const realPage = pIdx + minPage;
-                                return (
-                                    <Fragment key={`page-${realPage}`}>
-                                        <div
-                                            ref={setPageAnchor(realPage)}
-                                            data-page={realPage}
-                                            className="col-span-2 md:col-span-3 h-0"
-                                        />
-                                        {page.map((item, index) => (
-                                            <motion.div
-                                                key={item.productId}
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{
-                                                    duration: 0.4,
-                                                    delay: Math.min(index * 0.02, 0.3),
-                                                }}
-                                                className="p-1 md:p-2 border-r border-b border-[#CCC] dark:border-white/10"
-                                            >
-                                                <Card card={item} />
-                                            </motion.div>
-                                        ))}
-                                    </Fragment>
-                                );
-                            })}
+                            : goods.map((item, index) => (
+                                <motion.div
+                                    key={item.productId}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{
+                                        duration: 0.4,
+                                        delay: Math.min(index * 0.02, 0.3),
+                                    }}
+                                    className="p-1 md:p-2 border-r border-b border-[#CCC] dark:border-white/10"
+                                >
+                                    <Card card={item} />
+                                </motion.div>
+                            ))}
 
                         {/* === Пустое состояние === */}
                         {!loading && initialized && goods.length === 0 && (
@@ -309,7 +172,6 @@ export const Catalog = () => {
                                 transition={{ duration: 0.5 }}
                                 className="flex flex-col items-center justify-center py-24 text-center col-span-2 md:col-span-3"
                             >
-                                {/* 🔍 Анимированная лупа */}
                                 <div className="relative w-32 h-32 mb-8">
                                     <motion.svg
                                         viewBox="0 0 200 200"
@@ -339,7 +201,6 @@ export const Catalog = () => {
                                         />
                                     </motion.svg>
 
-                                    {/* 💫 Мягкие «пузырьки» вокруг лупы */}
                                     {[...Array(5)].map((_, i) => (
                                         <motion.div
                                             key={i}
@@ -368,13 +229,11 @@ export const Catalog = () => {
                                     ))}
                                 </div>
 
-                                {/* 📝 Текст */}
                                 <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Ничего не найдено</h2>
                                 <p className="text-gray-500 mb-6 max-w-md">
                                     Попробуйте изменить условия поиска или сбросить фильтры.
                                 </p>
 
-                                {/* 🔘 Кнопка в фирменном цвете */}
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.97 }}
@@ -388,21 +247,20 @@ export const Catalog = () => {
                                 </motion.button>
                             </motion.div>
                         )}
-
-                        {/* === НИЖНИЙ sentinel === */}
-                        {hasMore && <div ref={bottomSentinelRef} className="col-span-2 md:col-span-3 h-0 opacity-0" />}
-
-                        {/* === Нижний лоадер === */}
-                        {loadingDown && (
-                            <div className="col-span-2 md:col-span-3 flex justify-center py-8">
-                                <Spinner size={48} className="text-gray-500" />
-                            </div>
-                        )}
                     </div>
+
+                    {/* === Пагинация === */}
+                    {!loading && initialized && goods.length > 0 && (
+                        <Pagination
+                            currentPage={filters.page}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                        />
+                    )}
                 </div>
             </div>
 
-            {/* Индикаторы загрузки */}
+            {/* Индикатор загрузки */}
             {loading && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
                     <Spinner className="text-gray-500" size={48} />

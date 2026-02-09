@@ -36,7 +36,9 @@ export const useCatalogFilters = (MAPPED_SELECTED_TYPES: Record<string, number>)
                 ? [parsedParams.colors]
                 : [];
 
-        return { minVal, maxVal, types: resolvedTypes, sizes, colors, sort };
+        const page = parsedParams.page ? Math.max(Number(parsedParams.page), 0) : 0;
+
+        return { minVal, maxVal, types: resolvedTypes, sizes, colors, sort, page };
     }, [parsedParams, MAPPED_SELECTED_TYPES]);
 
     const updateQuery = useCallback(
