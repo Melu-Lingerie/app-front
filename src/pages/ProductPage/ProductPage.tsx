@@ -195,7 +195,7 @@ export function ProductPage() {
         <div className="w-full pt-4 md:pt-6">
             <div className="flex flex-col md:flex-row w-full gap-5 mb-10 md:mb-20">
                 {/* Картинки */}
-                <div className="w-full md:flex-1 md:mr-5 px-4 md:px-0">
+                <div className="w-full md:flex-1 md:mr-5 px-4 md:pl-10 md:pr-0">
                     <ProductImages images={images} />
                 </div>
 
