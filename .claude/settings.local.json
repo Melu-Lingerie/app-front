@@ -31,7 +31,12 @@
       "Bash(npx vite build)",
       "Bash(git checkout:*)",
       "Bash(git ls-tree:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "WebSearch",
+      "WebFetch(domain:yandex.cloud)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:cloud.yandex.com)"
     ],
     "deny": [],
     "ask": []

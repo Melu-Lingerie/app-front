@@ -20,47 +20,52 @@ export const Footer = () => {
     };
 
     return (
-        <footer className="px-4 md:px-[63px] pt-[40px] md:pt-[60px] pb-[60px] md:pb-[100px]">
+        <footer className="px-4 md:px-[63px] pt-[40px] md:pt-[60px] pb-[60px] md:pb-[100px] border-t border-gray-200">
             {/* Desktop layout */}
-            <div className="hidden md:flex gap-[160px]">
-                <div className="flex flex-col text-sm leading-[22px]">
-                    <p>8 (800) 777-01-22</p>
-                    <p>INFO@MELU.RU</p>
-                    <p>WA</p>
-                    <p>TG</p>
-                    <p>VK</p>
+            <div className="hidden md:grid grid-cols-3 gap-[80px] lg:gap-[160px]">
+                {/* Контакты */}
+                <div className="flex flex-col">
+                    <h3 className="text-[16px] uppercase mb-6">Контакты</h3>
+                    <div className="flex flex-col text-sm leading-[28px]">
+                        <p>8 (800) 777-01-22</p>
+                        <p>INFO@MELU.RU</p>
+                        <p>WA</p>
+                        <p>TG</p>
+                        <p>VK</p>
+                    </div>
                 </div>
 
-                <div className="flex flex-col text-sm leading-[22px]">
-                    <Link to="/">ГЛАВНАЯ</Link>
-                    <Link to="/catalog">КАТАЛОГ</Link>
-                    <button className="text-left cursor-pointer" onClick={() => goSort('Новинки')}>НОВИНКИ</button>
+                {/* Покупателям */}
+                <div className="flex flex-col">
+                    <h3 className="text-[16px] uppercase mb-6">Покупателям</h3>
+                    <div className="flex flex-col text-sm leading-[28px]">
+                        <Link to="/customers/delivery">ДОСТАВКА</Link>
+                        <Link to="/customers/returns">ВОЗВРАТ</Link>
+                        <Link to="/customers/faq">ВОПРОС-ОТВЕТ</Link>
+                        <Link to="/backstage">ОТЗЫВЫ</Link>
+                        <Link to="/customers/care">УХОД ЗА ИЗДЕЛИЯМИ</Link>
+                        <Link to="/policy" target="_blank" rel="noopener noreferrer">ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</Link>
+                        <Link to="/offer" target="_blank" rel="noopener noreferrer">ОФЕРТА</Link>
+                        <Link to="/privacy.html" target="_blank" rel="noopener noreferrer">COOKIE</Link>
+                    </div>
                 </div>
 
-                <div className="flex flex-col text-sm leading-[22px]">
-                    <Link to="/customers/delivery">ДОСТАВКА</Link>
-                    <Link to="/customers/returns">ВОЗВРАТ</Link>
-                    <Link to="/customers/faq">FAQ</Link>
-                </div>
-
-                <div className="flex flex-col text-sm leading-[22px]">
-                    <Link to={'/privacy.html'} target="_blank" rel="noopener noreferrer">COOKIE</Link>
-                </div>
-
-                <div className="flex flex-col text-sm leading-[22px] underline">
+                {/* Подписка */}
+                <div className="flex flex-col">
+                    <h3 className="text-[16px] uppercase mb-6">Подписка</h3>
                     <button
                         type="button"
-                        className="text-left cursor-pointer"
+                        className="text-left text-sm underline cursor-pointer mb-6"
                         onClick={handlePromoClick}
                     >
-                        {'Скидка 1000₽ за подписку на e-mail рассылку'.toUpperCase()}
+                        СКИДКА 1000₽ ЗА ПОДПИСКУ НА E-MAIL РАССЫЛКУ
                     </button>
-                </div>
-
-                <div className="max-w-[150px] flex flex-col text-[12px] text-[#999999] leading-[18px]">
-                    <p>Индивидуальный предприниматель Абдусаламов Гамид Зекергиевич</p>
-                    <p>ИНН 050000304522</p>
-                    <p>ОГРН 325050000115318</p>
+                    <div className="flex flex-col text-[12px] text-[#999999] leading-[18px]">
+                        <p>ИП Абдусаламов Гамид Зекергиевич</p>
+                        <p>ИНН 050000304522</p>
+                        <p>ОГРН 325050000115318</p>
+                    </div>
+                    <p className="text-[12px] text-[#999999] mt-4">&copy; melu {new Date().getFullYear()}</p>
                 </div>
             </div>
 
@@ -114,9 +119,14 @@ export const Footer = () => {
                     </a>
                 </div>
 
-                {/* Копирайт */}
-                <div className="text-[10px] text-[#999] mt-4">
-                    <p>© Бренд melu, 2025</p>
+                {/* Юр. данные и копирайт */}
+                <div className="flex flex-col gap-1 mt-4">
+                    <div className="text-[10px] text-[#999] leading-[14px]">
+                        <p>ИП Абдусаламов Гамид Зекергиевич</p>
+                        <p>ИНН 050000304522</p>
+                        <p>ОГРН 325050000115318</p>
+                    </div>
+                    <p className="text-[10px] text-[#999] mt-2">&copy; melu {new Date().getFullYear()}</p>
                 </div>
             </div>
         </footer>

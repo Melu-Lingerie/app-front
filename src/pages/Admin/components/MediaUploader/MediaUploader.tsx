@@ -34,10 +34,36 @@ export function MediaUploader({
             const uploadedMedia: UploadedMedia[] = [];
 
             for (const file of filesToUpload) {
-                const response = await MediaService.uploadMedia(undefined, { file });
+                // 1. Get presigned URL from backend
+                const presign = await MediaService.presignUpload({
+                    fileName: file.name,
+                    contentType: file.type,
+                    fileSize: file.size,
+                });
+
+                // 2. Upload file directly to S3
+                const s3Response = await fetch(presign.presignedUrl, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': file.type },
+                    body: file,
+                });
+
+                if (!s3Response.ok) {
+                    throw new Error(`S3 upload failed: ${s3Response.status}`);
+                }
+
+                // 3. Confirm upload to backend
+                const response = await MediaService.confirmUpload({
+                    key: presign.key,
+                    bucket: presign.bucket,
+                    fileName: file.name,
+                    contentType: file.type,
+                    fileSize: file.size,
+                });
+
                 uploadedMedia.push({
-                    id: String(response.mediaId ?? response.fileId ?? ''),
-                    url: response.url || '',
+                    id: String(response.mediaId ?? ''),
+                    url: response.url || presign.publicUrl || '',
                     file,
                 });
             }
