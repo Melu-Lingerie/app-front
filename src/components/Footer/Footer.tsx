@@ -14,11 +14,6 @@ export const Footer = () => {
         window.dispatchEvent(new CustomEvent('open-login-modal'));
     };
 
-    const goSort = (value: string) => {
-        const params = new URLSearchParams({ sort: value });
-        navigate(`/catalog?${params.toString()}`);
-    };
-
     return (
         <footer className="px-4 md:px-[63px] pt-[40px] md:pt-[60px] pb-[60px] md:pb-[100px] border-t border-gray-200">
             {/* Desktop layout */}
