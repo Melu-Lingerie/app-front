@@ -31,10 +31,12 @@ export const usePriceFilter = ({
     const lastMaxRef = useRef(maxVal);
     const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-    // при смене фильтров из URL обновляем локальные значения
+    // при смене фильтров из URL обновляем локальные значения и рефы
     useEffect(() => {
         setLocalMinVal(minVal);
         setLocalMaxVal(maxVal);
+        lastMinRef.current = minVal;
+        lastMaxRef.current = maxVal;
     }, [minVal, maxVal, setLocalMinVal, setLocalMaxVal]);
 
     // отложенное применение цены

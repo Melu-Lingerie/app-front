@@ -17,6 +17,7 @@ import {
     SORT_OPTIONS,
     type SortOption,
 } from '@/pages/Catalog/constants';
+import { useMemo } from 'react';
 
 export const Catalog = () => {
     const [, setSearchParams] = useSearchParams();
@@ -26,14 +27,18 @@ export const Catalog = () => {
     const { options: filterOptions, categoryMap } = useCatalogFilterOptions();
 
     // === фильтры из query ===
-    const { filters, updateQuery } = useCatalogFilters(categoryMap);
+    const priceDefaults = useMemo(
+        () => ({ min: filterOptions.minPrice, max: filterOptions.maxPrice }),
+        [filterOptions.minPrice, filterOptions.maxPrice],
+    );
+    const { filters, updateQuery } = useCatalogFilters(categoryMap, priceDefaults);
     const { types, sizes, colors } = filters;
 
     const {
         goods,
         loading,
         totalPages,
-    } = useCatalogData(filters);
+    } = useCatalogData(filters, categoryMap);
 
     // === управление фильтром цены ===
     const {

@@ -10,24 +10,24 @@ import {
 import { selectAppInitialized } from '@/store/appSlice.ts';
 import { useSelector } from 'react-redux';
 import {
-    MAPPED_SELECTED_TYPES,
-    PRICE_MAX,
-    PRICE_MIN,
     PRODUCT_STATUS_MAP,
     type SortOption,
 } from '@/pages/Catalog/constants';
 import { isAbortError } from '@/utils/utils.ts';
 
-export const useCatalogData = (filters: {
-    minVal: number;
-    maxVal: number;
-    types: string[];
-    sizes: string[];
-    colors: string[];
-    sort: SortOption;
-    page: number;
-    pageSize: number;
-}) => {
+export const useCatalogData = (
+    filters: {
+        minVal: number;
+        maxVal: number;
+        types: string[];
+        sizes: string[];
+        colors: string[];
+        sort: SortOption;
+        page: number;
+        pageSize: number;
+    },
+    categoryMap: Record<string, number> = {},
+) => {
     const { addNotification } = useNotifications();
     const initialized = useSelector(selectAppInitialized);
     const { signal } = useAbortController();
@@ -41,13 +41,13 @@ export const useCatalogData = (filters: {
         async (page: number) => {
             const status = PRODUCT_STATUS_MAP[filters.sort];
             const categories = filters.types
-                .filter((t): t is keyof typeof MAPPED_SELECTED_TYPES => t in MAPPED_SELECTED_TYPES)
-                .map((t) => MAPPED_SELECTED_TYPES[t]);
+                .filter((t) => t in categoryMap)
+                .map((t) => categoryMap[t]);
 
             return (await ProductsService.getCatalog(
                 undefined,
-                filters.minVal !== PRICE_MIN ? filters.minVal : undefined,
-                filters.maxVal !== PRICE_MAX ? filters.maxVal : undefined,
+                filters.minVal || undefined,
+                filters.maxVal || undefined,
                 categories.length ? categories : undefined,
                 filters.sizes?.length ? filters.sizes : undefined,
                 undefined,
@@ -59,7 +59,7 @@ export const useCatalogData = (filters: {
                 { signal },
             )) as unknown as Required<PageProductCatalogResponseDto>;
         },
-        [filters, signal],
+        [filters, signal, categoryMap],
     );
 
     useEffect(() => {
