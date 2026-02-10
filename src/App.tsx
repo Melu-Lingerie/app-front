@@ -35,6 +35,7 @@ import {
     BannerFormPage,
     BackstagesListPage,
     BackstageFormPage,
+    MediaListPage,
 } from '@/pages';
 
 function App() {
@@ -127,6 +128,7 @@ function App() {
                     <Route path="backstages" element={<BackstagesListPage />} />
                     <Route path="backstages/new" element={<BackstageFormPage />} />
                     <Route path="backstages/:id/edit" element={<BackstageFormPage />} />
+                    <Route path="media" element={<MediaListPage />} />
                     <Route path="reviews" element={<ReviewsListPage />} />
                 </Route>
             </Routes>

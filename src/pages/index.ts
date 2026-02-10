@@ -24,5 +24,6 @@ export {
     BannerFormPage,
     BackstagesListPage,
     BackstageFormPage,
+    MediaListPage,
     ReviewsListPage,
 } from './Admin';

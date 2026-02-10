@@ -19,5 +19,8 @@ export { BannersListPage, BannerFormPage } from './Banners';
 // Backstages
 export { BackstagesListPage, BackstageFormPage } from './Backstages';
 
+// Media
+export { MediaListPage } from './Media';
+
 // Reviews
 export { ReviewsListPage } from './Reviews';
