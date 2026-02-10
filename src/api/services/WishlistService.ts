@@ -47,7 +47,7 @@ export class WishlistService {
      */
     public static removeItemsFromWishlist(
         wishlistId: number,
-        requestBody: Array<number>,
+        itemIds: Array<number>,
      options?: Partial<ApiRequestOptions>): CancelablePromise<void> {
         return __request(OpenAPI, { ...options,
             method: 'DELETE',
@@ -55,8 +55,9 @@ export class WishlistService {
             path: {
                 'wishlistId': wishlistId,
             },
-            body: requestBody,
-            mediaType: 'application/json',
+            query: {
+                'itemIds': itemIds,
+            },
             errors: {
                 400: `Некорректный список идентификаторов`,
                 404: `Список желаний не найден`,

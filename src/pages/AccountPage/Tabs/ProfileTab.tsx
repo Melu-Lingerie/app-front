@@ -337,11 +337,12 @@ export const ProfileTab = () => {
                     {initialized && !loading ? (
                         <>
                         <input
-                            className={`h-[56px] rounded-[8px] border px-4 ${errors.email ? 'border-red-400' : 'border-[#CCCCCC]'} bg-[#F5F5F5] dark:bg-white/10 cursor-not-allowed`}
+                            className={`h-[56px] rounded-[8px] border px-4 ${errors.email ? 'border-red-400' : 'border-[#CCCCCC]'} ${initialRef.current.email ? 'bg-[#F5F5F5] dark:bg-white/10 cursor-not-allowed' : ''}`}
                             value={email}
+                            onChange={initialRef.current.email ? undefined : (e) => setEmail(e.target.value)}
                             name="email"
                             type="email"
-                            readOnly
+                            readOnly={!!initialRef.current.email}
                         />
                         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                         </>

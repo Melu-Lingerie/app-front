@@ -217,6 +217,70 @@ export function BackstagesListPage() {
                 getRowId={(item) => item.id}
                 onRowClick={(item) => navigate(`/admin/backstages/${item.id}/edit`)}
                 loading={loading}
+                renderMobileCard={(item) => (
+                    <div
+                        className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 cursor-pointer active:bg-gray-50 dark:active:bg-gray-700/50"
+                        onClick={() => navigate(`/admin/backstages/${item.id}/edit`)}
+                    >
+                        <div className="flex gap-3">
+                            <div className="w-16 h-12 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden flex-shrink-0">
+                                {item.mediaUrl ? (
+                                    item.mediaType === 'VIDEO' ? (
+                                        <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-600">
+                                            <Film size={18} className="text-gray-500 dark:text-gray-400" />
+                                        </div>
+                                    ) : (
+                                        <img src={item.mediaUrl} alt={item.title} className="w-full h-full object-cover" />
+                                    )
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">
+                                        Нет
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">{item.title}</div>
+                                {item.description && (
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{item.description}</div>
+                                )}
+                                <div className="flex items-center gap-2 mt-1.5">
+                                    <AdminBadge variant={item.isActive ? 'success' : 'warning'}>
+                                        {item.isActive ? 'Активен' : 'Неактивен'}
+                                    </AdminBadge>
+                                    {item.mediaType && (
+                                        <span className="text-[10px] text-gray-400 uppercase">{item.mediaType}</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                            <span className="text-xs text-gray-400">
+                                #{item.sortOrder} · {new Date(item.updatedAt).toLocaleDateString('ru-RU')}
+                            </span>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleActive(item);
+                                    }}
+                                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                >
+                                    {item.isActive ? <EyeOff size={14} /> : <Eye size={14} />}
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setItemToDelete(item);
+                                        setDeleteModalOpen(true);
+                                    }}
+                                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-red-500"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             />
 
             <AdminModal

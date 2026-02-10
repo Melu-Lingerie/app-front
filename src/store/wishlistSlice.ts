@@ -60,6 +60,19 @@ export const toggleWishlistItem = createAsyncThunk<
     }
 });
 
+// Очистить весь wishlist
+export const clearWishlistAsync = createAsyncThunk<
+    void,
+    number,
+    { rejectValue: string }
+>('wishlist/clearWishlistAsync', async (wishlistId, { rejectWithValue }) => {
+    try {
+        await WishlistService.clearWishlist(wishlistId);
+    } catch (e: any) {
+        return rejectWithValue(e?.message || 'Ошибка при очистке избранного');
+    }
+});
+
 const wishlistSlice = createSlice({
     name: 'wishlist',
     initialState,
@@ -95,6 +108,18 @@ const wishlistSlice = createSlice({
                 state.loading = false;
             })
             .addCase(toggleWishlistItem.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || 'Ошибка';
+            })
+            .addCase(clearWishlistAsync.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(clearWishlistAsync.fulfilled, (state) => {
+                state.loading = false;
+                state.items = [];
+                state.itemsCount = 0;
+            })
+            .addCase(clearWishlistAsync.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || 'Ошибка';
             });

@@ -110,7 +110,8 @@ export const AddAddressModal: React.FC<{
             country: country.trim(),
             streetAddress: streetAddress.trim(),
             postalCode: postalCode.trim(),
-          } as any);
+            isDefault: false,
+          });
           addNotification('Адрес добавлен', 'success');
           onSuccess();
         }

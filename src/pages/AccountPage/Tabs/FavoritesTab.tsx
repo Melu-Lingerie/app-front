@@ -1,19 +1,35 @@
-import { useSelector } from 'react-redux';
-import { selectWishlistItems } from '@/store/wishlistSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectWishlistItems, selectWishlistId, selectWishlistLoading, clearWishlistAsync } from '@/store/wishlistSlice';
 import { selectAppInitialized } from '@/store/appSlice';
 import ForWishListSkeleton from '@/assets/ForWishListSkeleton.svg';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {ProductSkeleton} from '@/pages/Catalog/ProductSkeleton';
 import {Card} from '@/components';
+import type { AppDispatch } from '@/store';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export const FavoritesTab = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
+    const { addNotification } = useNotifications();
     const wishListItems = useSelector(selectWishlistItems);
+    const wishlistId = useSelector(selectWishlistId);
+    const wishlistLoading = useSelector(selectWishlistLoading);
     const initialized = useSelector(selectAppInitialized);
     const items = wishListItems.map((wishlistItem) => {
         return wishlistItem.productCatalogResponseDto!;
     });
+
+    const handleClearWishlist = async () => {
+        if (!wishlistId) return;
+        try {
+            await dispatch(clearWishlistAsync(Number(wishlistId))).unwrap();
+            addNotification('Избранное очищено', 'success');
+        } catch {
+            addNotification('Не удалось очистить избранное', 'error');
+        }
+    };
 
     // Логика отображения
     if (!initialized) {
@@ -36,6 +52,18 @@ export const FavoritesTab = () => {
             <h2 className="text-[24px] leading-[26px] uppercase font-semibold mb-23">
                 Избранные товары
             </h2>
+            {items.length > 0 && (
+                <div className="mb-6">
+                    <button
+                        type="button"
+                        disabled={wishlistLoading}
+                        onClick={handleClearWishlist}
+                        className={`text-[14px] leading-[18px] underline ${!wishlistLoading ? 'cursor-pointer transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50'}`}
+                    >
+                        Очистить избранное
+                    </button>
+                </div>
+            )}
             {items.length === 0 ? (
                 <div className="flex flex-col items-center mt-[160px]">
                     <div className="flex gap-6 mb-[60px]">

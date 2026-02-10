@@ -204,6 +204,46 @@ export function MediaListPage() {
                         setCurrentPage(1);
                     },
                 }}
+                renderMobileCard={(item) => (
+                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+                        <div className="flex gap-3">
+                            <div className="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden flex-shrink-0">
+                                {item.mediaType === 'VIDEO' ? (
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-600">
+                                        <Film size={18} className="text-gray-500 dark:text-gray-400" />
+                                    </div>
+                                ) : (
+                                    <img src={item.s3Url} alt={item.fileName} className="w-full h-full object-cover" />
+                                )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">{item.fileName}</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{item.mimeType}</div>
+                                <div className="flex items-center gap-2 mt-1.5">
+                                    <AdminBadge variant={item.mediaType === 'VIDEO' ? 'info' : 'default'}>
+                                        {item.mediaType === 'VIDEO' ? 'Видео' : 'Фото'}
+                                    </AdminBadge>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">{formatFileSize(item.fileSize)}</span>
+                                    <AdminBadge variant={item.isActive ? 'success' : 'warning'}>
+                                        {item.isActive ? 'Активен' : 'Удалён'}
+                                    </AdminBadge>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setItemToDelete(item);
+                                    setDeleteModalOpen(true);
+                                }}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-red-500 flex-shrink-0 self-start"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        </div>
+                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                            {new Date(item.createdAt).toLocaleDateString('ru-RU')}
+                        </div>
+                    </div>
+                )}
             />
 
             <AdminModal

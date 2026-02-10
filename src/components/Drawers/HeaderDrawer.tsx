@@ -188,7 +188,7 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto px-4 pt-6">
+            <div className="flex-1 overflow-y-auto px-4 pt-6 pb-6">
                 <AnimatePresence mode="wait">
                     {!subMenu && (
                         <motion.div

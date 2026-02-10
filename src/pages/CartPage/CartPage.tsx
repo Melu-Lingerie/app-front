@@ -185,7 +185,9 @@ export function CartPage() {
                                         onRemove={(itemId) =>
                                             dispatch(
                                                 removeItemFromCart({ cartId: cartId!, itemId })
-                                            )
+                                            ).unwrap().catch(() => {
+                                                addNotification('Не удалось удалить товар из корзины', 'error');
+                                            })
                                         }
                                         onIncrease={(itemId) =>
                                             dispatch(
