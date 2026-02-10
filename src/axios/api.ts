@@ -18,7 +18,6 @@ const requestMeta = new WeakMap<InternalAxiosRequestConfig, DedupeMeta>();
 const api = axios.create({
     baseURL: '/api/v1',
     withCredentials: true,
-    headers: { 'Content-Type': 'application/json' },
     paramsSerializer: (params) =>
         qs.stringify(params, {
             arrayFormat: 'repeat',
@@ -202,10 +201,12 @@ const ensureFreshToken = async (): Promise<void> => {
 
 //  Request: отменяем ПРЕДЫДУЩИЙ, новый отправляем
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-    // For FormData uploads, remove Content-Type so the browser sets
-    // multipart/form-data with the correct boundary automatically
-    if (config.data instanceof FormData) {
-        config.headers.delete('Content-Type');
+    // For non-FormData requests, default to application/json.
+    // For FormData, let the browser set multipart/form-data with boundary.
+    if (!(config.data instanceof FormData)) {
+        if (!config.headers['Content-Type']) {
+            config.headers['Content-Type'] = 'application/json';
+        }
     }
 
     const key = getRequestKey(config);
