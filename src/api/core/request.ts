@@ -5,8 +5,6 @@
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosInstance } from 'axios';
 import api from '../../axios/api';
-import FormData from 'form-data';
-
 import { ApiError } from './ApiError';
 import type { ApiRequestOptions } from './ApiRequestOptions';
 import type { ApiResult } from './ApiResult';
@@ -209,6 +207,13 @@ export const sendRequest = async <T>(
     axiosClient: AxiosInstance
 ): Promise<AxiosResponse<T>> => {
     const source = axios.CancelToken.source();
+
+    // When sending FormData, set Content-Type to multipart/form-data
+    // to prevent the axios default 'application/json' from triggering JSON serialization.
+    // The browser will override this with the correct boundary automatically.
+    if (!body && formData) {
+        headers['Content-Type'] = 'multipart/form-data';
+    }
 
     const requestConfig: AxiosRequestConfig = {
         url,
