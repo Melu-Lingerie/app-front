@@ -1,10 +1,11 @@
 import {useCallback, useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {ActualInfo, Card, Carousel} from '@/components';
 import {type PageProductCatalogResponseDto, type ProductCatalogResponseDto, ProductsService} from '@/api';
-import {mockBackStageData} from './mock.ts';
 import {useAbortController} from '@/hooks/useAbortController.ts';
 import {useNotifications} from '@/hooks/useNotifications.ts';
 import {isAbortError} from '@/utils/utils.ts';
+import api from '@/axios/api.ts';
 
 const PAGE_SIZE = 8;
 
@@ -19,9 +20,20 @@ const useIsMobile = () => {
     return isMobile;
 };
 
+interface BackstageItem {
+    id: number;
+    title: string;
+    description?: string;
+    mediaUrl: string;
+    mediaType?: string;
+    sortOrder: number;
+}
+
 export const MainPage = () => {
+    const navigate = useNavigate();
     const [newProducts, setNewProducts] = useState<ProductCatalogResponseDto[]>([]);
     const [loading, setLoading] = useState(true);
+    const [backstages, setBackstages] = useState<BackstageItem[]>([]);
     const isMobile = useIsMobile();
 
     // пагинация
@@ -65,6 +77,15 @@ export const MainPage = () => {
             }
         })();
     }, [fetchPage, addNotification, signal]);
+
+    // загрузка бэкстейджей
+    useEffect(() => {
+        let cancelled = false;
+        api.get<BackstageItem[]>('/main-page/backstage')
+            .then((res) => { if (!cancelled) setBackstages(res.data); })
+            .catch(() => {});
+        return () => { cancelled = true; };
+    }, []);
 
     // подгрузка следующей страницы
     const onLoadMore = useCallback(async () => {
@@ -114,24 +135,46 @@ export const MainPage = () => {
                 {/* горизонтальная линия */}
                 <div className="relative left-1/2 -translate-x-1/2 w-screen h-[1px] dark:bg-white/10 bg-[#CCC]"/>
 
-                <div className="my-[40px] md:mb-[90px]">
-                    <h2 className="text-lg md:text-2xl leading-6 uppercase">БЭКСТЕЙДЖ</h2>
-                    <div className="flex flex-col md:flex-row gap-4 md:gap-5 mt-[30px] md:mt-[60px]">
-                        {mockBackStageData.slice(0, isMobile ? 1 : 4).map((card) => (
-                            <div
-                                key={card.id}
-                                className="flex justify-center items-end text-white text-center pb-[30px] text-sm md:text-base uppercase"
-                                style={{
-                                    flex: isMobile ? '1' : '0 0 calc((100% - (20px * (4 - 1))) / 4)',
-                                    background: `url(${card.image}) center/cover no-repeat`,
-                                    height: isMobile ? 400 : 666,
-                                }}
+                {backstages.length > 0 && (
+                    <div className="my-[40px] md:mb-[90px]">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg md:text-2xl leading-6 uppercase">БЭКСТЕЙДЖ</h2>
+                            <button
+                                onClick={() => navigate('/backstage')}
+                                className="text-[12px] md:text-[14px] leading-[18px] text-[#F892B5] uppercase cursor-pointer hover:underline"
                             >
-                                {card.title}
-                            </div>
-                        ))}
+                                Смотреть все
+                            </button>
+                        </div>
+                        <div className="flex flex-col md:flex-row gap-4 md:gap-5 mt-[30px] md:mt-[60px]">
+                            {backstages.slice(0, isMobile ? 1 : 4).map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="relative flex justify-center items-end text-white text-center pb-[30px] text-sm md:text-base uppercase"
+                                    style={{
+                                        flex: isMobile ? '1' : '0 0 calc((100% - (20px * (4 - 1))) / 4)',
+                                        background: item.mediaType === 'VIDEO'
+                                            ? '#1a1a1a'
+                                            : `url(${item.mediaUrl}) center/cover no-repeat`,
+                                        height: isMobile ? 400 : 666,
+                                    }}
+                                >
+                                    {item.mediaType === 'VIDEO' ? (
+                                        <video
+                                            src={item.mediaUrl}
+                                            autoPlay
+                                            muted
+                                            loop
+                                            playsInline
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                        />
+                                    ) : null}
+                                    <span className="relative">{item.title}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="relative left-1/2 -translate-x-1/2 w-screen h-[1px] dark:bg-white/10 bg-[#CCC]"/>
             </div>

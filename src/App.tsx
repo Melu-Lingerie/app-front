@@ -19,6 +19,7 @@ import {
     AboutPage,
     ContactsPage,
     CheckoutPage,
+    BackstagePage,
     // Admin
     AdminLayout,
     ProductsListPage,
@@ -32,6 +33,8 @@ import {
     ReviewsListPage,
     BannersListPage,
     BannerFormPage,
+    BackstagesListPage,
+    BackstageFormPage,
 } from '@/pages';
 
 function App() {
@@ -99,6 +102,7 @@ function App() {
                     <Route path="account/*" element={<AccountPage />} />
                     <Route path="customers/*" element={<CustomersPage />} />
                     <Route path="gift-certificate" element={<GiftCertificatePage />} />
+                    <Route path="backstage" element={<BackstagePage />} />
                     <Route path="about" element={<AboutPage />} />
                     <Route path="contacts" element={<ContactsPage />} />
                     <Route path="*" element={<NotFound />} />
@@ -120,6 +124,9 @@ function App() {
                     <Route path="banners" element={<BannersListPage />} />
                     <Route path="banners/new" element={<BannerFormPage />} />
                     <Route path="banners/:id/edit" element={<BannerFormPage />} />
+                    <Route path="backstages" element={<BackstagesListPage />} />
+                    <Route path="backstages/new" element={<BackstageFormPage />} />
+                    <Route path="backstages/:id/edit" element={<BackstageFormPage />} />
                     <Route path="reviews" element={<ReviewsListPage />} />
                 </Route>
             </Routes>

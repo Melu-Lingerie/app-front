@@ -7,6 +7,7 @@ export {GiftCertificatePage} from './GiftCertificatePage';
 export {AboutPage} from './AboutPage';
 export {ContactsPage} from './ContactsPage';
 export {CheckoutPage} from './CheckoutPage';
+export {BackstagePage} from './BackstagePage';
 
 // Admin
 export {
@@ -21,5 +22,7 @@ export {
     PromotionFormPage,
     BannersListPage,
     BannerFormPage,
+    BackstagesListPage,
+    BackstageFormPage,
     ReviewsListPage,
 } from './Admin';

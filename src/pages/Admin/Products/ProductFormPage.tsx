@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, X, Upload, Trash2, Loader2 } from 'lucide-react';
 import {
@@ -10,6 +10,7 @@ import {
 } from '../components';
 import { useFormValidation, validators } from '../../../hooks/useFormValidation';
 import { AdminProductService } from '@/api/services/AdminProductService';
+import { MediaService } from '@/api';
 import type { ProductAdminResponseDto, ProductStatus, ProductType } from '@/api/services/AdminProductService';
 
 interface VariantFormData {
@@ -98,6 +99,10 @@ export function ProductFormPage() {
 
     const [newColor, setNewColor] = useState('');
     const [newSize, setNewSize] = useState('');
+    const [uploadingMain, setUploadingMain] = useState(false);
+    const [uploadingVariant, setUploadingVariant] = useState<number | null>(null);
+    const mainPhotoInputRef = useRef<HTMLInputElement>(null);
+    const variantPhotoInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
     // Load product data when editing
     useEffect(() => {
@@ -241,6 +246,54 @@ export function ProductFormPage() {
         updateField('variants', formData.variants.filter((_, i) => i !== index));
     };
 
+    const handleMainPhotoUpload = async (files: FileList | null) => {
+        if (!files || files.length === 0) return;
+        setUploadingMain(true);
+        try {
+            const response = await MediaService.uploadMedia(undefined, { file: files[0] });
+            updateField('mainMediaId', Number(response.fileId));
+            updateField('mainMediaUrl', response.url || '');
+        } catch (err) {
+            console.error('Upload error:', err);
+            setError('Не удалось загрузить фото');
+        } finally {
+            setUploadingMain(false);
+            if (mainPhotoInputRef.current) mainPhotoInputRef.current.value = '';
+        }
+    };
+
+    const handleVariantPhotoUpload = async (variantIndex: number, files: FileList | null) => {
+        if (!files || files.length === 0) return;
+        setUploadingVariant(variantIndex);
+        try {
+            const uploaded: { id: number; url: string }[] = [];
+            for (const file of Array.from(files)) {
+                const response = await MediaService.uploadMedia(undefined, { file });
+                uploaded.push({ id: Number(response.fileId), url: response.url || '' });
+            }
+            const variant = formData.variants[variantIndex];
+            updateVariant(variantIndex, {
+                mediaIds: [...variant.mediaIds, ...uploaded.map((m) => m.id)],
+                mediaUrls: [...variant.mediaUrls, ...uploaded.map((m) => m.url)],
+            });
+        } catch (err) {
+            console.error('Upload error:', err);
+            setError('Не удалось загрузить фото варианта');
+        } finally {
+            setUploadingVariant(null);
+            const input = variantPhotoInputRefs.current[variantIndex];
+            if (input) input.value = '';
+        }
+    };
+
+    const removeVariantPhoto = (variantIndex: number, mediaIndex: number) => {
+        const variant = formData.variants[variantIndex];
+        updateVariant(variantIndex, {
+            mediaIds: variant.mediaIds.filter((_, i) => i !== mediaIndex),
+            mediaUrls: variant.mediaUrls.filter((_, i) => i !== mediaIndex),
+        });
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-96">
@@ -358,11 +411,27 @@ export function ProductFormPage() {
                                 </button>
                             </div>
                         ) : (
-                            <div className="w-32 h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500">
-                                <Upload size={24} className="text-gray-400 dark:text-gray-500" />
-                                <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">Загрузить</span>
+                            <div
+                                onClick={() => mainPhotoInputRef.current?.click()}
+                                className="w-32 h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500"
+                            >
+                                {uploadingMain ? (
+                                    <Loader2 size={24} className="text-gray-400 animate-spin" />
+                                ) : (
+                                    <>
+                                        <Upload size={24} className="text-gray-400 dark:text-gray-500" />
+                                        <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">Загрузить</span>
+                                    </>
+                                )}
                             </div>
                         )}
+                        <input
+                            ref={mainPhotoInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleMainPhotoUpload(e.target.files)}
+                            className="hidden"
+                        />
                         <div className="text-sm text-gray-500 dark:text-gray-400">
                             <p>Рекомендуемый размер: 800x800px</p>
                             <p>Формат: JPG, PNG, WebP</p>
@@ -456,19 +525,43 @@ export function ProductFormPage() {
                                         {variant.mediaUrls.map((url, mediaIndex) => (
                                             <div
                                                 key={mediaIndex}
-                                                className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700"
+                                                className="relative w-20 h-20 rounded-lg overflow-hidden group border border-gray-200 dark:border-gray-700"
                                             >
                                                 <img
                                                     src={url}
                                                     alt={`Фото ${mediaIndex + 1}`}
                                                     className="w-full h-full object-cover"
                                                 />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeVariantPhoto(index, mediaIndex)}
+                                                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    <X size={12} />
+                                                </button>
                                             </div>
                                         ))}
-                                        <div className="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500">
-                                            <Upload size={16} className="text-gray-400 dark:text-gray-500" />
-                                            <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">Добавить</span>
+                                        <div
+                                            onClick={() => variantPhotoInputRefs.current[index]?.click()}
+                                            className="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500"
+                                        >
+                                            {uploadingVariant === index ? (
+                                                <Loader2 size={16} className="text-gray-400 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <Upload size={16} className="text-gray-400 dark:text-gray-500" />
+                                                    <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">Добавить</span>
+                                                </>
+                                            )}
                                         </div>
+                                        <input
+                                            ref={(el) => { variantPhotoInputRefs.current[index] = el; }}
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={(e) => handleVariantPhotoUpload(index, e.target.files)}
+                                            className="hidden"
+                                        />
                                     </div>
                                 </div>
                             </div>

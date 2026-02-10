@@ -10,6 +10,7 @@ import {
     Sun,
     Moon,
     Image,
+    Film,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -25,6 +26,7 @@ const navItems: NavItem[] = [
     { to: '/admin/customers', icon: <Users size={20} />, label: 'Клиенты' },
     { to: '/admin/promotions', icon: <Tag size={20} />, label: 'Акции и скидки' },
     { to: '/admin/banners', icon: <Image size={20} />, label: 'Баннеры' },
+    { to: '/admin/backstages', icon: <Film size={20} />, label: 'Бэкстейдж' },
     { to: '/admin/reviews', icon: <MessageSquare size={20} />, label: 'Отзывы' },
 ];
 

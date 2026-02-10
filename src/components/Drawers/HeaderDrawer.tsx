@@ -225,6 +225,9 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                                 <button type="button" onClick={() => goTo('/about')} className="text-left text-[14px] uppercase cursor-pointer">
                                     О нас
                                 </button>
+                                <button type="button" onClick={() => goTo('/backstage')} className="text-left text-[14px] uppercase cursor-pointer">
+                                    Бэкстейдж
+                                </button>
                                 <button type="button" className="text-left text-[14px] uppercase cursor-pointer">
                                     Документы
                                 </button>
@@ -567,6 +570,14 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                             variants={itemV}
                         >
                             О нас
+                        </motion.button>
+                        <motion.button
+                            type="button"
+                            onClick={() => goTo('/backstage')}
+                            className="w-full block text-left text-[14px] leading-[18px] uppercase mb-[20px] cursor-pointer transition-colors hover:opacity-70"
+                            variants={itemV}
+                        >
+                            Бэкстейдж
                         </motion.button>
                         <motion.button
                             type="button"
