@@ -67,9 +67,10 @@ export const BackstagePage = () => {
                         {item.mediaType === 'VIDEO' ? (
                             <video
                                 src={item.mediaUrl}
-                                controls
+                                autoPlay
+                                loop
+                                muted
                                 playsInline
-                                preload="metadata"
                                 className="w-full aspect-[3/4] object-cover bg-black"
                             />
                         ) : (
