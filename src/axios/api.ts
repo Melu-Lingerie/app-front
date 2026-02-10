@@ -202,6 +202,12 @@ const ensureFreshToken = async (): Promise<void> => {
 
 //  Request: отменяем ПРЕДЫДУЩИЙ, новый отправляем
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+    // For FormData uploads, remove Content-Type so the browser sets
+    // multipart/form-data with the correct boundary automatically
+    if (config.data instanceof FormData) {
+        config.headers.delete('Content-Type');
+    }
+
     const key = getRequestKey(config);
 
     const prev = pendingRequests.get(key);

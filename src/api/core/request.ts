@@ -205,24 +205,15 @@ export const sendRequest = async <T>(
 ): Promise<AxiosResponse<T>> => {
     const source = axios.CancelToken.source();
 
-    const isFormDataUpload = !body && formData;
-
     const requestConfig: AxiosRequestConfig = {
         url,
-        headers: isFormDataUpload
-            ? { ...headers, 'Content-Type': undefined as any }
-            : headers,
+        headers,
         data: body ?? formData,
         method: options.method,
         withCredentials: config.WITH_CREDENTIALS,
         withXSRFToken: config.CREDENTIALS === 'include' ? config.WITH_CREDENTIALS : false,
         cancelToken: source.token,
         signal: options.signal,
-        // Bypass default transformRequest for FormData — it converts FormData to JSON
-        // when it sees Content-Type: application/json from axios defaults.
-        // The browser XHR adapter will auto-detect FormData and set the correct
-        // Content-Type: multipart/form-data with boundary.
-        ...(isFormDataUpload ? { transformRequest: [(data: any) => data] } : {}),
     };
 
     onCancel(() => source.cancel('The user aborted a request.'));
