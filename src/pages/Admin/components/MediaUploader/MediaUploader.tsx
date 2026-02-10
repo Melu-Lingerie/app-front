@@ -44,7 +44,10 @@ export function MediaUploader({
                 // 2. Upload file directly to S3
                 const s3Response = await fetch(presign.presignedUrl, {
                     method: 'PUT',
-                    headers: { 'Content-Type': file.type },
+                    headers: {
+                        'Content-Type': file.type,
+                        'x-amz-acl': 'public-read',
+                    },
                     body: file,
                 });
 

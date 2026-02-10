@@ -26,19 +26,27 @@ export function MediaListPage() {
     const [itemToDelete, setItemToDelete] = useState<MediaAdminResponseDto | null>(null);
     const [deleting, setDeleting] = useState(false);
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [totalItems, setTotalItems] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+
     const fetchMedia = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
-            const data = await AdminMediaService.getAllMedia();
-            setMedia(data);
+            const data = await AdminMediaService.getAllMedia(currentPage - 1, itemsPerPage);
+            setMedia(data.content);
+            setTotalItems(data.totalElements);
+            setTotalPages(data.totalPages);
         } catch (err) {
             console.error('Error fetching media:', err);
             setError('Не удалось загрузить медиафайлы');
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [currentPage, itemsPerPage]);
 
     useEffect(() => {
         fetchMedia();
@@ -50,7 +58,7 @@ export function MediaListPage() {
         try {
             setDeleting(true);
             await AdminMediaService.deleteMedia(itemToDelete.id);
-            setMedia(media.filter(m => m.id !== itemToDelete.id));
+            await fetchMedia();
         } catch (err) {
             console.error('Error deleting media:', err);
             alert('Ошибка удаления');
@@ -85,7 +93,6 @@ export function MediaListPage() {
         {
             key: 'fileName',
             title: 'Имя файла',
-            sortable: true,
             render: (item) => (
                 <div className="max-w-[200px]">
                     <div className="font-medium text-gray-900 dark:text-gray-100 truncate" title={item.fileName}>
@@ -186,6 +193,17 @@ export function MediaListPage() {
                 data={media}
                 getRowId={(item) => item.id}
                 loading={loading}
+                pagination={{
+                    currentPage,
+                    totalPages,
+                    totalItems,
+                    itemsPerPage,
+                    onPageChange: setCurrentPage,
+                    onItemsPerPageChange: (size) => {
+                        setItemsPerPage(size);
+                        setCurrentPage(1);
+                    },
+                }}
             />
 
             <AdminModal

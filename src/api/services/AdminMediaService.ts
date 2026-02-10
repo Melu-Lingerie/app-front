@@ -15,11 +15,23 @@ export type MediaAdminResponseDto = {
     createdAt: string;
 };
 
+export type PageMediaAdminResponseDto = {
+    content: MediaAdminResponseDto[];
+    totalElements: number;
+    totalPages: number;
+    size: number;
+    number: number;
+};
+
 export class AdminMediaService {
-    public static getAllMedia(): CancelablePromise<MediaAdminResponseDto[]> {
+    public static getAllMedia(
+        page: number = 0,
+        size: number = 10,
+    ): CancelablePromise<PageMediaAdminResponseDto> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/admin/media',
+            query: { page, size, sort: 'createdAt,desc' },
             errors: {
                 401: 'Unauthorized',
                 403: 'Forbidden',
