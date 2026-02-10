@@ -201,9 +201,11 @@ const ensureFreshToken = async (): Promise<void> => {
 
 //  Request: отменяем ПРЕДЫДУЩИЙ, новый отправляем
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+    // For FormData, remove Content-Type so the browser sets multipart/form-data with boundary.
     // For non-FormData requests, default to application/json.
-    // For FormData, let the browser set multipart/form-data with boundary.
-    if (!(config.data instanceof FormData)) {
+    if (config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
+    } else {
         if (!config.headers['Content-Type']) {
             config.headers['Content-Type'] = 'application/json';
         }
