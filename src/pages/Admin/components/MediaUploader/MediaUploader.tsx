@@ -97,16 +97,26 @@ export function MediaUploader({
 
             <div className="flex flex-wrap gap-3">
                 {/* Existing media items */}
-                {value.map((media, index) => (
+                {value.map((media, index) => {
+                    const isVideo = media.file?.type?.startsWith('video/') || media.url?.match(/\.(mp4|webm|ogg|mov)(\?|$)/i);
+                    return (
                     <div
                         key={media.id}
                         className="relative w-20 h-20 rounded-lg overflow-hidden group border border-gray-200 dark:border-gray-700"
                     >
-                        <img
-                            src={media.url}
-                            alt={`Media ${index + 1}`}
-                            className="w-full h-full object-cover"
-                        />
+                        {isVideo ? (
+                            <video
+                                src={media.url}
+                                muted
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <img
+                                src={media.url}
+                                alt={`Media ${index + 1}`}
+                                className="w-full h-full object-cover"
+                            />
+                        )}
                         {!disabled && (
                             <button
                                 type="button"
@@ -117,7 +127,8 @@ export function MediaUploader({
                             </button>
                         )}
                     </div>
-                ))}
+                    );
+                })}
 
                 {/* Upload button */}
                 {canAddMore && (
