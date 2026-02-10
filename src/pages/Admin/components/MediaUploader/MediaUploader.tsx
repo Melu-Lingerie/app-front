@@ -36,7 +36,7 @@ export function MediaUploader({
             for (const file of filesToUpload) {
                 const response = await MediaService.uploadMedia(undefined, { file });
                 uploadedMedia.push({
-                    id: response.fileId || '',
+                    id: String(response.mediaId ?? response.fileId ?? ''),
                     url: response.url || '',
                     file,
                 });

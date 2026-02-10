@@ -7,6 +7,10 @@
  */
 export type UploadMediaResponseDto = {
     /**
+     * Числовой идентификатор медиа
+     */
+    mediaId?: number;
+    /**
      * Идентификатор загруженного файла
      */
     fileId?: string;
