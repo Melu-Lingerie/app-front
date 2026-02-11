@@ -10,6 +10,8 @@ import {
 } from '../components';
 import { useFormValidation, validators } from '../../../hooks/useFormValidation';
 import { AdminProductService } from '@/api/services/AdminProductService';
+import { AdminCategoryService } from '@/api/services/AdminCategoryService';
+import type { CategoryAdminResponseDto } from '@/api/services/AdminCategoryService';
 import { MediaService } from '@/api';
 import type { ProductAdminResponseDto, ProductStatus, ProductType } from '@/api/services/AdminProductService';
 
@@ -85,6 +87,9 @@ const validationRules = {
         validators.required('Укажите цену'),
         validators.positive('Цена должна быть положительной'),
     ],
+    categoryId: [
+        validators.positive('Выберите категорию'),
+    ],
 };
 
 export function ProductFormPage() {
@@ -97,12 +102,21 @@ export function ProductFormPage() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [categories, setCategories] = useState<CategoryAdminResponseDto[]>([]);
+
     const [newColor, setNewColor] = useState('');
     const [newSize, setNewSize] = useState('');
     const [uploadingMain, setUploadingMain] = useState(false);
     const [uploadingVariant, setUploadingVariant] = useState<number | null>(null);
     const mainPhotoInputRef = useRef<HTMLInputElement>(null);
     const variantPhotoInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+
+    // Load categories
+    useEffect(() => {
+        AdminCategoryService.getAllCategories()
+            .then(setCategories)
+            .catch((err) => console.error('Failed to load categories:', err));
+    }, []);
 
     // Load product data when editing
     useEffect(() => {
@@ -180,7 +194,7 @@ export function ProductFormPage() {
                 name: formData.name,
                 articleNumber: formData.articleNumber,
                 description: formData.description || undefined,
-                categoryId: formData.categoryId || undefined,
+                categoryId: formData.categoryId,
                 collectionId: formData.collectionId,
                 basePrice: formData.basePrice,
                 promoPrice: formData.promoPrice,
@@ -328,7 +342,7 @@ export function ProductFormPage() {
                 {/* Основное */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Основное</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <AdminInput
                             label="Название товара"
                             placeholder="Название товара"
@@ -344,6 +358,14 @@ export function ProductFormPage() {
                             onChange={(e) => updateField('articleNumber', e.target.value)}
                             onBlur={() => setFieldTouched('articleNumber')}
                             error={getFieldError('articleNumber')}
+                        />
+                        <AdminSelect
+                            label="Категория"
+                            placeholder="Выберите категорию"
+                            options={categories.map((c) => ({ value: String(c.id), label: c.name }))}
+                            value={formData.categoryId ? String(formData.categoryId) : ''}
+                            onChange={(e) => updateField('categoryId', Number(e.target.value))}
+                            error={getFieldError('categoryId')}
                         />
                         <AdminSelect
                             label="Статус"

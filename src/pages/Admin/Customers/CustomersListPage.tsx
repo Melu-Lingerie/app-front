@@ -73,7 +73,7 @@ export function CustomersListPage() {
             const roleFilter = filterValues.role as UserRole | undefined;
 
             const response = await AdminUserService.searchUsers({
-                email: searchQuery || undefined,
+                query: searchQuery || undefined,
                 status: statusFilter,
                 role: roleFilter,
                 page: currentPage - 1,

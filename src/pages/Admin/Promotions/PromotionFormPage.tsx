@@ -8,12 +8,13 @@ import {
     AdminSelect,
 } from '../components';
 import { useFormValidation, validators } from '../../../hooks/useFormValidation';
+import { useNotifications } from '@/hooks/useNotifications';
 import type { PromoCodeFormData, DiscountType } from './types';
 import { AdminPromoCodeService } from '../../../api/services/AdminPromoCodeService';
 
 const discountTypeOptions = [
     { value: 'PERCENTAGE', label: 'Процент (%)' },
-    { value: 'FIXED', label: 'Фиксированная сумма (₽)' },
+    { value: 'FIXED_AMOUNT', label: 'Фиксированная сумма (₽)' },
 ];
 
 const defaultFormData: PromoCodeFormData = {
@@ -45,6 +46,7 @@ export function PromotionFormPage() {
     const navigate = useNavigate();
     const { id } = useParams();
     const isEditing = Boolean(id);
+    const { addNotification } = useNotifications();
 
     const [formData, setFormData] = useState<PromoCodeFormData>(defaultFormData);
     const [isLoading, setIsLoading] = useState(false);
@@ -111,6 +113,7 @@ export function PromotionFormPage() {
             navigate('/admin/promotions');
         } catch (error) {
             console.error('Failed to save promo code:', error);
+            addNotification('Ошибка сохранения промокода', 'error');
         } finally {
             setIsSaving(false);
         }

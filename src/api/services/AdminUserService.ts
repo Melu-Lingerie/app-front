@@ -40,6 +40,7 @@ export class AdminUserService {
      */
     public static searchUsers(
         params: {
+            query?: string;
             email?: string;
             phoneNumber?: string;
             firstName?: string;
@@ -54,6 +55,7 @@ export class AdminUserService {
             method: 'GET',
             url: '/admin/users',
             query: {
+                query: params.query,
                 email: params.email,
                 phoneNumber: params.phoneNumber,
                 firstName: params.firstName,

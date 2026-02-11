@@ -3,7 +3,7 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 
 // Types
-export type DiscountType = 'PERCENTAGE' | 'FIXED';
+export type DiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
 
 export type PromoCodeAdminResponseDto = {
     id: number;

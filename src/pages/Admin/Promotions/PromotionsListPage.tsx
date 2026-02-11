@@ -30,7 +30,7 @@ const statusVariants: Record<PromoCodeStatus, 'success' | 'warning' | 'error' | 
 
 const discountTypeLabels: Record<DiscountType, string> = {
     PERCENTAGE: 'Процент',
-    FIXED: 'Фиксированная сумма',
+    FIXED_AMOUNT: 'Фиксированная сумма',
 };
 
 const filterConfigs: FilterConfig[] = [
@@ -40,7 +40,7 @@ const filterConfigs: FilterConfig[] = [
         type: 'select',
         options: [
             { value: 'PERCENTAGE', label: 'Процент' },
-            { value: 'FIXED', label: 'Фиксированная сумма' },
+            { value: 'FIXED_AMOUNT', label: 'Фиксированная сумма' },
         ],
     },
     {
