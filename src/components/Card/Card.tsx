@@ -12,7 +12,7 @@ import {
     toggleWishlistItem,
     selectWishlistId,
     selectWishlistItems,
-    selectWishlistLoading,
+    selectTogglingProductIds,
 } from '@/store/wishlistSlice';
 import type { ProductCatalogResponseDto } from '@/api';
 
@@ -34,9 +34,10 @@ export const Card = ({
     const dispatch = useDispatch<AppDispatch>();
     const wishlistId = useSelector(selectWishlistId);
     const wishlistItems = useSelector(selectWishlistItems);
-    const wishlistLoading = useSelector(selectWishlistLoading);
+    const togglingProductIds = useSelector(selectTogglingProductIds);
 
     const inWishlist = wishlistItems.some((w) => w.productCatalogResponseDto?.productId === productId);
+    const wishlistLoading = togglingProductIds.includes(productId);
 
     const handleClick = () => {
         navigate(`/catalog/${productId}`);
@@ -44,7 +45,8 @@ export const Card = ({
 
     const handleWishlistClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!wishlistId) return;
+        e.preventDefault();
+        if (!wishlistId || wishlistLoading) return;
         dispatch(toggleWishlistItem({ wishlistId: Number(wishlistId), productId }));
     };
 
@@ -90,7 +92,7 @@ export const Card = ({
                             ? 'opacity-50 cursor-not-allowed'
                             : 'cursor-pointer hover:opacity-80 active:scale-95'
                     }`}
-                    onClick={wishlistLoading ? undefined : handleWishlistClick}
+                    onClick={handleWishlistClick}
                 >
                     <img
                         src={inWishlist ? FillWishList : EmptyWishList}

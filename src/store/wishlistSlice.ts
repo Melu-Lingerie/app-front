@@ -11,6 +11,7 @@ interface WishlistState {
     items: WishlistItemGetFacadeResponseDto[];
     itemsCount: number;
     loading: boolean;
+    togglingProductIds: number[];
     error: string | null;
 }
 
@@ -19,6 +20,7 @@ const initialState: WishlistState = {
     items: [],
     itemsCount: 0,
     loading: false,
+    togglingProductIds: [],
     error: null,
 };
 
@@ -101,14 +103,19 @@ const wishlistSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload || 'Ошибка';
             })
-            .addCase(toggleWishlistItem.pending, (state) => {
-                state.loading = true;
+            .addCase(toggleWishlistItem.pending, (state, action) => {
+                const productId = action.meta.arg.productId;
+                if (!state.togglingProductIds.includes(productId)) {
+                    state.togglingProductIds.push(productId);
+                }
             })
-            .addCase(toggleWishlistItem.fulfilled, (state) => {
-                state.loading = false;
+            .addCase(toggleWishlistItem.fulfilled, (state, action) => {
+                const productId = action.meta.arg.productId;
+                state.togglingProductIds = state.togglingProductIds.filter(id => id !== productId);
             })
             .addCase(toggleWishlistItem.rejected, (state, action) => {
-                state.loading = false;
+                const productId = action.meta.arg.productId;
+                state.togglingProductIds = state.togglingProductIds.filter(id => id !== productId);
                 state.error = action.payload || 'Ошибка';
             })
             .addCase(clearWishlistAsync.pending, (state) => {
@@ -133,5 +140,6 @@ export const selectWishlistId = (state: RootState) => state.wishlist.wishlistId;
 export const selectWishlistItems = (state: RootState) => state.wishlist.items;
 export const selectWishlistCount = (state: RootState) => state.wishlist.itemsCount;
 export const selectWishlistLoading = (state: RootState) => state.wishlist.loading;
+export const selectTogglingProductIds = (state: RootState) => state.wishlist.togglingProductIds;
 
 export default wishlistSlice.reducer;
