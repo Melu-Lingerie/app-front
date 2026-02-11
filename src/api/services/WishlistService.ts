@@ -45,21 +45,19 @@ export class WishlistService {
      * @returns void
      * @throws ApiError
      */
-    public static removeItemsFromWishlist(
+    public static removeItemFromWishlist(
         wishlistId: number,
-        itemIds: Array<number>,
+        itemId: number,
      options?: Partial<ApiRequestOptions>): CancelablePromise<void> {
         return __request(OpenAPI, { ...options,
             method: 'DELETE',
-            url: '/wishlist/{wishlistId}/items',
+            url: '/wishlist/{wishlistId}/items/{itemId}',
             path: {
                 'wishlistId': wishlistId,
-            },
-            query: {
-                'itemIds': itemIds,
+                'itemId': itemId,
             },
             errors: {
-                400: `Некорректный список идентификаторов`,
+                400: `Некорректный идентификатор`,
                 404: `Список желаний не найден`,
             },
         });

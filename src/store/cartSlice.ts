@@ -28,7 +28,7 @@ export const removeItemFromCart = createAsyncThunk<
     number,
     { cartId: number; itemId: number }
 >('cart/removeItemFromCart', async ({ cartId, itemId }) => {
-    await CartService.removeItemsFromCart(cartId, [itemId]);
+    await CartService.removeItemFromCart(cartId, itemId);
     return itemId;
 });
 

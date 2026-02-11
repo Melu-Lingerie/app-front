@@ -47,7 +47,7 @@ export const toggleWishlistItem = createAsyncThunk<
 
         if (existingItem?.id) {
             // 🔴 удаляем
-            await WishlistService.removeItemsFromWishlist(wishlistId, [existingItem.id]);
+            await WishlistService.removeItemFromWishlist(wishlistId, existingItem.id);
         } else {
             // 🟢 добавляем
             await WishlistService.addItemToWishlist(wishlistId, { productId });

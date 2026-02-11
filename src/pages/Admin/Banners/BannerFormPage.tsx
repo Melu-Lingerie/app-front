@@ -11,9 +11,7 @@ import type { UploadedMedia } from '../components';
 import { useFormValidation, validators } from '@/hooks/useFormValidation';
 import type { BannerFormData } from './types';
 import { useNotifications } from '@/hooks/useNotifications';
-
-// TODO: Replace with real API service when generated
-// import { AdminBannerService } from '@/api';
+import { AdminBannerService } from '@/api/services/AdminBannerService';
 
 const defaultFormData: BannerFormData = {
     title: '',
@@ -53,25 +51,17 @@ export function BannerFormPage() {
 
         try {
             setLoading(true);
-            // TODO: Replace with real API call
-            // const banner = await AdminBannerService.getBannerById(Number(id));
-            // setFormData({
-            //     title: banner.title,
-            //     url: banner.url,
-            //     mediaId: banner.mediaId,
-            //     order: banner.order,
-            //     isActive: banner.isActive,
-            // });
-            // if (banner.mediaUrl && banner.mediaId) {
-            //     setMedia([{ id: banner.mediaId, url: banner.mediaUrl }]);
-            // }
-
-            // Mock data for now
+            const banner = await AdminBannerService.getBanner(Number(id));
             setFormData({
-                title: 'Тестовый баннер',
-                url: '/catalog/test',
-                isActive: true,
+                title: banner.title,
+                url: banner.url,
+                mediaId: banner.mediaId,
+                order: banner.order,
+                isActive: banner.isActive,
             });
+            if (banner.mediaUrl && banner.mediaId) {
+                setMedia([{ id: String(banner.mediaId), url: banner.mediaUrl }]);
+            }
         } catch (error) {
             console.error('Error fetching banner:', error);
             addNotification('Ошибка загрузки баннера', 'error');
@@ -111,12 +101,22 @@ export function BannerFormPage() {
             setSaving(true);
 
             if (isEditing && id) {
-                // TODO: Replace with real API call
-                // await AdminBannerService.updateBanner(Number(id), formData);
+                await AdminBannerService.updateBanner(Number(id), {
+                    title: formData.title,
+                    url: formData.url,
+                    mediaId: formData.mediaId,
+                    order: formData.order,
+                    isActive: formData.isActive,
+                });
                 addNotification('Баннер обновлен', 'success');
             } else {
-                // TODO: Replace with real API call
-                // await AdminBannerService.createBanner(formData);
+                await AdminBannerService.createBanner({
+                    title: formData.title,
+                    url: formData.url,
+                    mediaId: formData.mediaId,
+                    order: formData.order,
+                    isActive: formData.isActive,
+                });
                 addNotification('Баннер создан', 'success');
             }
 

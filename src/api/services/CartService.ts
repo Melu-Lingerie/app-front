@@ -74,21 +74,19 @@ export class CartService {
      * @returns void
      * @throws ApiError
      */
-    public static removeItemsFromCart(
+    public static removeItemFromCart(
         cartId: number,
-        itemIds: Array<number>,
+        itemId: number,
      options?: Partial<ApiRequestOptions>): CancelablePromise<void> {
         return __request(OpenAPI, { ...options,
             method: 'DELETE',
-            url: '/cart/{cartId}/items',
+            url: '/cart/{cartId}/items/{itemId}',
             path: {
                 'cartId': cartId,
-            },
-            query: {
-                'itemIds': itemIds,
+                'itemId': itemId,
             },
             errors: {
-                400: `Некорректный список идентификаторов`,
+                400: `Некорректный идентификатор`,
                 404: `Корзина не найдена`,
             },
         });
