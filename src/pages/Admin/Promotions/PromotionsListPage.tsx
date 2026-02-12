@@ -71,10 +71,13 @@ export function PromotionsListPage() {
     const fetchPromoCodes = useCallback(async () => {
         setIsLoading(true);
         try {
-            const isActiveFilter = filterValues.isActive as string | undefined;
+            const rawActive = filterValues.isActive;
+            const activeArr = Array.isArray(rawActive) ? rawActive as string[] : [];
+            // Один чекбокс — фильтруем, оба или ни одного — показываем всё
+            const isActiveParam = activeArr.length === 1 ? activeArr[0] === 'true' : undefined;
             const response = await AdminPromoCodeService.searchPromoCodes({
                 search: searchQuery || undefined,
-                isActive: isActiveFilter ? isActiveFilter === 'true' : undefined,
+                isActive: isActiveParam,
                 page: pagination.page,
                 size: pagination.size,
             });
