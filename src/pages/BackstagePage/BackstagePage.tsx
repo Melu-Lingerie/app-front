@@ -71,7 +71,7 @@ export const BackstagePage = () => {
                                 loop
                                 muted
                                 playsInline
-                                className="w-full bg-black rounded-lg"
+                                className="w-full max-h-[350px] object-contain bg-black rounded-lg"
                             />
                         ) : (
                             <div
