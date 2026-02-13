@@ -71,7 +71,7 @@ export const BackstagePage = () => {
                                 loop
                                 muted
                                 playsInline
-                                className="max-h-[400px] rounded-lg mx-auto"
+                                className="w-full aspect-[4/5] object-cover rounded-lg"
                             />
                         ) : (
                             <div
@@ -95,7 +95,7 @@ export const BackstagePage = () => {
                         )}
 
                         {item.mediaType === 'VIDEO' && (
-                            <div className="p-3 md:p-4">
+                            <div className="p-3 md:p-4 text-center">
                                 <h3 className="text-sm md:text-base uppercase font-medium">
                                     {item.title}
                                 </h3>
