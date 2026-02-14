@@ -9,6 +9,7 @@ export type CalculateDeliveryRequestDto = {
     length?: number;
     width?: number;
     height?: number;
+    tariffCode?: number;
 };
 
 export type TariffResponseDto = {

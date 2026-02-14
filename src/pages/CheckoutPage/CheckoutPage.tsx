@@ -133,7 +133,7 @@ export function CheckoutPage() {
     }, []);
 
     // Расчет стоимости доставки
-    const calculateDelivery = useCallback(async (cityName: string) => {
+    const calculateDelivery = useCallback(async (cityName: string, tariffCode?: number) => {
         if (!cityName || cityName.length < 2 || totalWeight === 0) {
             setTariffs([]);
             setSelectedTariff(null);
@@ -145,6 +145,7 @@ export function CheckoutPage() {
             const result = await DeliveryService.calculateDeliveryCost({
                 city: cityName,
                 weight: totalWeight,
+                tariffCode,
             });
             setTariffs(result);
             // Автоматически выбираем первый тариф
@@ -160,17 +161,27 @@ export function CheckoutPage() {
         }
     }, [totalWeight]);
 
-    // Debounced city search
+    // Debounced city search - только загрузка ПВЗ
     useEffect(() => {
         const timer = setTimeout(() => {
             if (city.length >= 2) {
                 loadDeliveryPoints(city);
-                calculateDelivery(city);
             }
         }, 500);
 
+        setSelectedPoint(null);
+        setTariffs([]);
+        setSelectedTariff(null);
+
         return () => clearTimeout(timer);
-    }, [city, loadDeliveryPoints, calculateDelivery]);
+    }, [city, loadDeliveryPoints]);
+
+    // Расчет тарифов после выбора ПВЗ
+    useEffect(() => {
+        if (selectedPoint && city.length >= 2) {
+            calculateDelivery(city, 136);
+        }
+    }, [selectedPoint, city, calculateDelivery]);
 
     // Валидация формы
     const isFormValid = useMemo(() => {
