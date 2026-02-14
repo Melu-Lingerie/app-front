@@ -110,7 +110,7 @@ export const Catalog = () => {
             {/* Заголовок страницы */}
             <h1 className="ml-4 md:ml-10 mt-[30px] md:mt-[60px] mb-[20px] md:mb-[30px] text-[28px] md:text-[36px] leading-[32px] md:leading-[38px] uppercase">Каталог</h1>
 
-            {/* Верхняя панель фильтров (fixed — не занимает место в потоке) */}
+            {/* Верхняя панель фильтров */}
             <FilterTopBar
                 filterChanges={filterChanges}
                 selectedTypes={filters.types}
@@ -134,13 +134,10 @@ export const Catalog = () => {
                 onPriceCommit={flushPrice}
             />
 
-            {/* Спейсер под fixed FilterTopBar (49px header + 58px bar = 107px, main уже имеет pt-50) */}
-            <div className="h-[58px]" />
-
             {/* Контент */}
             <div className="grid grid-cols-1 md:grid-cols-4">
                 {/* === Sidebar (скрыт на мобилке) === */}
-                <div className="hidden md:block col-span-1 sticky top-[107px] self-start max-h-[calc(100vh-107px)] overflow-y-auto">
+                <div className="hidden md:block col-span-1 sticky top-[108px] self-start max-h-[calc(100vh-108px)] overflow-y-auto">
                     <FilterSidebar
                         minVal={localMinVal}
                         maxVal={localMaxVal}
@@ -160,7 +157,7 @@ export const Catalog = () => {
                 </div>
 
                 <div className="col-span-1 md:col-span-3">
-                    <div className="grid grid-cols-2 md:grid-cols-3">
+                    <div className="grid grid-cols-2 md:grid-cols-3 isolate">
                         {/* === Контент === */}
                         {loading || !initialized
                             ? Array.from({ length: filters.pageSize }).map((_, i) => (
