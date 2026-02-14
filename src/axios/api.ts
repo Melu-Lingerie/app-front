@@ -260,6 +260,13 @@ api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
         config.headers = config.headers || {};
         (config.headers as any).Authorization = `Bearer ${token}`;
     }
+
+    const userId = state.user?.userId;
+    if (userId) {
+        config.headers = config.headers || {};
+        (config.headers as any)['X-User-Id'] = String(userId);
+    }
+
     return config;
 });
 
