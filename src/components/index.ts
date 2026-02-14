@@ -18,3 +18,4 @@ export {RegisterModal} from './Modals';
 export {VerifyEmailModal} from './Modals';
 export {HeaderDrawer} from './Drawers';
 export {ForgotPasswordModal} from './Modals';
+export {ErrorBoundary} from './ErrorBoundary';

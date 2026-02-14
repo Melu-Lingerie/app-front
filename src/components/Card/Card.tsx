@@ -23,7 +23,7 @@ type Props = {
 };
 
 export const Card = ({
-                         card: { s3url, name, productStatus, price, colors, productId },
+                         card: { s3url, name, productStatus, price, colors = [], productId },
                          widthStyle,
                          reportImageHeight,
                      }: Props) => {

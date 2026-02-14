@@ -8,6 +8,7 @@ import {
     Catalog,
     ScrollRestoration,
     CookieNotice,
+    ErrorBoundary,
 } from '@/components';
 import {
     AccountPage,
@@ -93,6 +94,7 @@ function App() {
     return (
         <Provider store={store}>
             <ScrollRestoration />
+            <ErrorBoundary>
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<MainPage />} />
@@ -132,6 +134,7 @@ function App() {
                     <Route path="reviews" element={<ReviewsListPage />} />
                 </Route>
             </Routes>
+            </ErrorBoundary>
             {/* CookieNotice отвечает за guest-запрос и initApp */}
             <CookieNotice />
         </Provider>
