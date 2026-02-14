@@ -173,7 +173,7 @@ export const LoyaltyTab = () => {
                     >
                         <Copy size={16} />
                     </button>
-                    {navigator.share && (
+                    {'share' in navigator && (
                         <button
                             onClick={shareReferralCode}
                             className="p-2.5 border border-[#CCC] dark:border-white/10 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"

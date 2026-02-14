@@ -26,4 +26,13 @@ export {
     BackstageFormPage,
     MediaListPage,
     ReviewsListPage,
+    // Loyalty
+    LoyaltyDashboardPage,
+    LoyaltyAccountsPage,
+    LoyaltyAccountDetailPage,
+    AdminLoyaltyRewardsPage,
+    LoyaltyRewardFormPage,
+    LoyaltyRedemptionsPage,
+    TasteDaysPage,
+    LoyaltySettingsPage,
 } from './Admin';

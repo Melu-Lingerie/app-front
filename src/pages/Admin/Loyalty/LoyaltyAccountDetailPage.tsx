@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { AdminHeader, AdminButton, AdminInput, AdminSelect, AdminBadge } from '../components';
+import { AdminHeader, AdminButton, AdminInput, AdminSelect } from '../components';
 import { AdminLoyaltyService } from '@/api/services/AdminLoyaltyService';
 import type { LoyaltyAccountResponse, LoyaltyTier } from '@/api/models/LoyaltyDto';
 

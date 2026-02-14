@@ -187,6 +187,7 @@ export function TasteDaysPage() {
 
             {showModal && (
                 <AdminModal
+                    isOpen={showModal}
                     title={editingId ? 'Редактировать день вкуса' : 'Создать день вкуса'}
                     onClose={() => setShowModal(false)}
                 >

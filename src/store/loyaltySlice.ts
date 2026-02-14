@@ -4,7 +4,6 @@ import type {
     CrumbTransactionResponse,
     LoyaltyRewardResponse,
     ReferralInfoResponse,
-    RedeemDiscountResponse,
 } from '@/api/models/LoyaltyDto';
 import { LoyaltyService } from '@/api/services/LoyaltyService';
 import type { RootState } from './index';
@@ -106,7 +105,7 @@ const loyaltySlice = createSlice({
 
         // Redeem discount - refresh account after
         builder
-            .addCase(redeemDiscount.fulfilled, (state, action) => {
+            .addCase(redeemDiscount.fulfilled, () => {
                 // Account will be refreshed separately
             });
     },
