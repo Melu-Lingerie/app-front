@@ -265,7 +265,7 @@ export function ProductFormPage() {
         setUploadingMain(true);
         try {
             const response = await MediaService.uploadMedia(undefined, { file: files[0] });
-            updateField('mainMediaId', Number(response.fileId));
+            updateField('mainMediaId', response.mediaId);
             updateField('mainMediaUrl', response.url || '');
         } catch (err) {
             console.error('Upload error:', err);
@@ -283,7 +283,7 @@ export function ProductFormPage() {
             const uploaded: { id: number; url: string }[] = [];
             for (const file of Array.from(files)) {
                 const response = await MediaService.uploadMedia(undefined, { file });
-                uploaded.push({ id: Number(response.fileId), url: response.url || '' });
+                uploaded.push({ id: response.mediaId!, url: response.url || '' });
             }
             const variant = formData.variants[variantIndex];
             updateVariant(variantIndex, {

@@ -92,7 +92,7 @@ export const FilterTopBar = ({
         <>
             <div
                 className={`
-                    sticky top-0 z-50
+                    sticky top-[50px]
                     grid grid-cols-2 md:grid-cols-4
                     border-b border-t border-[#CCC] dark:border-white/10
                     relative w-screen left-[calc((100%-100vw)/2)]
