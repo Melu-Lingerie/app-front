@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import GuestIcon from '@/assets/GuestIcon.svg';
 import { FavoritesTab } from '@/pages/AccountPage/Tabs/FavoritesTab.tsx';
 import { ProfileTab } from '@/pages/AccountPage/Tabs/ProfileTab.tsx';
+import { LoyaltyTab } from '@/pages/AccountPage/Tabs/LoyaltyTab.tsx';
 // import { SecurityTab } from '@/pages/AccountPage/Tabs/SecurityTab.tsx';
 // import { OrdersTab } from '@/pages/AccountPage/Tabs/OrdersTab.tsx';
 import { useSelector } from 'react-redux';
@@ -22,6 +23,7 @@ export const AccountPage = () => {
         { label: 'Безопасность и уведомления', path: '/account/security' },
         { label: 'Мои заказы', path: '/account/orders' },
         { label: 'Избранное', path: '/account/favorites' },
+        { label: 'Программа лояльности', path: '/account/loyalty' },
     ];
 
     const handleTabClick = (tabPath: string, disabled: boolean) => {
@@ -58,7 +60,7 @@ export const AccountPage = () => {
                     <div className="border-b border-[#CCCCCC] dark:border-white/10" />
                     {tabs.map((tab) => {
                         const isActive = location.pathname === tab.path;
-                        const disabled = !initialized || (isGuest && tab.label !== 'Избранное');
+                        const disabled = !initialized || (isGuest && tab.label !== 'Избранное' && tab.label !== 'Программа лояльности');
                         return (
                             <div key={tab.path}>
                                 <button
@@ -210,6 +212,19 @@ export const AccountPage = () => {
                                         transition={{ duration: 0.25 }}
                                     >
                                         <FavoritesTab />
+                                    </motion.div>
+                                }
+                            />
+                            <Route
+                                path="loyalty"
+                                element={
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.25 }}
+                                    >
+                                        <LoyaltyTab />
                                     </motion.div>
                                 }
                             />

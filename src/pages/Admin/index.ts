@@ -24,3 +24,15 @@ export { MediaListPage } from './Media';
 
 // Reviews
 export { ReviewsListPage } from './Reviews';
+
+// Loyalty
+export {
+    LoyaltyDashboardPage,
+    LoyaltyAccountsPage,
+    LoyaltyAccountDetailPage,
+    LoyaltyRewardsPage as AdminLoyaltyRewardsPage,
+    LoyaltyRewardFormPage,
+    LoyaltyRedemptionsPage,
+    TasteDaysPage,
+    LoyaltySettingsPage,
+} from './Loyalty';

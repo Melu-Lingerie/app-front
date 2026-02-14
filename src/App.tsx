@@ -10,6 +10,7 @@ import {
     CookieNotice,
     ErrorBoundary,
 } from '@/components';
+import { LoyaltyRewardsPage } from '@/pages/LoyaltyRewardsPage/LoyaltyRewardsPage';
 import {
     AccountPage,
     CartPage,
@@ -37,6 +38,15 @@ import {
     BackstagesListPage,
     BackstageFormPage,
     MediaListPage,
+    // Loyalty Admin
+    LoyaltyDashboardPage,
+    LoyaltyAccountsPage,
+    LoyaltyAccountDetailPage,
+    AdminLoyaltyRewardsPage,
+    LoyaltyRewardFormPage,
+    LoyaltyRedemptionsPage,
+    TasteDaysPage,
+    LoyaltySettingsPage,
 } from '@/pages';
 
 function App() {
@@ -106,6 +116,7 @@ function App() {
                     <Route path="customers/*" element={<CustomersPage />} />
                     <Route path="gift-certificate" element={<GiftCertificatePage />} />
                     <Route path="backstage" element={<BackstagePage />} />
+                    <Route path="loyalty/rewards" element={<LoyaltyRewardsPage />} />
                     <Route path="about" element={<AboutPage />} />
                     <Route path="contacts" element={<ContactsPage />} />
                     <Route path="*" element={<NotFound />} />
@@ -132,6 +143,16 @@ function App() {
                     <Route path="backstages/:id/edit" element={<BackstageFormPage />} />
                     <Route path="media" element={<MediaListPage />} />
                     <Route path="reviews" element={<ReviewsListPage />} />
+                    {/* Loyalty */}
+                    <Route path="loyalty" element={<LoyaltyDashboardPage />} />
+                    <Route path="loyalty/accounts" element={<LoyaltyAccountsPage />} />
+                    <Route path="loyalty/accounts/:id" element={<LoyaltyAccountDetailPage />} />
+                    <Route path="loyalty/rewards" element={<AdminLoyaltyRewardsPage />} />
+                    <Route path="loyalty/rewards/new" element={<LoyaltyRewardFormPage />} />
+                    <Route path="loyalty/rewards/:id/edit" element={<LoyaltyRewardFormPage />} />
+                    <Route path="loyalty/redemptions" element={<LoyaltyRedemptionsPage />} />
+                    <Route path="loyalty/taste-days" element={<TasteDaysPage />} />
+                    <Route path="loyalty/settings" element={<LoyaltySettingsPage />} />
                 </Route>
             </Routes>
             </ErrorBoundary>

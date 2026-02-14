@@ -1,12 +1,13 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { type RootState } from '@/store';
+import { type RootState, type AppDispatch } from '@/store';
 import { motion } from 'framer-motion';
 import { OrderService } from '@/api/services/OrderService';
 import { DeliveryService } from '@/api/services/DeliveryService';
 import type { TariffResponseDto, DeliveryPointResponseDto } from '@/api/models/DeliveryDto';
 import type { PaymentMethod, DeliveryMethod } from '@/api/models/CheckoutRequestDto';
+import { fetchLoyaltyAccount, selectLoyaltyBalance } from '@/store/loyaltySlice';
 
 // Иконка СБП
 const SbpIcon = () => (
@@ -60,8 +61,10 @@ const AVERAGE_ITEM_WEIGHT = 300;
 
 export function CheckoutPage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
     const { items, itemsCount, cartId } = useSelector((state: RootState) => state.cart);
     const { isAuthenticated } = useSelector((state: RootState) => state.user);
+    const crumbsBalance = useSelector(selectLoyaltyBalance);
 
     // Форма получателя
     const [firstName, setFirstName] = useState('');
@@ -95,6 +98,9 @@ export function CheckoutPage() {
 
     // Промокод
     const [promoCode, setPromoCode] = useState('');
+
+    // Лояльность (крошки)
+    const [useCrumbsDiscount, setUseCrumbsDiscount] = useState(false);
 
     // Checkout state
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -161,6 +167,13 @@ export function CheckoutPage() {
         }
     }, [totalWeight]);
 
+    // Загрузка баланса крошек
+    useEffect(() => {
+        if (isAuthenticated) {
+            dispatch(fetchLoyaltyAccount());
+        }
+    }, [isAuthenticated, dispatch]);
+
     // Debounced city search - только загрузка ПВЗ
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -221,6 +234,7 @@ export function CheckoutPage() {
                 promoCode: promoCode || undefined,
                 customerComment: comment || undefined,
                 tariffCode: selectedTariff.tariffCode,
+                useCrumbsDiscount: useCrumbsDiscount || undefined,
             });
 
             // Если есть URL для оплаты - редиректим
@@ -623,6 +637,28 @@ export function CheckoutPage() {
                     </div>
 
                     <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-6" />
+
+                    {/* Скидка крошками */}
+                    {isAuthenticated && crumbsBalance >= 10 && (
+                        <div className="mb-6">
+                            <label className="flex items-start gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={useCrumbsDiscount}
+                                    onChange={(e) => setUseCrumbsDiscount(e.target.checked)}
+                                    className="w-4 h-4 mt-0.5 accent-[#F8C6D7] border border-[#CCC]"
+                                />
+                                <div>
+                                    <span className="text-sm font-medium">
+                                        Использовать 10 крошек для скидки 10%
+                                    </span>
+                                    <div className="text-xs text-[#999] mt-1">
+                                        Ваш баланс: {crumbsBalance.toFixed(1)} крошек
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    )}
 
                     {/* Промокод */}
                     <div className="mb-6">

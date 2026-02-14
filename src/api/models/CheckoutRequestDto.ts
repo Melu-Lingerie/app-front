@@ -21,4 +21,5 @@ export type CheckoutRequestDto = {
     promoCode?: string;
     customerComment?: string;
     tariffCode: number;
+    useCrumbsDiscount?: boolean;
 };

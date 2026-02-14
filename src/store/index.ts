@@ -4,6 +4,7 @@ import cartReducer, { fetchCart, setCartId } from './cartSlice';
 import wishlistReducer, { fetchWishlist, setWishlistId } from './wishlistSlice';
 import appReducer from './appSlice';
 import userReducer from './userSlice';
+import loyaltyReducer from './loyaltySlice';
 import {Service, UserManagementService} from '@/api';
 
 /**
@@ -201,6 +202,7 @@ export const store = configureStore({
         cart: cartReducer,
         wishlist: wishlistReducer,
         user: userReducer,
+        loyalty: loyaltyReducer,
     },
 });
 

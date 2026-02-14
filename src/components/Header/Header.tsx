@@ -16,6 +16,7 @@ import { setCartId } from '@/store/cartSlice';
 import { setWishlistId } from '@/store/wishlistSlice';
 import { Service } from '@/api/services/Service.ts';
 import { setInitialized } from '@/store/appSlice.ts';
+import { fetchLoyaltyAccount, selectLoyaltyBalance } from '@/store/loyaltySlice';
 
 // --- device info helpers ---
 const detectDeviceInfo = async () => {
@@ -104,6 +105,7 @@ export const Header = () => {
     const wishlistCount = useSelector((state: RootState) => state.wishlist.itemsCount);
     const initialized = useSelector((state: RootState) => state.app.initialized);
     const isAuthenticated = useSelector(selectIsAuthenticated);
+    const crumbsBalance = useSelector(selectLoyaltyBalance);
 
     useEffect(() => {
         const onDown = (e: MouseEvent) => {
@@ -133,6 +135,12 @@ export const Header = () => {
             window.removeEventListener('open-login-modal', onOpenLogin);
         };
     }, []);
+
+    useEffect(() => {
+        if (isAuthenticated && initialized) {
+            dispatch(fetchLoyaltyAccount());
+        }
+    }, [isAuthenticated, initialized, dispatch]);
 
     const handleLogout = async () => {
       setLoggingOut(true);
@@ -362,6 +370,19 @@ export const Header = () => {
                                 <button type="button" className={`${iconBtn} hidden md:block`}>
                                     <Search className="w-4 h-4" aria-hidden="true" />
                                 </button>
+
+                                {/* Crumbs balance */}
+                                {isAuthenticated && crumbsBalance > 0 && (
+                                    <button
+                                        type="button"
+                                        className="hidden md:flex items-center gap-1 text-xs font-medium cursor-pointer hover:opacity-70 transition-opacity"
+                                        onClick={() => navigate('/account/loyalty')}
+                                        title="Баланс крошек"
+                                    >
+                                        <span className="text-[#F8C6D7]">{crumbsBalance.toFixed(1)}</span>
+                                        <span className="text-[#999]">крошек</span>
+                                    </button>
+                                )}
 
                                 {/* Cart */}
                                 <button
