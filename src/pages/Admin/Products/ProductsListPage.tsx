@@ -64,13 +64,14 @@ export function ProductsListPage() {
         setError(null);
         try {
             const statusFilter = filterValues.status as ProductStatus | undefined;
-            const priceRange = filterValues.price as { min?: number; max?: number } | undefined;
+            const minPrice = filterValues.price_from ? Number(filterValues.price_from) : undefined;
+            const maxPrice = filterValues.price_to ? Number(filterValues.price_to) : undefined;
 
             const response = await AdminProductService.searchProducts({
                 name: searchQuery || undefined,
                 status: statusFilter,
-                minPrice: priceRange?.min,
-                maxPrice: priceRange?.max,
+                minPrice,
+                maxPrice,
                 page: currentPage - 1,
                 size: itemsPerPage,
             });
@@ -84,7 +85,7 @@ export function ProductsListPage() {
         } finally {
             setLoading(false);
         }
-    }, [currentPage, itemsPerPage, filterValues.status, filterValues.price, searchQuery]);
+    }, [currentPage, itemsPerPage, filterValues.status, filterValues.price_from, filterValues.price_to, searchQuery]);
 
     useEffect(() => {
         fetchProducts();

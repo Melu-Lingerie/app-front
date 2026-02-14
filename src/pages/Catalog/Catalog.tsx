@@ -135,7 +135,7 @@ export const Catalog = () => {
             />
 
             {/* Контент */}
-            <div className="grid grid-cols-1 md:grid-cols-4 relative">
+            <div className="grid grid-cols-1 md:grid-cols-4 isolate">
                 {/* === Sidebar (скрыт на мобилке) === */}
                 <div className="hidden md:block col-span-1 sticky top-[108px] self-start max-h-[calc(100vh-108px)] overflow-y-auto">
                     <FilterSidebar
@@ -157,7 +157,7 @@ export const Catalog = () => {
                 </div>
 
                 <div className="col-span-1 md:col-span-3">
-                    <div className="grid grid-cols-2 md:grid-cols-3 relative">
+                    <div className="grid grid-cols-2 md:grid-cols-3">
                         {/* === Контент === */}
                         {loading || !initialized
                             ? Array.from({ length: filters.pageSize }).map((_, i) => (
