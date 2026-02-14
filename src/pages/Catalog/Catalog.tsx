@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -89,13 +89,6 @@ export const Catalog = () => {
         window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
     }, [setSearchParams]);
 
-    const handlePageChange = useCallback(
-        (page: number) => {
-            updateQuery({ page });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-        [updateQuery],
-    );
 
     // === счётчик активных фильтров ===
     const filterChanges =
@@ -105,39 +98,53 @@ export const Catalog = () => {
         (filters.sizes.length ? 1 : 0);
 
     // === UI ===
+
+    const productScrollRef = useRef<HTMLDivElement>(null);
+
+    // Переопределяем scrollTo для пагинации — скроллим контейнер карточек, а не window
+    const handlePageChangeLocal = useCallback(
+        (page: number) => {
+            updateQuery({ page });
+            productScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+        [updateQuery],
+    );
+
     return (
-        <div>
+        <div className="h-[calc(100vh-50px)] flex flex-col overflow-hidden">
             {/* Заголовок страницы */}
-            <h1 className="ml-4 md:ml-10 mt-[30px] md:mt-[60px] mb-[20px] md:mb-[30px] text-[28px] md:text-[36px] leading-[32px] md:leading-[38px] uppercase">Каталог</h1>
+            <h1 className="ml-4 md:ml-10 mt-[30px] md:mt-[60px] mb-[20px] md:mb-[30px] text-[28px] md:text-[36px] leading-[32px] md:leading-[38px] uppercase shrink-0">Каталог</h1>
 
-            {/* Верхняя панель фильтров */}
-            <FilterTopBar
-                filterChanges={filterChanges}
-                selectedTypes={filters.types}
-                toggleFn={toggleFilterValue}
-                onReset={handleReset}
-                options={[...SORT_OPTIONS]}
-                selectedOption={filters.sort}
-                onSelectChange={handleSortChange}
-                // Mobile filter props
-                minVal={localMinVal}
-                maxVal={localMaxVal}
-                priceMin={filterOptions.minPrice}
-                priceMax={filterOptions.maxPrice}
-                categories={filterOptions.categories}
-                availableSizes={filterOptions.sizes}
-                availableColors={filterOptions.colors}
-                selectedSizes={filters.sizes ?? []}
-                selectedColors={filters.colors ?? []}
-                setMinVal={setLocalMinVal}
-                setMaxVal={setLocalMaxVal}
-                onPriceCommit={flushPrice}
-            />
+            {/* Верхняя панель фильтров — статичная */}
+            <div className="shrink-0">
+                <FilterTopBar
+                    filterChanges={filterChanges}
+                    selectedTypes={filters.types}
+                    toggleFn={toggleFilterValue}
+                    onReset={handleReset}
+                    options={[...SORT_OPTIONS]}
+                    selectedOption={filters.sort}
+                    onSelectChange={handleSortChange}
+                    // Mobile filter props
+                    minVal={localMinVal}
+                    maxVal={localMaxVal}
+                    priceMin={filterOptions.minPrice}
+                    priceMax={filterOptions.maxPrice}
+                    categories={filterOptions.categories}
+                    availableSizes={filterOptions.sizes}
+                    availableColors={filterOptions.colors}
+                    selectedSizes={filters.sizes ?? []}
+                    selectedColors={filters.colors ?? []}
+                    setMinVal={setLocalMinVal}
+                    setMaxVal={setLocalMaxVal}
+                    onPriceCommit={flushPrice}
+                />
+            </div>
 
-            {/* Контент */}
-            <div className="grid grid-cols-1 md:grid-cols-4">
-                {/* === Sidebar (скрыт на мобилке) === */}
-                <div className="hidden md:block col-span-1 sticky top-[108px] self-start max-h-[calc(100vh-108px)] overflow-y-auto">
+            {/* Контент: sidebar + карточки */}
+            <div className="flex flex-1 min-h-0">
+                {/* === Sidebar (скрыт на мобилке) — статичный, свой скролл === */}
+                <div className="hidden md:block w-1/4 shrink-0 overflow-y-auto border-r border-[#CCC] dark:border-white/10">
                     <FilterSidebar
                         minVal={localMinVal}
                         maxVal={localMaxVal}
@@ -156,8 +163,9 @@ export const Catalog = () => {
                     />
                 </div>
 
-                <div className="col-span-1 md:col-span-3">
-                    <div className="grid grid-cols-2 md:grid-cols-3 isolate">
+                {/* === Карточки — единственная скроллируемая область === */}
+                <div ref={productScrollRef} className="flex-1 overflow-y-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3">
                         {/* === Контент === */}
                         {loading || !initialized
                             ? Array.from({ length: filters.pageSize }).map((_, i) => (
@@ -268,7 +276,7 @@ export const Catalog = () => {
                         <Pagination
                             currentPage={filters.page}
                             totalPages={totalPages}
-                            onPageChange={handlePageChange}
+                            onPageChange={handlePageChangeLocal}
                         />
                     )}
                 </div>

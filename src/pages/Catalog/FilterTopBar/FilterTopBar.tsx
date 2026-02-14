@@ -52,7 +52,6 @@ export const FilterTopBar = ({
                                  onPriceCommit,
                              }: FilterTopBarProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [isSticky, setIsSticky] = useState(false);
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -78,29 +77,10 @@ export const FilterTopBar = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // следим за скроллом и добавляем тень только после прилипания
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsSticky(window.scrollY > 0);
-        };
-        handleScroll();
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     return (
         <>
             <div
-                className={`
-                    sticky top-[50px]
-                    grid grid-cols-2 md:grid-cols-4
-                    border-b border-t border-[#CCC] dark:border-white/10
-                    relative w-screen left-[calc((100%-100vw)/2)]
-                    h-[58px]
-                    transition-shadow duration-300
-                    bg-[#FFFBF5] dark:bg-[#2A2A2B]
-                    ${isSticky ? 'shadow-md' : 'shadow-none'}
-                `}
+                className="grid grid-cols-2 md:grid-cols-4 border-b border-t border-[#CCC] dark:border-white/10 h-[58px] bg-[#FFFBF5] dark:bg-[#2A2A2B]"
             >
                 {/* Колонка 1 — фильтры */}
                 <div className="col-span-1 flex items-center px-4 md:px-10">
