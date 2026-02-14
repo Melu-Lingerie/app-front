@@ -98,7 +98,7 @@ export const FilterTopBar = ({
                     relative w-screen left-[calc((100%-100vw)/2)]
                     h-[58px]
                     transition-shadow duration-300
-                    bg-[#FFFAF4] dark:bg-[#2A2A2B]
+                    bg-[#FFFBF5] dark:bg-[#2A2A2B]
                     ${isSticky ? 'shadow-md' : 'shadow-none'}
                 `}
             >
