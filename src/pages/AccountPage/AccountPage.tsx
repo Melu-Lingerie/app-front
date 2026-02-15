@@ -5,8 +5,8 @@ import GuestIcon from '@/assets/GuestIcon.svg';
 import { FavoritesTab } from '@/pages/AccountPage/Tabs/FavoritesTab.tsx';
 import { ProfileTab } from '@/pages/AccountPage/Tabs/ProfileTab.tsx';
 import { LoyaltyTab } from '@/pages/AccountPage/Tabs/LoyaltyTab.tsx';
-// import { SecurityTab } from '@/pages/AccountPage/Tabs/SecurityTab.tsx';
-// import { OrdersTab } from '@/pages/AccountPage/Tabs/OrdersTab.tsx';
+import { SecurityTab } from '@/pages/AccountPage/Tabs/SecurityTab.tsx';
+import { OrdersTab } from '@/pages/AccountPage/Tabs/OrdersTab.tsx';
 import { useSelector } from 'react-redux';
 import { selectIsAuthenticated } from '@/store/userSlice';
 import { selectAppInitialized } from '@/store/appSlice.ts';
@@ -123,7 +123,7 @@ export const AccountPage = () => {
                                         exit={{ opacity: 0, y: -10 }}
                                         transition={{ duration: 0.25 }}
                                     >
-                                        <ProfileTab />
+                                        <SecurityTab />
                                     </motion.div>
                                 }
                             />
@@ -136,7 +136,7 @@ export const AccountPage = () => {
                                         exit={{ opacity: 0, y: -10 }}
                                         transition={{ duration: 0.25 }}
                                     >
-                                        <></>
+                                        <OrdersTab />
                                     </motion.div>
                                 }
                             />
@@ -185,7 +185,7 @@ export const AccountPage = () => {
                                         exit={{ opacity: 0, y: -10 }}
                                         transition={{ duration: 0.25 }}
                                     >
-                                        <></>
+                                        <SecurityTab />
                                     </motion.div>
                                 }
                             />
@@ -198,7 +198,7 @@ export const AccountPage = () => {
                                         exit={{ opacity: 0, y: -10 }}
                                         transition={{ duration: 0.25 }}
                                     >
-                                        <></>
+                                        <OrdersTab />
                                     </motion.div>
                                 }
                             />
