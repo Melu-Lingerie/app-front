@@ -6,6 +6,8 @@ import {
     removeItemFromCart,
     updateItemQuantity,
 } from '@/store/cartSlice';
+import { selectWishlistId, toggleWishlistItem } from '@/store/wishlistSlice';
+import { selectIsAuthenticated } from '@/store/userSlice';
 import { Spinner } from '@/components/Spinner';
 import { CartItem } from './CartItem';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -37,6 +39,8 @@ export function CartPage() {
         updatingItemIds,
     } = useSelector((state: RootState) => state.cart);
     const { addNotification } = useNotifications();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const wishlistId = useSelector(selectWishlistId);
 
     const [relatedGoods, setRelatedGoods] = useState<any[]>([]);
     const [relatedLoading, setRelatedLoading] = useState(false);
@@ -209,6 +213,16 @@ export function CartPage() {
                                                 })
                                             )
                                         }
+                                        onAddToFavorites={() => {
+                                            if (!wishlistId) {
+                                                addNotification('Избранное не инициализировано', 'error');
+                                                return;
+                                            }
+                                            dispatch(toggleWishlistItem({ wishlistId: Number(wishlistId), productId: item.productId! }))
+                                                .unwrap()
+                                                .then(() => addNotification('Товар добавлен в избранное', 'success'))
+                                                .catch(() => addNotification('Не удалось добавить в избранное', 'error'));
+                                        }}
                                     />
                                 </motion.div>
                             ))}
@@ -247,10 +261,14 @@ export function CartPage() {
                     >
                         Оформить заказ
                     </button>
-                    <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 my-[15px] md:my-[20px]" />
-                    <p className="text-[#999] text-[11px] md:text-[12px] font-medium leading-[18px]">
-                        <span className="text-[#F8C6D7] underline cursor-pointer">Войдите</span> или <span className="text-[#F8C6D7] underline cursor-pointer">зарегистрируйтесь</span>, чтобы применить промокод или получить баллы за покупку.
-                    </p>
+                    {!isAuthenticated && (
+                        <>
+                            <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 my-[15px] md:my-[20px]" />
+                            <p className="text-[#999] text-[11px] md:text-[12px] font-medium leading-[18px]">
+                                <span className="text-[#F8C6D7] underline cursor-pointer">Войдите</span> или <span className="text-[#F8C6D7] underline cursor-pointer">зарегистрируйтесь</span>, чтобы применить промокод или получить баллы за покупку.
+                            </p>
+                        </>
+                    )}
                 </motion.div>
             </div>
 
