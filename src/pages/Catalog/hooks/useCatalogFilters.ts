@@ -41,11 +41,13 @@ export const useCatalogFilters = (
                 ? [parsedParams.colors]
                 : [];
 
+        const name = parsedParams.name ? String(parsedParams.name) : '';
+
         const page = parsedParams.page ? Math.max(Number(parsedParams.page), 0) : 0;
         const rawSize = parsedParams.pageSize ? Number(parsedParams.pageSize) : PAGE_SIZE_DEFAULT;
         const pageSize = Math.min(Math.max(rawSize, PAGE_SIZE_MIN), PAGE_SIZE_MAX);
 
-        return { minVal, maxVal, types: resolvedTypes, sizes, colors, sort, page, pageSize };
+        return { name, minVal, maxVal, types: resolvedTypes, sizes, colors, sort, page, pageSize };
     }, [parsedParams, MAPPED_SELECTED_TYPES, priceDefaults?.min, priceDefaults?.max]);
 
     const updateQuery = useCallback(

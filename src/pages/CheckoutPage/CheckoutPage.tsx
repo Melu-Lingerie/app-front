@@ -371,12 +371,12 @@ export function CheckoutPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[75px] gap-y-4">
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Населенный пункт</label>
+                                <label className="block text-sm font-medium uppercase mb-2">Адрес</label>
                                 <input
                                     type="text"
                                     value={city}
                                     onChange={(e) => setCity(e.target.value)}
-                                    placeholder="Начните вводить название города"
+                                    placeholder="Город, улица"
                                     className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-sm font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
@@ -611,6 +611,38 @@ export function CheckoutPage() {
                     transition={{ duration: 0.4 }}
                     className="w-full lg:w-96 lg:flex-shrink-0 lg:sticky lg:top-[100px] h-fit"
                 >
+                    {/* Товары в заказе */}
+                    <h3 className="text-base font-medium uppercase mb-3">Ваш заказ</h3>
+                    <div className="space-y-3 mb-6">
+                        {items.map((item) => (
+                            <div key={item.itemId} className="flex gap-3">
+                                <div className="w-14 h-14 flex-shrink-0 bg-[#F7F7F7] dark:bg-white/5 rounded overflow-hidden">
+                                    {item.imageUrl ? (
+                                        <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-[#999] text-[10px]">Нет фото</div>
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-xs font-medium truncate">{item.productName}</div>
+                                    <div className="text-[11px] text-[#999]">
+                                        {item.variantColor && <span>{item.variantColor}</span>}
+                                        {item.variantColor && item.variantSize && <span> / </span>}
+                                        {item.variantSize && <span>{item.variantSize}</span>}
+                                    </div>
+                                    <div className="text-[11px] text-[#999]">
+                                        {item.quantity} × {numberFormat(item.unitPrice)} ₽
+                                    </div>
+                                </div>
+                                <div className="text-xs font-medium whitespace-nowrap">
+                                    {numberFormat(item.totalPrice ?? 0)} ₽
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 mb-4" />
+
                     <div className="flex justify-between items-baseline mb-2">
                         <h3 className="text-base font-medium uppercase">Сумма заказа</h3>
                         <span className="text-base font-medium uppercase">{numberFormat(subtotal)} ₽</span>

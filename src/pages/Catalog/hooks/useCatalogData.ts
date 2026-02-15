@@ -17,6 +17,7 @@ import { isAbortError } from '@/utils/utils.ts';
 
 export const useCatalogData = (
     filters: {
+        name: string;
         minVal: number;
         maxVal: number;
         types: string[];
@@ -45,7 +46,7 @@ export const useCatalogData = (
                 .map((t) => categoryMap[t]);
 
             return (await ProductsService.getCatalog(
-                undefined,
+                filters.name || undefined,
                 filters.minVal || undefined,
                 filters.maxVal || undefined,
                 categories.length ? categories : undefined,
