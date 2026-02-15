@@ -126,7 +126,11 @@ export const ProfileTab = () => {
 
         let initPhone = '';
         if (user?.phoneNumber) {
-            const digits = user.phoneNumber.replace(/\D/g, '');
+            let digits = user.phoneNumber.replace(/\D/g, '');
+            // Нормализация: 8XXXXXXXXXX → 7XXXXXXXXXX
+            if (digits.length === 11 && digits[0] === '8') {
+                digits = '7' + digits.substring(1);
+            }
             if (digits && digits[0] === '7') {
                 initPhone = formatPhoneFromDigits(digits);
             }
