@@ -6,7 +6,7 @@ import {
     removeItemFromCart,
     updateItemQuantity,
 } from '@/store/cartSlice';
-import { selectWishlistId, toggleWishlistItem } from '@/store/wishlistSlice';
+import { selectWishlistId, selectWishlistItems, toggleWishlistItem } from '@/store/wishlistSlice';
 import { selectIsAuthenticated } from '@/store/userSlice';
 import { Spinner } from '@/components/Spinner';
 import { CartItem } from './CartItem';
@@ -41,6 +41,11 @@ export function CartPage() {
     const { addNotification } = useNotifications();
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const wishlistId = useSelector(selectWishlistId);
+    const wishlistItems = useSelector(selectWishlistItems);
+
+    const favoriteProductIds = useMemo(() => {
+        return new Set(wishlistItems.map(i => i.productCatalogResponseDto?.productId).filter(Boolean));
+    }, [wishlistItems]);
 
     const [relatedGoods, setRelatedGoods] = useState<any[]>([]);
     const [relatedLoading, setRelatedLoading] = useState(false);
@@ -185,6 +190,7 @@ export function CartPage() {
                                         isRemoving={removingItemIds.includes(item.itemId!)}
                                         isUpdating={updatingItemIds.includes(item.itemId!)}
                                         isSelected={selectedItems.has(item.itemId!)}
+                                        isFavorite={favoriteProductIds.has(item.productId!)}
                                         onToggleSelect={toggleItemSelect}
                                         onRemove={(itemId) =>
                                             dispatch(
@@ -218,10 +224,17 @@ export function CartPage() {
                                                 addNotification('Избранное не инициализировано', 'error');
                                                 return;
                                             }
+                                            const isInFavorites = favoriteProductIds.has(item.productId!);
                                             dispatch(toggleWishlistItem({ wishlistId: Number(wishlistId), productId: item.productId! }))
                                                 .unwrap()
-                                                .then(() => addNotification('Товар добавлен в избранное', 'success'))
-                                                .catch(() => addNotification('Не удалось добавить в избранное', 'error'));
+                                                .then(() => addNotification(
+                                                    isInFavorites ? 'Товар убран из избранного' : 'Товар добавлен в избранное',
+                                                    'success'
+                                                ))
+                                                .catch(() => addNotification(
+                                                    isInFavorites ? 'Не удалось убрать из избранного' : 'Не удалось добавить в избранное',
+                                                    'error'
+                                                ));
                                         }}
                                     />
                                 </motion.div>

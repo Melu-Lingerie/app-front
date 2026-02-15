@@ -9,6 +9,7 @@ type Props = {
     isRemoving?: boolean;
     isUpdating?: boolean;
     isSelected?: boolean;
+    isFavorite?: boolean;
     onToggleSelect?: (itemId: number) => void;
     onIncrease?: (itemId: number) => void;
     onDecrease?: (itemId: number) => void;
@@ -21,6 +22,7 @@ export const CartItem = ({
                              isRemoving = false,
                              isUpdating = false,
                              isSelected = true,
+                             isFavorite = false,
                              onToggleSelect,
                              onIncrease,
                              onDecrease,
@@ -182,10 +184,10 @@ export const CartItem = ({
                         <img
                             src={WishListInCard}
                             alt="Избранное"
-                            className="w-[10px] h-[14px] md:w-[12px] md:h-[17px]"
+                            className={`w-[10px] h-[14px] md:w-[12px] md:h-[17px] ${isFavorite ? 'opacity-100' : 'opacity-50'}`}
                         />
                         <span className="text-[#999] text-[11px] md:text-[12px] font-medium leading-[16px] md:leading-[18px]">
-                            Добавить в избранное
+                            {isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
                         </span>
                     </button>
                 </div>
