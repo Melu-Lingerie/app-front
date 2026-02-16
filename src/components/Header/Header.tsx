@@ -95,9 +95,6 @@ export const Header = () => {
     const accountMenuRef = useRef<HTMLDivElement | null>(null);
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const searchInputRef = useRef<HTMLInputElement | null>(null);
 
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
@@ -139,20 +136,6 @@ export const Header = () => {
         };
     }, []);
 
-    useEffect(() => {
-        if (isSearchOpen && searchInputRef.current) {
-            searchInputRef.current.focus();
-        }
-    }, [isSearchOpen]);
-
-    const handleSearchSubmit = () => {
-        const q = searchQuery.trim();
-        if (q) {
-            navigate(`/catalog?name=${encodeURIComponent(q)}`);
-            setSearchQuery('');
-            setIsSearchOpen(false);
-        }
-    };
 
     useEffect(() => {
         if (isAuthenticated && initialized) {
@@ -244,7 +227,7 @@ export const Header = () => {
                         <Menu className="w-4 h-4 md:w-4 md:h-4" aria-hidden="true" />
                     </button>
                     {/* Search - visible on mobile too */}
-                    <button type="button" className={`${iconBtn} md:hidden`} onClick={() => setIsSearchOpen(v => !v)}>
+                    <button type="button" className={`${iconBtn} md:hidden`} onClick={() => navigate('/search')}>
                         <Search className="w-4 h-4" aria-hidden="true" />
                     </button>
                 </div>
@@ -385,7 +368,7 @@ export const Header = () => {
                                 )}
 
                                 {/* Search - desktop only (mobile search is on left) */}
-                                <button type="button" className={`${iconBtn} hidden md:block`} onClick={() => setIsSearchOpen(v => !v)}>
+                                <button type="button" className={`${iconBtn} hidden md:block`} onClick={() => navigate('/search')}>
                                     <Search className="w-4 h-4" aria-hidden="true" />
                                 </button>
 
@@ -433,41 +416,6 @@ export const Header = () => {
             {/* Divider */}
             <div className="w-full h-px bg-[#CCC] dark:bg-white/10" />
 
-            {/* Search bar */}
-            <AnimatePresence>
-                {isSearchOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden border-b border-[#CCC] dark:border-white/10"
-                    >
-                        <div className="flex items-center px-4 md:px-10 h-[44px]">
-                            <Search className="w-4 h-4 text-[#999] flex-shrink-0" aria-hidden="true" />
-                            <input
-                                ref={searchInputRef}
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') handleSearchSubmit();
-                                    if (e.key === 'Escape') { setIsSearchOpen(false); setSearchQuery(''); }
-                                }}
-                                placeholder="Поиск по названию или артикулу..."
-                                className="flex-1 h-full px-3 bg-transparent text-sm outline-none placeholder:text-[#999]"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
-                                className="text-[#999] hover:text-black dark:hover:text-white text-sm cursor-pointer"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
             </header>
 
             {/* Drawer */}

@@ -22,6 +22,7 @@ import {
     ContactsPage,
     CheckoutPage,
     BackstagePage,
+    SearchPage,
     // Admin
     AdminLayout,
     ProductsListPage,
@@ -115,6 +116,7 @@ function App() {
                     <Route path="account/*" element={<AccountPage />} />
                     <Route path="customers/*" element={<CustomersPage />} />
                     <Route path="gift-certificate" element={<GiftCertificatePage />} />
+                    <Route path="search" element={<SearchPage />} />
                     <Route path="backstage" element={<BackstagePage />} />
                     <Route path="loyalty/rewards" element={<LoyaltyRewardsPage />} />
                     <Route path="about" element={<AboutPage />} />
