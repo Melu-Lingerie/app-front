@@ -30,5 +30,13 @@ export type UserInfoResponseDto = {
      * Дата рождения
      */
     birthDate?: string;
+    /**
+     * Роль пользователя
+     */
+    role?: string;
+    /**
+     * Статус пользователя
+     */
+    status?: string;
 };
 

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff } from 'lucide-react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '@/axios/api';
 import { setUserData, setAuthenticated, selectIsAuthenticated, selectUser } from '@/store/userSlice';
+import { selectAppInitialized } from '@/store/appSlice';
 import type { AppDispatch } from '@/store';
 import type { LoginResponseDto } from '@/api';
 
@@ -12,15 +13,25 @@ export const AdminLoginPage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const user = useSelector(selectUser);
+    const initialized = useSelector(selectAppInitialized);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // Wait for app init (silent refresh)
+    if (!initialized) {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+                <Loader2 style={{ width: 32, height: 32, animation: 'spin 1s linear infinite', color: '#F8C6D7' }} />
+            </div>
+        );
+    }
+
     // If already authenticated as admin, redirect
     if (isAuthenticated && user.role === 'ADMIN') {
-        navigate('/admin', { replace: true });
+        return <Navigate to="/admin" replace />;
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
