@@ -9,6 +9,7 @@ export {ContactsPage} from './ContactsPage';
 export {CheckoutPage} from './CheckoutPage';
 export {BackstagePage} from './BackstagePage';
 export {SearchPage} from './SearchPage';
+export {ReviewsPage} from './ReviewsPage';
 
 // Admin
 export {

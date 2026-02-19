@@ -26,10 +26,16 @@ const statusLabel: Record<SyncStatus, string> = {
     ERROR: 'Ошибка',
 };
 
+const PAGE_SIZE = 20;
+
 export function MoySkladPage() {
     const [mappings, setMappings] = useState<MoySkladProductMapping[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalItems, setTotalItems] = useState(0);
 
     const [syncingStock, setSyncingStock] = useState(false);
     const [syncingProducts, setSyncingProducts] = useState(false);
@@ -39,12 +45,15 @@ export function MoySkladPage() {
     const [orderIdInput, setOrderIdInput] = useState('');
     const [syncMessage, setSyncMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-    const fetchMappings = useCallback(async () => {
+    const fetchMappings = useCallback(async (page = 0) => {
         try {
             setLoading(true);
             setError(null);
-            const data = await AdminMoySkladService.getMappings();
-            setMappings(data);
+            const data = await AdminMoySkladService.getMappings(page, PAGE_SIZE);
+            setMappings(data.content);
+            setTotalPages(data.totalPages);
+            setTotalItems(data.totalElements);
+            setCurrentPage(data.number);
         } catch (err) {
             console.error('Error fetching mappings:', err);
             setError('Не удалось загрузить маппинги');
@@ -56,6 +65,10 @@ export function MoySkladPage() {
     useEffect(() => {
         fetchMappings();
     }, [fetchMappings]);
+
+    const handlePageChange = (page: number) => {
+        fetchMappings(page - 1); // AdminTable uses 1-based pages
+    };
 
     const showMessage = (text: string, type: 'success' | 'error') => {
         setSyncMessage({ text, type });
@@ -80,7 +93,7 @@ export function MoySkladPage() {
             setSyncingProducts(true);
             await AdminMoySkladService.syncProducts();
             showMessage('Товары успешно синхронизированы', 'success');
-            await fetchMappings();
+            await fetchMappings(currentPage);
         } catch (err) {
             console.error('Products sync error:', err);
             showMessage('Ошибка синхронизации товаров', 'error');
@@ -182,7 +195,7 @@ export function MoySkladPage() {
                     <AdminButton
                         variant="outline"
                         icon={<RefreshCw size={18} />}
-                        onClick={fetchMappings}
+                        onClick={() => fetchMappings(currentPage)}
                     >
                         Обновить
                     </AdminButton>
@@ -210,8 +223,8 @@ export function MoySkladPage() {
                             <CheckCircle size={20} className="text-green-600 dark:text-green-400" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Синхронизировано</p>
-                            <p className="text-2xl font-semibold text-gray-900 dark:text-white">{syncedCount}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Всего связано</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-white">{totalItems}</p>
                         </div>
                     </div>
                 </div>
@@ -222,7 +235,7 @@ export function MoySkladPage() {
                             <AlertTriangle size={20} className="text-red-600 dark:text-red-400" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Ошибки</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Ошибки (на стр.)</p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-white">{errorCount}</p>
                         </div>
                     </div>
@@ -285,7 +298,7 @@ export function MoySkladPage() {
             {error && (
                 <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg">
                     {error}
-                    <button onClick={fetchMappings} className="ml-4 underline">
+                    <button onClick={() => fetchMappings(currentPage)} className="ml-4 underline">
                         Повторить
                     </button>
                 </div>
@@ -294,7 +307,7 @@ export function MoySkladPage() {
             {/* Product mappings table */}
             <div className="mb-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                    Маппинг товаров ({mappings.length})
+                    Маппинг товаров ({totalItems})
                 </h2>
             </div>
 
@@ -303,6 +316,13 @@ export function MoySkladPage() {
                 data={mappings}
                 getRowId={(item) => item.id}
                 loading={loading}
+                pagination={{
+                    currentPage: currentPage + 1,
+                    totalPages,
+                    totalItems,
+                    itemsPerPage: PAGE_SIZE,
+                    onPageChange: handlePageChange,
+                }}
                 renderMobileCard={(item) => (
                     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
                         <div className="flex justify-between items-start mb-2">

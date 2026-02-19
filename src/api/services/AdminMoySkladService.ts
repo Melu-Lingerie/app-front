@@ -20,6 +20,14 @@ export interface MoySkladOrderMapping {
     syncStatus: 'SYNCED' | 'PENDING' | 'ERROR';
 }
 
+export interface PageResponse<T> {
+    content: T[];
+    totalElements: number;
+    totalPages: number;
+    size: number;
+    number: number;
+}
+
 export class AdminMoySkladService {
     public static async syncStock(): Promise<void> {
         return request({ method: 'POST', url: '/admin/moysklad/sync/stock' });
@@ -37,7 +45,7 @@ export class AdminMoySkladService {
         return request({ method: 'POST', url: `/admin/moysklad/sync/orders/${orderId}` });
     }
 
-    public static async getMappings(): Promise<MoySkladProductMapping[]> {
-        return request({ method: 'GET', url: '/admin/moysklad/mappings' });
+    public static async getMappings(page = 0, size = 20): Promise<PageResponse<MoySkladProductMapping>> {
+        return request({ method: 'GET', url: '/admin/moysklad/mappings', params: { page, size } });
     }
 }

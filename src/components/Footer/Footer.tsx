@@ -37,7 +37,7 @@ export const Footer = () => {
                         <Link to="/customers/delivery">ДОСТАВКА</Link>
                         <Link to="/customers/returns">ВОЗВРАТ</Link>
                         <Link to="/customers/faq">ВОПРОС-ОТВЕТ</Link>
-                        <Link to="/backstage">ОТЗЫВЫ</Link>
+                        <Link to="/reviews">ОТЗЫВЫ</Link>
                         <Link to="/customers/care">УХОД ЗА ИЗДЕЛИЯМИ</Link>
                         <Link to="/policy" target="_blank" rel="noopener noreferrer">ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</Link>
                         <Link to="/offer" target="_blank" rel="noopener noreferrer">ОФЕРТА</Link>
@@ -82,7 +82,7 @@ export const Footer = () => {
                     <Link to="/customers/delivery" className="text-[12px] uppercase">Доставка</Link>
                     <Link to="/customers/returns" className="text-[12px] uppercase">Возврат</Link>
                     <Link to="/customers/faq" className="text-[12px] uppercase">Вопрос-ответ</Link>
-                    <button className="text-left text-[12px] uppercase">Отзывы</button>
+                    <Link to="/reviews" className="text-[12px] uppercase">Отзывы</Link>
                     <Link to="/customers/care" className="text-[12px] uppercase">Уход за изделиями</Link>
                     <Link to="/policy" className="text-[12px] uppercase">Политика конфиденциальности</Link>
                     <Link to="/offer" className="text-[12px] uppercase">Оферта</Link>

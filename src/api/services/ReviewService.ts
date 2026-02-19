@@ -10,6 +10,13 @@ export type ReviewResponseDto = {
     reviewText: string;
     isVerifiedPurchase: boolean;
     createdAt: string;
+    adminResponse: string | null;
+    adminResponseAt: string | null;
+};
+
+export type ReviewsStatsDto = {
+    totalCount: number;
+    averageRating: number;
 };
 
 export type PageReviewResponseDto = {
@@ -61,6 +68,33 @@ export class ReviewService {
                 401: 'Unauthorized',
                 400: 'Bad request',
             },
+        });
+    }
+
+    /**
+     * Get all approved reviews with optional filter
+     */
+    public static getAllReviews(
+        params: { filter?: string; page?: number; size?: number } = {}
+    ): CancelablePromise<PageReviewResponseDto> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/reviews',
+            query: {
+                filter: params.filter ?? 'all',
+                page: params.page ?? 0,
+                size: params.size ?? 10,
+            },
+        });
+    }
+
+    /**
+     * Get reviews statistics
+     */
+    public static getReviewsStats(): CancelablePromise<ReviewsStatsDto> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/reviews/stats',
         });
     }
 }
