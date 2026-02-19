@@ -22,22 +22,22 @@ export interface MoySkladOrderMapping {
 
 export class AdminMoySkladService {
     public static async syncStock(): Promise<void> {
-        return request({ method: 'POST', url: '/api/v1/admin/moysklad/sync/stock' });
+        return request({ method: 'POST', url: '/admin/moysklad/sync/stock' });
     }
 
     public static async syncProducts(): Promise<void> {
-        return request({ method: 'POST', url: '/api/v1/admin/moysklad/sync/products' });
+        return request({ method: 'POST', url: '/admin/moysklad/sync/products' });
     }
 
     public static async syncProduct(productId: number): Promise<void> {
-        return request({ method: 'POST', url: `/api/v1/admin/moysklad/sync/products/${productId}` });
+        return request({ method: 'POST', url: `/admin/moysklad/sync/products/${productId}` });
     }
 
     public static async syncOrder(orderId: number): Promise<void> {
-        return request({ method: 'POST', url: `/api/v1/admin/moysklad/sync/orders/${orderId}` });
+        return request({ method: 'POST', url: `/admin/moysklad/sync/orders/${orderId}` });
     }
 
     public static async getMappings(): Promise<MoySkladProductMapping[]> {
-        return request({ method: 'GET', url: '/api/v1/admin/moysklad/mappings' });
+        return request({ method: 'GET', url: '/admin/moysklad/mappings' });
     }
 }
