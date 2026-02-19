@@ -13,6 +13,7 @@ import {
     Film,
     HardDrive,
     Heart,
+    Warehouse,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -32,6 +33,7 @@ const navItems: NavItem[] = [
     { to: '/admin/media', icon: <HardDrive size={20} />, label: 'Медиа' },
     { to: '/admin/reviews', icon: <MessageSquare size={20} />, label: 'Отзывы' },
     { to: '/admin/loyalty', icon: <Heart size={20} />, label: 'Лояльность' },
+    { to: '/admin/moysklad', icon: <Warehouse size={20} />, label: 'МойСклад' },
 ];
 
 export function AdminSidebar() {

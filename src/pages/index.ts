@@ -28,6 +28,8 @@ export {
     BackstageFormPage,
     MediaListPage,
     ReviewsListPage,
+    // MoySklad
+    MoySkladPage,
     // Loyalty
     LoyaltyDashboardPage,
     LoyaltyAccountsPage,

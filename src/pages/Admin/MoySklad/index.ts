@@ -1,0 +1,1 @@
+export { MoySkladPage } from './MoySkladPage';

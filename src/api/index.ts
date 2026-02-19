@@ -55,3 +55,5 @@ export { MediaService } from './services/MediaService';
 export { ProductsService } from './services/ProductsService';
 export { UserManagementService } from './services/UserManagementService';
 export { WishlistService } from './services/WishlistService';
+export { ReviewService } from './services/ReviewService';
+export type { ReviewResponseDto, PageReviewResponseDto, ReviewCreateRequest } from './services/ReviewService';

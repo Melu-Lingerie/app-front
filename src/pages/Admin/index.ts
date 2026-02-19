@@ -28,6 +28,9 @@ export { MediaListPage } from './Media';
 // Reviews
 export { ReviewsListPage } from './Reviews';
 
+// MoySklad
+export { MoySkladPage } from './MoySklad';
+
 // Loyalty
 export {
     LoyaltyDashboardPage,

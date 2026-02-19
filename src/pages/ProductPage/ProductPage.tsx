@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/Spinner';
 import {
     ProductsService,
+    ReviewService,
     type ProductCardResponse,
     type ProductVariantCardDto,
+    type ReviewResponseDto,
 } from '@/api';
 import { ProductImages } from './ProductImages.tsx';
 import { useNotifications } from '@/hooks/useNotifications.ts';
@@ -19,6 +21,7 @@ import { Card } from '@/components';
 import { Carousel } from '@/components/Carousel/Carousel';
 import { DotsLoader } from '@/components/DotsLoader';
 import { RatingStars } from './RatingStars.tsx';
+import { StarRatingInput } from './StarRatingInput.tsx';
 
 // redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,6 +34,7 @@ import {
     selectWishlistLoading,
 } from '@/store/wishlistSlice.ts';
 import { selectAppInitialized } from '@/store/appSlice';
+import { selectUser } from '@/store/userSlice.ts';
 import api from '@/axios/api.ts';
 
 export function ProductPage() {
@@ -48,6 +52,7 @@ export function ProductPage() {
     const wishlistItems = useSelector(selectWishlistItems);
     const wishlistLoading = useSelector(selectWishlistLoading);
     const appInitialized = useSelector(selectAppInitialized);
+    const user = useSelector(selectUser);
 
     const [product, setProduct] = useState<ProductCardResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -62,6 +67,16 @@ export function ProductPage() {
 
     const [relatedGoods, setRelatedGoods] = useState<any[]>([]);
     const [relatedLoading, setRelatedLoading] = useState(false);
+
+    // reviews state
+    const [reviews, setReviews] = useState<ReviewResponseDto[]>([]);
+    const [reviewsLoaded, setReviewsLoaded] = useState(false);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
+    const [reviewsPage, setReviewsPage] = useState(0);
+    const [reviewsTotalPages, setReviewsTotalPages] = useState(0);
+    const [reviewRating, setReviewRating] = useState(0);
+    const [reviewText, setReviewText] = useState('');
+    const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
     // есть ли товар в корзине?
     const inCart = items.some(
@@ -158,6 +173,55 @@ export function ProductPage() {
             addNotification('Товар добавлен в корзину', 'success');
         } catch (e: any) {
             addNotification(e?.message || 'Ошибка при добавлении в корзину', 'error');
+        }
+    };
+
+    // загрузка отзывов
+    const loadReviews = useCallback(async (page: number, append = false) => {
+        if (!id) return;
+        try {
+            setReviewsLoading(true);
+            const data = await ReviewService.getProductReviews(Number(id), { page, size: 5 });
+            setReviews(prev => append ? [...prev, ...data.content] : data.content);
+            setReviewsPage(data.number);
+            setReviewsTotalPages(data.totalPages);
+            setReviewsLoaded(true);
+        } catch {
+            addNotification('Ошибка загрузки отзывов', 'error');
+        } finally {
+            setReviewsLoading(false);
+        }
+    }, [id, addNotification]);
+
+    // загружаем отзывы при открытии аккордеона
+    useEffect(() => {
+        if (isReviewsOpen && !reviewsLoaded) {
+            loadReviews(0);
+        }
+    }, [isReviewsOpen, reviewsLoaded, loadReviews]);
+
+    // отправка отзыва
+    const handleSubmitReview = async () => {
+        if (!id || !reviewRating || !reviewText.trim()) {
+            addNotification('Укажите оценку и текст отзыва', 'error');
+            return;
+        }
+        try {
+            setReviewSubmitting(true);
+            const reviewerName = [user.firstName, user.lastName].filter(Boolean).join(' ') || undefined;
+            await ReviewService.createReview(Number(id), {
+                rating: reviewRating,
+                reviewText: reviewText.trim(),
+                reviewerName,
+            });
+            addNotification('Отзыв отправлен на модерацию', 'success');
+            setReviewRating(0);
+            setReviewText('');
+        } catch (e: any) {
+            const msg = e?.body?.message || e?.message || 'Ошибка при отправке отзыва';
+            addNotification(msg, 'error');
+        } finally {
+            setReviewSubmitting(false);
         }
     };
 
@@ -472,15 +536,88 @@ export function ProductPage() {
                                 title="ОТЗЫВЫ"
                                 isOpen={isReviewsOpen}
                                 onToggle={() => setIsReviewsOpen(!isReviewsOpen)}
+                                maxHeight="max-h-[2000px]"
                                 rightContent={
                                     <div className="mr-10">
                                         <RatingStars value={product.score ?? 0} />
                                     </div>
                                 }
                             >
-                                <p className="text-[#999] leading-[22px] text-[14px] mt-[22px]">
-                                    Здесь будут отзывы покупателей.
-                                </p>
+                                <div className="mt-[22px]">
+                                    {/* Список отзывов */}
+                                    {reviewsLoading && reviews.length === 0 ? (
+                                        <div className="flex justify-center py-4">
+                                            <DotsLoader color="#999" size={6} />
+                                        </div>
+                                    ) : reviews.length === 0 && reviewsLoaded ? (
+                                        <p className="text-[#999] text-[14px]">Пока нет отзывов</p>
+                                    ) : (
+                                        <div className="flex flex-col gap-4">
+                                            {reviews.map((review) => (
+                                                <div key={review.id} className="border-b border-[#EEE] dark:border-white/10 pb-4">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="text-[14px] font-medium">
+                                                            {review.reviewerName || 'Покупатель'}
+                                                        </span>
+                                                        {review.isVerifiedPurchase && (
+                                                            <span className="text-[11px] text-[#999] bg-[#F0F0F0] dark:bg-white/10 px-2 py-0.5 rounded">
+                                                                Подтверждённая покупка
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <RatingStars value={review.rating} />
+                                                        <span className="text-[12px] text-[#999]">
+                                                            {new Date(review.createdAt).toLocaleDateString('ru-RU')}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[14px] leading-[20px] text-[#666] dark:text-[#AAA]">
+                                                        {review.reviewText}
+                                                    </p>
+                                                </div>
+                                            ))}
+
+                                            {reviewsPage + 1 < reviewsTotalPages && (
+                                                <button
+                                                    onClick={() => loadReviews(reviewsPage + 1, true)}
+                                                    disabled={reviewsLoading}
+                                                    className="text-[14px] text-[#999] hover:text-[#666] cursor-pointer transition self-start"
+                                                >
+                                                    {reviewsLoading ? <DotsLoader color="#999" size={4} /> : 'Показать ещё'}
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Форма отзыва */}
+                                    <div className="mt-6 pt-4 border-t border-[#EEE] dark:border-white/10">
+                                        {user.isAuthenticated && user.role === 'CUSTOMER' ? (
+                                            <div className="flex flex-col gap-3">
+                                                <p className="text-[14px] font-medium">Оставить отзыв</p>
+                                                <StarRatingInput value={reviewRating} onChange={setReviewRating} />
+                                                <textarea
+                                                    value={reviewText}
+                                                    onChange={(e) => setReviewText(e.target.value)}
+                                                    placeholder="Напишите ваш отзыв..."
+                                                    maxLength={2000}
+                                                    rows={3}
+                                                    className="w-full px-3 py-2 border border-[#CCC] dark:border-white/20 rounded-lg text-[14px] resize-none bg-transparent focus:outline-none focus:border-[#F8C6D7]"
+                                                />
+                                                <button
+                                                    onClick={handleSubmitReview}
+                                                    disabled={reviewSubmitting || !reviewRating || !reviewText.trim()}
+                                                    className="self-start px-6 py-2 rounded-lg border border-[#2A2A2B] dark:border-white/10 text-[14px] cursor-pointer transition hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                >
+                                                    {reviewSubmitting ? <DotsLoader color="#2A2A2B" size={4} /> : 'Отправить'}
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <p className="text-[#999] text-[14px]">
+                                                Войдите, чтобы оставить отзыв
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
                             </FilterAccordion>
                         </div>
                     </div>

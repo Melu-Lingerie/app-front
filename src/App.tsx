@@ -40,6 +40,8 @@ import {
     BackstagesListPage,
     BackstageFormPage,
     MediaListPage,
+    // MoySklad
+    MoySkladPage,
     // Loyalty Admin
     LoyaltyDashboardPage,
     LoyaltyAccountsPage,
@@ -147,6 +149,8 @@ function App() {
                     <Route path="backstages/:id/edit" element={<BackstageFormPage />} />
                     <Route path="media" element={<MediaListPage />} />
                     <Route path="reviews" element={<ReviewsListPage />} />
+                    {/* MoySklad */}
+                    <Route path="moysklad" element={<MoySkladPage />} />
                     {/* Loyalty */}
                     <Route path="loyalty" element={<LoyaltyDashboardPage />} />
                     <Route path="loyalty/accounts" element={<LoyaltyAccountsPage />} />

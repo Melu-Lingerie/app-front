@@ -7,6 +7,7 @@ interface FilterAccordionProps {
     onToggle: () => void;
     children: ReactNode;
     rightContent?: ReactNode;
+    maxHeight?: string;
 }
 
 export const FilterAccordion = ({
@@ -15,6 +16,7 @@ export const FilterAccordion = ({
                                     onToggle,
                                     children,
                                     rightContent,
+                                    maxHeight = 'max-h-96',
                                 }: FilterAccordionProps) => (
     <div className="w-full mx-auto py-4">
         <button
@@ -30,7 +32,7 @@ export const FilterAccordion = ({
         </button>
         <div
             className={`transition-all duration-300 overflow-hidden ${
-                isOpen ? 'max-h-96' : 'max-h-0'
+                isOpen ? maxHeight : 'max-h-0'
             }`}
         >
             {children}
