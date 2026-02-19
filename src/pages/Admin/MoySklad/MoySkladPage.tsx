@@ -120,7 +120,6 @@ export function MoySkladPage() {
         }
     };
 
-    const syncedCount = mappings.filter((m) => m.syncStatus === 'SYNCED').length;
     const errorCount = mappings.filter((m) => m.syncStatus === 'ERROR').length;
     const lastSync = mappings.length > 0
         ? mappings.reduce((latest, m) => {
