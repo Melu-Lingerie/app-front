@@ -13,6 +13,7 @@ export {SearchPage} from './SearchPage';
 // Admin
 export {
     AdminLayout,
+    AdminLoginPage,
     ProductsListPage,
     ProductFormPage,
     OrdersListPage,

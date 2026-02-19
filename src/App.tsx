@@ -24,6 +24,7 @@ import {
     BackstagePage,
     SearchPage,
     // Admin
+    AdminLoginPage,
     AdminLayout,
     ProductsListPage,
     ProductFormPage,
@@ -125,6 +126,7 @@ function App() {
                 </Route>
 
                 {/* Admin Routes */}
+                <Route path="/melu-admin-secret/login" element={<AdminLoginPage />} />
                 <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<ProductsListPage />} />
                     <Route path="products" element={<ProductsListPage />} />

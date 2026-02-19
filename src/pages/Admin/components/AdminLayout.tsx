@@ -1,10 +1,18 @@
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { Menu } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectUser } from '@/store/userSlice';
 import { AdminSidebar } from './AdminSidebar';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
 
 function AdminLayoutContent() {
     const { mobileMenuOpen, setMobileMenuOpen, toggleMobileMenu } = useTheme();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const user = useSelector(selectUser);
+
+    if (!isAuthenticated || user.role !== 'ADMIN') {
+        return <Navigate to="/melu-admin-secret/login" replace />;
+    }
 
     return (
         <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">

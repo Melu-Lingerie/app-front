@@ -1,6 +1,9 @@
 // Components
 export { AdminLayout } from './components';
 
+// Auth
+export { AdminLoginPage } from './AdminLoginPage';
+
 // Products
 export { ProductsListPage, ProductFormPage } from './Products';
 
