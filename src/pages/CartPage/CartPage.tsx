@@ -17,6 +17,7 @@ import api from '@/axios/api.ts';
 import { useNotifications } from '@/hooks/useNotifications.ts';
 import { Card } from '@/components';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { HintModal } from '@/components/Modals/HintModal';
 
 const getTovarWord = (count: number) => {
     const mod10 = count % 10;
@@ -47,6 +48,7 @@ export function CartPage() {
         return new Set(wishlistItems.map(i => i.productCatalogResponseDto?.productId).filter(Boolean));
     }, [wishlistItems]);
 
+    const [hintModalOpen, setHintModalOpen] = useState(false);
     const [relatedGoods, setRelatedGoods] = useState<any[]>([]);
     const [relatedLoading, setRelatedLoading] = useState(false);
 
@@ -274,6 +276,14 @@ export function CartPage() {
                     >
                         Оформить заказ
                     </button>
+                    {selectedCount > 0 && (
+                        <button
+                            onClick={() => setHintModalOpen(true)}
+                            className="w-full h-[48px] md:h-[56px] rounded-[8px] border border-[#CCC] dark:border-white/10 text-[13px] md:text-[14px] leading-[18px] uppercase font-medium cursor-pointer hover:opacity-90 transition mt-3"
+                        >
+                            Намекнуть о подарке
+                        </button>
+                    )}
                     {!isAuthenticated && (
                         <>
                             <div className="w-full h-[1px] bg-[#CCC] dark:bg-white/10 my-[15px] md:my-[20px]" />
@@ -309,6 +319,9 @@ export function CartPage() {
 
             {/* Divider */}
             <div className="relative left-1/2 ml-[-50vw] w-screen h-[1px] bg-[#CCC] dark:bg-white/10 mt-[60px] md:mt-[120px]" />
+
+            {/* Hint Modal */}
+            <HintModal isOpen={hintModalOpen} onClose={() => setHintModalOpen(false)} />
         </div>
     );
 }

@@ -24,6 +24,7 @@ import {
     BackstagePage,
     SearchPage,
     ReviewsPage,
+    HintPayPage,
     // Admin
     AdminLoginPage,
     AdminLayout,
@@ -38,6 +39,7 @@ import {
     ReviewsListPage,
     BannersListPage,
     BannerFormPage,
+    ReviewsBannerPage,
     BackstagesListPage,
     BackstageFormPage,
     MediaListPage,
@@ -126,6 +128,7 @@ function App() {
                     <Route path="loyalty/rewards" element={<LoyaltyRewardsPage />} />
                     <Route path="about" element={<AboutPage />} />
                     <Route path="contacts" element={<ContactsPage />} />
+                    <Route path="wish/:shareToken" element={<HintPayPage />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
 
@@ -146,6 +149,7 @@ function App() {
                     <Route path="banners" element={<BannersListPage />} />
                     <Route path="banners/new" element={<BannerFormPage />} />
                     <Route path="banners/:id/edit" element={<BannerFormPage />} />
+                    <Route path="banners/reviews" element={<ReviewsBannerPage />} />
                     <Route path="backstages" element={<BackstagesListPage />} />
                     <Route path="backstages/new" element={<BackstageFormPage />} />
                     <Route path="backstages/:id/edit" element={<BackstageFormPage />} />

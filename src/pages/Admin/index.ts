@@ -17,7 +17,7 @@ export { CustomersListPage, CustomerDetailPage } from './Customers';
 export { PromotionsListPage, PromotionFormPage } from './Promotions';
 
 // Banners
-export { BannersListPage, BannerFormPage } from './Banners';
+export { BannersListPage, BannerFormPage, ReviewsBannerPage } from './Banners';
 
 // Backstages
 export { BackstagesListPage, BackstageFormPage } from './Backstages';

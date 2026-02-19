@@ -26,6 +26,18 @@ export const ReviewsPage = () => {
 
     const listRef = useRef<HTMLDivElement>(null);
 
+    // Hero banner from admin (localStorage for now)
+    const [bannerUrl] = useState<string | null>(() => {
+        try {
+            const saved = localStorage.getItem('reviews_hero_banner');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                return parsed[0]?.url ?? null;
+            }
+        } catch { /* ignore */ }
+        return null;
+    });
+
     const loadReviews = useCallback(
         async (pageNum: number, append: boolean) => {
             if (append) setLoadingMore(true);
@@ -104,10 +116,17 @@ export const ReviewsPage = () => {
                 className="relative w-full bg-[#f0e6d8] overflow-hidden"
                 style={{ minHeight: '420px' }}
             >
-                {/* Placeholder bg — will be replaced with image from admin */}
-                <div className="absolute inset-0 bg-[#e8ddd0]" />
+                {bannerUrl ? (
+                    <img
+                        src={bannerUrl}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover"
+                    />
+                ) : (
+                    <div className="absolute inset-0 bg-[#e8ddd0]" />
+                )}
 
-                <div className="relative z-10 flex flex-col justify-end h-full min-h-[420px] px-4 md:px-[63px] pb-10">
+                <div className="relative z-10 flex flex-col items-center justify-end h-full min-h-[420px] px-4 md:px-[63px] pb-10 text-center">
                     <h1
                         className="text-[32px] md:text-[48px] leading-[36px] md:leading-[52px] italic mb-4"
                         style={{ fontFamily: 'serif' }}
@@ -122,7 +141,7 @@ export const ReviewsPage = () => {
                     <button
                         type="button"
                         onClick={handleScrollToList}
-                        className="w-fit px-8 py-3 bg-black text-white text-[13px] uppercase tracking-wider hover:bg-gray-800 transition-colors"
+                        className="px-8 py-3 bg-black text-white text-[13px] uppercase tracking-wider hover:bg-gray-800 transition-colors"
                     >
                         Оставить отзыв
                     </button>

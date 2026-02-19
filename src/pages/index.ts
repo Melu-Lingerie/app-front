@@ -10,6 +10,7 @@ export {CheckoutPage} from './CheckoutPage';
 export {BackstagePage} from './BackstagePage';
 export {SearchPage} from './SearchPage';
 export {ReviewsPage} from './ReviewsPage';
+export {HintPayPage} from './HintPayPage';
 
 // Admin
 export {

@@ -56,6 +56,7 @@ export function ReviewsListPage() {
     const [filterValues, setFilterValues] = useState<Record<string, unknown>>({});
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [pendingCount, setPendingCount] = useState(0);
+
     const [pagination, setPagination] = useState({
         page: 0,
         size: 10,
@@ -285,12 +286,13 @@ export function ReviewsListPage() {
                             }
                             onClear={() => setFilterValues({})}
                         />
-                        <AdminSelect
-                            options={statusSelectOptions}
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-40"
-                        />
+                        <div className="w-44 shrink-0">
+                            <AdminSelect
+                                options={statusSelectOptions}
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
 
