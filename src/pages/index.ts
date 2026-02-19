@@ -26,6 +26,7 @@ export {
     PromotionFormPage,
     BannersListPage,
     BannerFormPage,
+    ReviewsBannerPage,
     BackstagesListPage,
     BackstageFormPage,
     MediaListPage,

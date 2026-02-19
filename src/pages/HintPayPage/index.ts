@@ -1,0 +1,1 @@
+export { HintPayPage } from './HintPayPage';
