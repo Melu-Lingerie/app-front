@@ -257,7 +257,7 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                                 <button type="button" onClick={() => goTo('/customers/faq')} className="text-left text-[14px] uppercase cursor-pointer">
                                     Вопрос-ответ
                                 </button>
-                                <button type="button" className="text-left text-[14px] uppercase cursor-pointer">
+                                <button type="button" onClick={() => goTo('/reviews')} className="text-left text-[14px] uppercase cursor-pointer">
                                     Отзывы
                                 </button>
                                 <button
@@ -639,8 +639,9 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                                 </motion.button>
                                 <motion.button
                                     type="button"
-                                    className="w-full block text-left text-[14px] leading-[18px] uppercase mb-[20px] transition-colors hover:opacity-70"
+                                    className="cursor-pointer w-full block text-left text-[14px] leading-[18px] uppercase mb-[20px] transition-colors hover:opacity-70"
                                     variants={itemV}
+                                    onClick={() => goTo('/reviews')}
                                 >
                                     Отзывы
                                 </motion.button>
