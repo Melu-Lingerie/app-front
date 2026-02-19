@@ -33,10 +33,10 @@ export type UserInfoResponseDto = {
     /**
      * Роль пользователя
      */
-    role?: string;
+    role?: 'GUEST' | 'CUSTOMER' | 'CONTENT_MANAGER' | 'SUPPORT' | 'ADMIN';
     /**
      * Статус пользователя
      */
-    status?: string;
+    status?: 'ACTIVE' | 'INACTIVE' | 'BANNED' | 'PENDING_VERIFICATION' | 'UNREGISTERED';
 };
 
