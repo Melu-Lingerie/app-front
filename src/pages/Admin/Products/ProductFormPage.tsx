@@ -119,6 +119,8 @@ export function ProductFormPage() {
         return false;
     })();
 
+    const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+
     const [newColor, setNewColor] = useState('');
     const [newSize, setNewSize] = useState('');
     const [uploadingMain, setUploadingMain] = useState(false);
@@ -463,7 +465,8 @@ export function ProductFormPage() {
                                 <img
                                     src={formData.mainMediaUrl}
                                     alt="Главное фото"
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover cursor-pointer"
+                                    onClick={() => setLightboxUrl(formData.mainMediaUrl!)}
                                 />
                                 <button
                                     onClick={() => {
@@ -614,7 +617,8 @@ export function ProductFormPage() {
                                                 <img
                                                     src={url}
                                                     alt={`Фото ${mediaIndex + 1}`}
-                                                    className="w-full h-full object-cover"
+                                                    className="w-full h-full object-cover cursor-pointer"
+                                                    onClick={() => setLightboxUrl(url)}
                                                 />
                                                 <button
                                                     type="button"
@@ -725,6 +729,27 @@ export function ProductFormPage() {
                     </AdminButton>
                 </div>
             </div>
+
+            {/* Lightbox */}
+            {lightboxUrl && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+                    onClick={() => setLightboxUrl(null)}
+                >
+                    <button
+                        onClick={() => setLightboxUrl(null)}
+                        className="absolute top-4 right-4 p-2 text-white hover:text-gray-300"
+                    >
+                        <X size={28} />
+                    </button>
+                    <img
+                        src={lightboxUrl}
+                        alt="Увеличенное фото"
+                        className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>
     );
 }
