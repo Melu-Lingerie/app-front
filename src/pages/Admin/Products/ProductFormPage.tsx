@@ -32,6 +32,7 @@ interface FormData {
     description: string;
     articleNumber: string;
     categoryId: number;
+    subcategoryId?: number;
     collectionId?: number;
     productType: ProductType;
     basePrice: number;
@@ -46,6 +47,8 @@ interface FormData {
     mainMediaUrl?: string;
     variants: VariantFormData[];
 }
+
+const BRA_SIZES = ['70B', '75A', '75B', '75C', '80B', '80C'];
 
 const productTypeOptions = [
     { value: 'STANDARD', label: 'Стандартный' },
@@ -64,6 +67,7 @@ const defaultFormData: FormData = {
     description: '',
     articleNumber: '',
     categoryId: 0,
+    subcategoryId: undefined,
     productType: 'STANDARD',
     basePrice: 0,
     status: 'AVAILABLE',
@@ -104,6 +108,17 @@ export function ProductFormPage() {
 
     const [categories, setCategories] = useState<CategoryAdminResponseDto[]>([]);
 
+    // Determine if the selected category is a bra category
+    const isBraCategory = (() => {
+        const selected = categories.find((c) => c.id === formData.categoryId);
+        if (selected?.name?.toLowerCase().includes('бра')) return true;
+        if (formData.subcategoryId) {
+            const sub = categories.find((c) => c.id === formData.subcategoryId);
+            if (sub?.name?.toLowerCase().includes('бра')) return true;
+        }
+        return false;
+    })();
+
     const [newColor, setNewColor] = useState('');
     const [newSize, setNewSize] = useState('');
     const [uploadingMain, setUploadingMain] = useState(false);
@@ -140,11 +155,16 @@ export function ProductFormPage() {
     };
 
     const mapProductToFormData = (product: ProductAdminResponseDto): FormData => {
+        // Determine if the product's category is a subcategory
+        const productCategory = categories.find((c) => c.id === product.categoryId);
+        const isSubcategory = productCategory?.parentId;
+
         return {
             name: product.name || '',
             description: product.description || '',
             articleNumber: product.articleNumber || '',
-            categoryId: product.categoryId || 0,
+            categoryId: isSubcategory ? productCategory.parentId! : (product.categoryId || 0),
+            subcategoryId: isSubcategory ? product.categoryId : undefined,
             collectionId: product.collectionId,
             productType: product.productType || 'STANDARD',
             basePrice: product.basePrice || 0,
@@ -194,7 +214,7 @@ export function ProductFormPage() {
                 name: formData.name,
                 articleNumber: formData.articleNumber,
                 description: formData.description || undefined,
-                categoryId: formData.categoryId,
+                categoryId: formData.subcategoryId || formData.categoryId,
                 collectionId: formData.collectionId,
                 basePrice: formData.basePrice,
                 promoPrice: formData.promoPrice,
@@ -362,11 +382,34 @@ export function ProductFormPage() {
                         <AdminSelect
                             label="Категория"
                             placeholder="Выберите категорию"
-                            options={categories.map((c) => ({ value: String(c.id), label: c.name }))}
+                            options={categories
+                                .filter((c) => !c.parentId)
+                                .map((c) => ({ value: String(c.id), label: c.name }))}
                             value={formData.categoryId ? String(formData.categoryId) : ''}
-                            onChange={(e) => updateField('categoryId', Number(e.target.value))}
+                            onChange={(e) => {
+                                updateField('categoryId', Number(e.target.value));
+                                updateField('subcategoryId', undefined);
+                            }}
                             error={getFieldError('categoryId')}
                         />
+                        {(() => {
+                            const selectedParent = categories.find((c) => c.id === formData.categoryId);
+                            const subcats = selectedParent?.children?.length
+                                ? selectedParent.children
+                                : categories.filter((c) => c.parentId === formData.categoryId);
+                            if (subcats && subcats.length > 0) {
+                                return (
+                                    <AdminSelect
+                                        label="Подкатегория"
+                                        placeholder="Выберите подкатегорию"
+                                        options={subcats.map((sc) => ({ value: String(sc.id), label: sc.name }))}
+                                        value={formData.subcategoryId ? String(formData.subcategoryId) : ''}
+                                        onChange={(e) => updateField('subcategoryId', Number(e.target.value))}
+                                    />
+                                );
+                            }
+                            return null;
+                        })()}
                         <AdminSelect
                             label="Статус"
                             options={statusOptions}
@@ -478,12 +521,21 @@ export function ProductFormPage() {
                             onChange={(e) => setNewColor(e.target.value)}
                             className="w-32"
                         />
-                        <AdminInput
-                            placeholder="Размер"
-                            value={newSize}
-                            onChange={(e) => setNewSize(e.target.value)}
-                            className="w-24"
-                        />
+                        {isBraCategory ? (
+                            <AdminSelect
+                                placeholder="Размер"
+                                options={BRA_SIZES.map((s) => ({ value: s, label: s }))}
+                                value={newSize}
+                                onChange={(e) => setNewSize(e.target.value)}
+                            />
+                        ) : (
+                            <AdminInput
+                                placeholder="Размер"
+                                value={newSize}
+                                onChange={(e) => setNewSize(e.target.value)}
+                                className="w-24"
+                            />
+                        )}
                         <AdminButton
                             variant="outline"
                             size="sm"
@@ -519,11 +571,21 @@ export function ProductFormPage() {
                                         value={variant.colorName}
                                         onChange={(e) => updateVariant(index, { colorName: e.target.value })}
                                     />
-                                    <AdminInput
-                                        label="Размер"
-                                        value={variant.size}
-                                        onChange={(e) => updateVariant(index, { size: e.target.value })}
-                                    />
+                                    {isBraCategory ? (
+                                        <AdminSelect
+                                            label="Размер"
+                                            placeholder="Размер"
+                                            options={BRA_SIZES.map((s) => ({ value: s, label: s }))}
+                                            value={variant.size}
+                                            onChange={(e) => updateVariant(index, { size: e.target.value })}
+                                        />
+                                    ) : (
+                                        <AdminInput
+                                            label="Размер"
+                                            value={variant.size}
+                                            onChange={(e) => updateVariant(index, { size: e.target.value })}
+                                        />
+                                    )}
                                     <AdminInput
                                         label="Остаток"
                                         type="number"

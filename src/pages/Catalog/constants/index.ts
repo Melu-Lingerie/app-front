@@ -1,4 +1,3 @@
-export const MAPPED_SELECTED_TYPES = { трусики: 1, сорочки: 2, бра: 3 } as const;
 export const SORT_OPTIONS = ['Все', 'Новинки', 'Скоро в продаже'] as const;
 export type SortOption = (typeof SORT_OPTIONS)[number];
 export type ListKey = 'types' | 'sizes' | 'colors';

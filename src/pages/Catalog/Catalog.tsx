@@ -56,9 +56,28 @@ export const Catalog = () => {
     const toggleFilterValue = useCallback(
         (key: ListKey, value: string) => {
             if (key === 'types') {
-                const updatedKeys = types.includes(value)
-                    ? types.filter((v) => v !== value)
-                    : [...types, value];
+                // Check if this is a parent category with children
+                const parentCat = filterOptions.categories.find(
+                    (c) => c.name.toLowerCase() === value && c.children && c.children.length > 0,
+                );
+
+                let updatedKeys: string[];
+                if (parentCat) {
+                    // Toggling a parent: add/remove parent + all its children
+                    const childNames = parentCat.children!.map((ch) => ch.name.toLowerCase());
+                    const allRelated = [value, ...childNames];
+                    if (types.includes(value)) {
+                        // Remove parent and all children
+                        updatedKeys = types.filter((v) => !allRelated.includes(v));
+                    } else {
+                        // Add parent and all children (avoid duplicates)
+                        updatedKeys = [...new Set([...types, ...allRelated])];
+                    }
+                } else {
+                    updatedKeys = types.includes(value)
+                        ? types.filter((v) => v !== value)
+                        : [...types, value];
+                }
 
                 const mappedTypes = updatedKeys
                     .filter((t) => t in categoryMap)
@@ -75,7 +94,7 @@ export const Catalog = () => {
 
             updateQuery({ [key]: next, page: 0 });
         },
-        [types, sizes, colors, updateQuery, categoryMap],
+        [types, sizes, colors, updateQuery, categoryMap, filterOptions.categories],
     );
 
     const handleSortChange = useCallback(

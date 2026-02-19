@@ -6,19 +6,6 @@ import { ProductsService } from '@/api';
 import type { ProductCatalogResponseDto } from '@/api';
 import { Card } from '@/components/Card/Card';
 
-// Рекомендуемые товары (статический список названий для быстрого поиска)
-const RECOMMENDED = [
-    'Бра-топ без косточек',
-    'Трусики-слипы',
-    'Бра с треугольными чашками',
-    'Полупрозрачный бралетт',
-    'Кружевные стринги',
-    'Трусики-хайвэйст из сетки',
-    'Трусики с завышенной талией',
-    'Трусики-слипы с мягкой сеткой',
-    'Стринги с высокой посадкой',
-];
-
 export function SearchPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const initialQuery = searchParams.get('name') ?? '';
@@ -27,6 +14,7 @@ export function SearchPage() {
     const [results, setResults] = useState<ProductCatalogResponseDto[]>([]);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+    const [recommended, setRecommended] = useState<ProductCatalogResponseDto[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const search = useCallback(async (term: string) => {
@@ -51,6 +39,16 @@ export function SearchPage() {
         } finally {
             setLoading(false);
         }
+    }, []);
+
+    // Загрузка рекомендуемых товаров
+    useEffect(() => {
+        ProductsService.getCatalog(
+            undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            'NEW', 0, 9,
+        )
+            .then((data) => setRecommended((data as any).content ?? []))
+            .catch(() => {});
     }, []);
 
     // Поиск при загрузке если есть query param
@@ -114,20 +112,22 @@ export function SearchPage() {
                     </div>
 
                     {/* Рекомендуемые товары */}
-                    <div className="mb-6">
-                        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4">Рекомендуемые товары</h3>
-                        <div className="space-y-2">
-                            {RECOMMENDED.map((name) => (
-                                <button
-                                    key={name}
-                                    onClick={() => handleRecommendedClick(name)}
-                                    className="block text-sm text-left hover:underline cursor-pointer"
-                                >
-                                    {name}
-                                </button>
-                            ))}
+                    {recommended.length > 0 && (
+                        <div className="mb-6">
+                            <h3 className="text-xs font-semibold uppercase tracking-wider mb-4">Рекомендуемые товары</h3>
+                            <div className="space-y-2">
+                                {recommended.map((item) => (
+                                    <button
+                                        key={item.productId}
+                                        onClick={() => handleRecommendedClick(item.name ?? '')}
+                                        className="block text-sm text-left hover:underline cursor-pointer"
+                                    >
+                                        {item.name}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Кнопка найти */}
                     <button

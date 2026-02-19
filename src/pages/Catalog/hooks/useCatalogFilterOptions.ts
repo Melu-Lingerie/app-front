@@ -5,6 +5,8 @@ import api from '@/axios/api.ts';
 export interface CategoryOption {
     id: number;
     name: string;
+    parentId?: number;
+    children?: CategoryOption[];
 }
 
 export interface CatalogFilterOptions {
@@ -53,9 +55,15 @@ export const useCatalogFilterOptions = () => {
     }, [setOptions, setLoading]);
 
     // Build category name -> ID map (lowercased names for matching)
+    // Includes both parent and child categories
     const categoryMap: Record<string, number> = {};
     for (const cat of options.categories) {
         categoryMap[cat.name.toLowerCase()] = cat.id;
+        if (cat.children) {
+            for (const child of cat.children) {
+                categoryMap[child.name.toLowerCase()] = child.id;
+            }
+        }
     }
 
     return { options, loading, categoryMap };

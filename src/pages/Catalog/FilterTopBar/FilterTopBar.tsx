@@ -240,15 +240,32 @@ export const FilterTopBar = ({
                             >
                                 <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
                                     {categories.map((cat) => (
-                                        <label key={cat.id} className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedTypes.includes(cat.name.toLowerCase())}
-                                                onChange={() => toggleFn('types', cat.name.toLowerCase())}
-                                                className="accent-[#2A2A2B]"
-                                            />
-                                            {cat.name.toLowerCase()}
-                                        </label>
+                                        <div key={cat.id}>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedTypes.includes(cat.name.toLowerCase())}
+                                                    onChange={() => toggleFn('types', cat.name.toLowerCase())}
+                                                    className="accent-[#2A2A2B]"
+                                                />
+                                                {cat.name.toLowerCase()}
+                                            </label>
+                                            {cat.children && cat.children.length > 0 && selectedTypes.includes(cat.name.toLowerCase()) && (
+                                                <div className="ml-6 mt-1 space-y-1">
+                                                    {cat.children.map((child) => (
+                                                        <label key={child.id} className="flex items-center gap-2 cursor-pointer text-[13px]">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedTypes.includes(child.name.toLowerCase())}
+                                                                onChange={() => toggleFn('types', child.name.toLowerCase())}
+                                                                className="accent-[#2A2A2B]"
+                                                            />
+                                                            {child.name.toLowerCase()}
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
                                     ))}
                                 </div>
                             </FilterAccordion>
