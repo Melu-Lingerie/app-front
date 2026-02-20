@@ -218,7 +218,8 @@ export function ProductPage() {
             setReviewRating(0);
             setReviewText('');
         } catch (e: any) {
-            const msg = e?.body?.message || e?.message || 'Ошибка при отправке отзыва';
+            let msg = e?.body?.message || e?.message || 'Ошибка при отправке отзыва';
+            msg = msg.replace(/^Generic error:\s*/i, '');
             addNotification(msg, 'error');
         } finally {
             setReviewSubmitting(false);

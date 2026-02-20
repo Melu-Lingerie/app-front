@@ -156,7 +156,7 @@ export function BannersListPage() {
         try {
             setLoading(true);
             setError(null);
-            const data = await AdminBannerService.getAllBanners();
+            const data = await AdminBannerService.getAllBanners('MAIN');
             setBanners(data);
         } catch (err) {
             console.error('Error fetching banners:', err);

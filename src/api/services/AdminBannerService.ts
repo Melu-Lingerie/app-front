@@ -13,6 +13,7 @@ export type BannerAdminResponseDto = {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
+    placement?: string;
 };
 
 export type BannerAdminCreateRequestDto = {
@@ -21,6 +22,7 @@ export type BannerAdminCreateRequestDto = {
     mediaId?: number;
     order?: number;
     isActive?: boolean;
+    placement?: string;
 };
 
 export type BannerAdminUpdateRequestDto = {
@@ -39,10 +41,13 @@ export class AdminBannerService {
     /**
      * Get all banners
      */
-    public static getAllBanners(): CancelablePromise<BannerAdminResponseDto[]> {
+    public static getAllBanners(placement?: string): CancelablePromise<BannerAdminResponseDto[]> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/admin/banners',
+            query: {
+                placement,
+            },
             errors: {
                 401: 'Unauthorized',
                 403: 'Forbidden',

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import {
     AdminHeader,
@@ -32,8 +32,10 @@ const validationRules = {
 export function BannerFormPage() {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
     const { addNotification } = useNotifications();
     const isEditing = Boolean(id);
+    const [placement, setPlacement] = useState(searchParams.get('placement') || 'MAIN');
 
     const [formData, setFormData] = useState<BannerFormData>(defaultFormData);
     const [media, setMedia] = useState<UploadedMedia[]>([]);
@@ -59,6 +61,9 @@ export function BannerFormPage() {
                 order: banner.order,
                 isActive: banner.isActive,
             });
+            if (banner.placement) {
+                setPlacement(banner.placement);
+            }
             if (banner.mediaUrl && banner.mediaId) {
                 setMedia([{ id: String(banner.mediaId), url: banner.mediaUrl }]);
             }
@@ -116,11 +121,12 @@ export function BannerFormPage() {
                     mediaId: formData.mediaId,
                     order: formData.order,
                     isActive: formData.isActive,
+                    placement,
                 });
                 addNotification('Баннер создан', 'success');
             }
 
-            navigate('/admin/banners');
+            navigate(placement === 'REVIEWS' ? '/admin/banners/reviews' : '/admin/banners');
         } catch (error) {
             console.error('Error saving banner:', error);
             addNotification('Ошибка сохранения баннера', 'error');
@@ -141,12 +147,12 @@ export function BannerFormPage() {
         <div>
             <AdminHeader
                 title={isEditing ? 'Редактирование баннера' : 'Новый баннер'}
-                subtitle="Баннер главной страницы"
+                subtitle={placement === 'REVIEWS' ? 'Баннер страницы отзывов' : 'Баннер главной страницы'}
                 actions={
                     <AdminButton
                         variant="ghost"
                         icon={<ArrowLeft size={18} />}
-                        onClick={() => navigate('/admin/banners')}
+                        onClick={() => navigate(placement === 'REVIEWS' ? '/admin/banners/reviews' : '/admin/banners')}
                     >
                         Назад
                     </AdminButton>
@@ -214,7 +220,7 @@ export function BannerFormPage() {
                     </AdminButton>
                     <AdminButton
                         variant="outline"
-                        onClick={() => navigate('/admin/banners')}
+                        onClick={() => navigate(placement === 'REVIEWS' ? '/admin/banners/reviews' : '/admin/banners')}
                     >
                         Отмена
                     </AdminButton>

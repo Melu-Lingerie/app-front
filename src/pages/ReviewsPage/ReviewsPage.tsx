@@ -5,6 +5,7 @@ import {
     type ReviewResponseDto,
     type ReviewsStatsDto,
 } from '@/api/services/ReviewService';
+import { MainPageControllerService } from '@/api/services/MainPageControllerService';
 
 type FilterType = 'all' | 'positive' | 'negative';
 
@@ -26,17 +27,7 @@ export const ReviewsPage = () => {
 
     const listRef = useRef<HTMLDivElement>(null);
 
-    // Hero banner from admin (localStorage for now)
-    const [bannerUrl] = useState<string | null>(() => {
-        try {
-            const saved = localStorage.getItem('reviews_hero_banner');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                return parsed[0]?.url ?? null;
-            }
-        } catch { /* ignore */ }
-        return null;
-    });
+    const [bannerUrl, setBannerUrl] = useState<string | null>(null);
 
     const loadReviews = useCallback(
         async (pageNum: number, append: boolean) => {
@@ -67,6 +58,13 @@ export const ReviewsPage = () => {
     useEffect(() => {
         ReviewService.getReviewsStats()
             .then(setStats)
+            .catch(() => {});
+        MainPageControllerService.getBannersByPlacement('REVIEWS')
+            .then((banners) => {
+                if (banners.length > 0) {
+                    setBannerUrl(banners[0].mediaUrl);
+                }
+            })
             .catch(() => {});
     }, []);
 

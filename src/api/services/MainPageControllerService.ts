@@ -18,4 +18,12 @@ export class MainPageControllerService {
             url: '/main-page/banner',
         });
     }
+
+    public static getBannersByPlacement(placement: string, options?: Partial<ApiRequestOptions>): CancelablePromise<Array<BannerMainPageFacadeDto>> {
+        return __request(OpenAPI, { ...options,
+            method: 'GET',
+            url: '/main-page/banner/{placement}',
+            path: { placement },
+        });
+    }
 }
