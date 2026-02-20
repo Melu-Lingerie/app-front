@@ -24,9 +24,6 @@ const validationRules = {
         validators.required('Заголовок обязателен'),
         validators.maxLength(100, 'Максимум 100 символов'),
     ],
-    url: [
-        validators.required('URL обязателен'),
-    ],
 };
 
 export function BannerFormPage() {
@@ -176,12 +173,10 @@ export function BannerFormPage() {
                         />
 
                         <AdminInput
-                            label="URL ссылки"
+                            label="URL ссылки (необязательно)"
                             placeholder="/catalog/collection"
                             value={formData.url}
                             onChange={(e) => updateField('url', e.target.value)}
-                            onBlur={() => setFieldTouched('url')}
-                            error={getFieldError('url')}
                         />
                     </div>
 
