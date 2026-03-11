@@ -55,7 +55,7 @@ export function MixMatchProductCard({ product, isSelected, onSelect, onDeselect,
             (v: ProductVariantCardDto) => v.colorName === selectedColor && v.size === selectedSize
         );
         if (variant) {
-            const mediaUrl = variant.productVariantMedia?.[0]?.s3Url || product.s3url || '';
+            const mediaUrl = variant.productVariantMedia?.[0]?.url || product.s3url || '';
             onSelect({
                 productId: product.productId!,
                 variantId: variant.id!,
@@ -110,7 +110,7 @@ export function MixMatchProductCard({ product, isSelected, onSelect, onDeselect,
             {/* Info */}
             <div className="mt-2">
                 <p className="text-[12px] md:text-sm truncate uppercase">{product.name}</p>
-                <p className="text-[12px] md:text-sm">{numberFormat(product.price ?? 0)} ₽</p>
+                <p className="text-[12px] md:text-sm">{String(numberFormat(product.price ?? 0))} ₽</p>
             </div>
 
             {/* Variant selection */}

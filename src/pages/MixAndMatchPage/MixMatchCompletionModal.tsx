@@ -52,7 +52,7 @@ export function MixMatchCompletionModal({ open, onClose, items, totalPrice }: Pr
                         </div>
 
                         <p className="text-center text-[16px] md:text-[18px] font-medium uppercase mb-8">
-                            {numberFormat(totalPrice)} ₽
+                            {String(numberFormat(totalPrice))} ₽
                         </p>
 
                         <div className="flex flex-col gap-3">

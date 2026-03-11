@@ -26,7 +26,7 @@ export function MixMatchSummary({ isComplete, totalPrice, selectedItems, onBuySe
                     </div>
                     {totalPrice > 0 && (
                         <p className="text-[14px] md:text-[16px] font-medium uppercase">
-                            Итого: {numberFormat(totalPrice)} ₽
+                            Итого: {String(numberFormat(totalPrice))} ₽
                         </p>
                     )}
                 </div>
