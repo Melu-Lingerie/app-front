@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '@/axios/api';
-import type { ProductCatalogResponseDto } from '@/api';
+import { ProductsService, type ProductCatalogResponseDto, type ProductCardResponse, type ProductVariantCardDto } from '@/api';
 import type { MixMatchStepDto } from './useMixMatchSteps';
 import type { SelectedItem } from './useMixMatchState';
-import { MixMatchProductCard } from './MixMatchProductCard';
-import { Carousel } from '@/components/Carousel';
-import { useIsMobile } from '@/hooks/useIsMobile';
+import { MixMatchCarouselStep } from './MixMatchCarouselStep';
+import { MixMatchGridStep } from './MixMatchGridStep';
 
 type Props = {
     step: MixMatchStepDto;
@@ -17,7 +16,6 @@ type Props = {
 export function MixMatchStep({ step, selection, onSelect, onDeselect }: Props) {
     const [products, setProducts] = useState<ProductCatalogResponseDto[]>([]);
     const [loading, setLoading] = useState(true);
-    const isMobile = useIsMobile();
 
     useEffect(() => {
         let cancelled = false;
@@ -37,59 +35,31 @@ export function MixMatchStep({ step, selection, onSelect, onDeselect }: Props) {
         return () => { cancelled = true; };
     }, [step.slug]);
 
-    const renderProduct = useCallback(
-        (product: ProductCatalogResponseDto, { widthStyle }: { widthStyle: React.CSSProperties; idx: number; reportImageHeight: (h: number) => void }) => (
-            <div key={product.productId} style={widthStyle}>
-                <MixMatchProductCard
-                    product={product}
-                    isSelected={selection?.productId === product.productId}
-                    onSelect={onSelect}
-                    onDeselect={onDeselect}
-                />
-            </div>
-        ),
-        [selection, onSelect, onDeselect]
-    );
-
     return (
-        <section className="mb-8 md:mb-12">
-            <div className="mb-4">
-                <h2 className="text-[18px] md:text-[24px] uppercase font-medium leading-tight">
+        <section className="mb-6 md:mb-10">
+            {/* Title */}
+            <div className="border-t border-dashed border-[#CCC] dark:border-white/20 pt-6 md:pt-10 mb-4 md:mb-6">
+                <h2 className="text-[20px] md:text-[28px] uppercase font-medium leading-tight text-center">
                     {step.title}
                 </h2>
-                {step.subtitle && (
-                    <p className="text-[12px] md:text-[14px] text-[#999] mt-1">{step.subtitle}</p>
-                )}
-                {!step.isRequired && (
-                    <span className="text-[10px] md:text-[11px] text-[#999] uppercase">необязательно</span>
-                )}
             </div>
 
             {step.displayType === 'CAROUSEL' ? (
-                <Carousel
-                    items={products}
-                    visibleCount={isMobile ? 2 : 4}
-                    gap={isMobile ? 12 : 20}
+                <MixMatchCarouselStep
+                    products={products}
                     loading={loading}
-                    renderItem={renderProduct}
+                    selection={selection}
+                    onSelect={onSelect}
+                    onDeselect={onDeselect}
                 />
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-                    {loading
-                        ? Array.from({ length: 4 }).map((_, i) => (
-                            <div key={i} className="aspect-[2/3] bg-gray-200 animate-pulse rounded-md" />
-                        ))
-                        : products.map(product => (
-                            <MixMatchProductCard
-                                key={product.productId}
-                                product={product}
-                                isSelected={selection?.productId === product.productId}
-                                onSelect={onSelect}
-                                onDeselect={onDeselect}
-                            />
-                        ))
-                    }
-                </div>
+                <MixMatchGridStep
+                    products={products}
+                    loading={loading}
+                    selection={selection}
+                    onSelect={onSelect}
+                    onDeselect={onDeselect}
+                />
             )}
         </section>
     );

@@ -53,17 +53,7 @@ export function MixAndMatchPage() {
     }
 
     return (
-        <div className="min-h-screen pb-[120px]">
-            {/* Header */}
-            <div className="px-4 md:px-[195px] pt-[30px] md:pt-[60px] mb-6 md:mb-10">
-                <h1 className="text-[28px] md:text-[42px] uppercase font-medium leading-tight">
-                    Mix'n'Match
-                </h1>
-                <p className="text-[13px] md:text-[16px] text-[#999] mt-2 md:mt-3 max-w-[600px]">
-                    Соберите свой идеальный комплект белья — выберите основу, добавьте посыпку и украсьте вишенкой
-                </p>
-            </div>
-
+        <div className="min-h-screen pb-[60px]">
             {/* Steps */}
             <div className="px-4 md:px-[195px]">
                 {steps.map((step) => (
@@ -78,13 +68,13 @@ export function MixAndMatchPage() {
             </div>
 
             {/* Summary bar */}
-            <MixMatchSummary
-                isComplete={isComplete}
-                totalPrice={totalPrice}
-                selectedItems={selectedItems}
-                onBuySet={handleBuySet}
-                loading={submitting}
-            />
+            <div className="px-4 md:px-[195px]">
+                <MixMatchSummary
+                    isComplete={isComplete}
+                    onBuySet={handleBuySet}
+                    loading={submitting}
+                />
+            </div>
 
             {/* Completion modal */}
             <MixMatchCompletionModal
