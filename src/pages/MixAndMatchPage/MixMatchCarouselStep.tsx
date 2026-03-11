@@ -11,7 +11,7 @@ type Props = {
     onDeselect: () => void;
 };
 
-export function MixMatchCarouselStep({ products, loading, selection, onSelect, onDeselect }: Props) {
+export function MixMatchCarouselStep({ products, loading, onSelect }: Props) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [productInfo, setProductInfo] = useState<ProductCardResponse | null>(null);
     const [loadingInfo, setLoadingInfo] = useState(false);

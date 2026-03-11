@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '@/axios/api';
-import { ProductsService, type ProductCatalogResponseDto, type ProductCardResponse, type ProductVariantCardDto } from '@/api';
+import type { ProductCatalogResponseDto } from '@/api';
 import type { MixMatchStepDto } from './useMixMatchSteps';
 import type { SelectedItem } from './useMixMatchState';
 import { MixMatchCarouselStep } from './MixMatchCarouselStep';
