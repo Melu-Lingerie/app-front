@@ -208,6 +208,9 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                                 <button type="button" onClick={() => goSort('Скоро в продаже')} className="text-left text-[14px] uppercase cursor-pointer">
                                     Скоро в продаже
                                 </button>
+                                <button type="button" onClick={() => goTo('/mix-and-match')} className="text-left text-[14px] uppercase cursor-pointer">
+                                    Mix'n'Match
+                                </button>
                                 <button type="button" className="text-left text-[14px] uppercase cursor-pointer">
                                     Sale
                                 </button>
@@ -534,6 +537,14 @@ export const HeaderDrawer = ({ open, onClose }: HeaderDrawerProps) => {
                             variants={itemV}
                         >
                             Скоро в продаже
+                        </motion.button>
+                        <motion.button
+                            type="button"
+                            onClick={() => goTo('/mix-and-match')}
+                            className="w-full block text-left text-[14px] leading-[18px] uppercase mb-[20px] cursor-pointer transition-colors hover:opacity-70"
+                            variants={itemV}
+                        >
+                            Mix'n'Match
                         </motion.button>
                         <motion.button
                             type="button"

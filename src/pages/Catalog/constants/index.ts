@@ -1,6 +1,6 @@
 export const SORT_OPTIONS = ['Все', 'Новинки', 'Скоро в продаже'] as const;
 export type SortOption = (typeof SORT_OPTIONS)[number];
-export type ListKey = 'types' | 'sizes' | 'colors';
+export type ListKey = 'types' | 'sizes' | 'braSizes' | 'colors';
 export const PRODUCT_STATUS_MAP: Record<SortOption, 'AVAILABLE' | 'NEW' | 'SOON'> = {
     Все: 'AVAILABLE',
     Новинки: 'NEW',

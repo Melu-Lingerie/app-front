@@ -25,6 +25,7 @@ import {
     SearchPage,
     ReviewsPage,
     HintPayPage,
+    MixAndMatchPage,
     // Admin
     AdminLoginPage,
     AdminLayout,
@@ -128,6 +129,7 @@ function App() {
                     <Route path="loyalty/rewards" element={<LoyaltyRewardsPage />} />
                     <Route path="about" element={<AboutPage />} />
                     <Route path="contacts" element={<ContactsPage />} />
+                    <Route path="mix-and-match" element={<MixAndMatchPage />} />
                     <Route path="wish/:shareToken" element={<HintPayPage />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>

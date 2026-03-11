@@ -14,6 +14,7 @@ export interface CatalogFilterOptions {
     maxPrice: number;
     categories: CategoryOption[];
     sizes: string[];
+    braSizes: string[];
     colors: string[];
 }
 
@@ -22,6 +23,7 @@ const DEFAULTS: CatalogFilterOptions = {
     maxPrice: 90000,
     categories: [],
     sizes: [],
+    braSizes: [],
     colors: [],
 };
 
@@ -41,6 +43,7 @@ export const useCatalogFilterOptions = () => {
                     maxPrice: res.data.maxPrice ?? 90000,
                     categories: res.data.categories ?? [],
                     sizes: res.data.sizes ?? [],
+                    braSizes: (res.data as CatalogFilterOptions).braSizes ?? [],
                     colors: res.data.colors ?? [],
                 });
             } catch {

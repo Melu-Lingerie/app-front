@@ -32,7 +32,7 @@ export const Catalog = () => {
         [filterOptions.minPrice, filterOptions.maxPrice],
     );
     const { filters, updateQuery } = useCatalogFilters(categoryMap, priceDefaults);
-    const { types, sizes, colors } = filters;
+    const { types, sizes, braSizes, colors } = filters;
 
     const {
         goods,
@@ -87,14 +87,14 @@ export const Catalog = () => {
                 return;
             }
 
-            const current = key === 'sizes' ? sizes : colors;
+            const current = key === 'sizes' ? sizes : key === 'braSizes' ? braSizes : colors;
             const next = current.includes(value)
                 ? current.filter((v) => v !== value)
                 : [...current, value];
 
             updateQuery({ [key]: next, page: 0 });
         },
-        [types, sizes, colors, updateQuery, categoryMap, filterOptions.categories],
+        [types, sizes, braSizes, colors, updateQuery, categoryMap, filterOptions.categories],
     );
 
     const handleSortChange = useCallback(
@@ -114,7 +114,8 @@ export const Catalog = () => {
         (filters.minVal !== filterOptions.minPrice || filters.maxVal !== filterOptions.maxPrice ? 1 : 0) +
         (filters.types.length ? 1 : 0) +
         (filters.colors.length ? 1 : 0) +
-        (filters.sizes.length ? 1 : 0);
+        (filters.sizes.length ? 1 : 0) +
+        (filters.braSizes.length ? 1 : 0);
 
     // === UI ===
 
@@ -151,8 +152,10 @@ export const Catalog = () => {
                     priceMax={filterOptions.maxPrice}
                     categories={filterOptions.categories}
                     availableSizes={filterOptions.sizes}
+                    availableBraSizes={filterOptions.braSizes}
                     availableColors={filterOptions.colors}
                     selectedSizes={filters.sizes ?? []}
+                    selectedBraSizes={filters.braSizes ?? []}
                     selectedColors={filters.colors ?? []}
                     setMinVal={setLocalMinVal}
                     setMaxVal={setLocalMaxVal}
@@ -171,9 +174,11 @@ export const Catalog = () => {
                         priceMax={filterOptions.maxPrice}
                         categories={filterOptions.categories}
                         availableSizes={filterOptions.sizes}
+                        availableBraSizes={filterOptions.braSizes}
                         availableColors={filterOptions.colors}
                         selectedTypes={filters.types}
                         selectedSizes={filters.sizes ?? []}
+                        selectedBraSizes={filters.braSizes ?? []}
                         selectedColors={filters.colors ?? []}
                         toggleFilterValue={toggleFilterValue}
                         setMinVal={setLocalMinVal}

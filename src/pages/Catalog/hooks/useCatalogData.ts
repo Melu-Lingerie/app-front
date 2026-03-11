@@ -22,6 +22,7 @@ export const useCatalogData = (
         maxVal: number;
         types: string[];
         sizes: string[];
+        braSizes: string[];
         colors: string[];
         sort: SortOption;
         page: number;
@@ -51,7 +52,7 @@ export const useCatalogData = (
                 filters.maxVal || undefined,
                 categories.length ? categories : undefined,
                 filters.sizes?.length ? filters.sizes : undefined,
-                undefined,
+                filters.braSizes?.length ? filters.braSizes : undefined,
                 filters.colors?.length ? filters.colors : undefined,
                 status !== 'AVAILABLE' ? status : undefined,
                 page,

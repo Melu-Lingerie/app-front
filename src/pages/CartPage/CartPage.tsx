@@ -85,6 +85,22 @@ export function CartPage() {
     // Количество выбранных товаров
     const selectedCount = selectedItems.size;
 
+    // Группировка по setGroupId
+    const { setGroups, ungroupedItems } = useMemo(() => {
+        const groups = new Map<string, typeof items>();
+        const ungrouped: typeof items = [];
+        for (const item of items) {
+            const gid = (item as any).setGroupId;
+            if (gid) {
+                if (!groups.has(gid)) groups.set(gid, []);
+                groups.get(gid)!.push(item);
+            } else {
+                ungrouped.push(item);
+            }
+        }
+        return { setGroups: Array.from(groups.entries()), ungroupedItems: ungrouped };
+    }, [items]);
+
     const categoryIds = useMemo(() => {
         const ids = items.map((i) => i.categoryId).filter(Boolean);
         return Array.from(new Set(ids));
@@ -116,6 +132,62 @@ export function CartPage() {
 
         fetchRelated();
     }, [cartId, items, categoryIds, addNotification]);
+
+    const renderCartItem = (item: typeof items[0]) => (
+        <CartItem
+            key={item.itemId}
+            item={item}
+            isRemoving={removingItemIds.includes(item.itemId!)}
+            isUpdating={updatingItemIds.includes(item.itemId!)}
+            isSelected={selectedItems.has(item.itemId!)}
+            isFavorite={favoriteProductIds.has(item.productId!)}
+            onToggleSelect={toggleItemSelect}
+            onRemove={(itemId) =>
+                dispatch(
+                    removeItemFromCart({ cartId: cartId!, itemId })
+                ).unwrap().catch(() => {
+                    addNotification('Не удалось удалить товар из корзины', 'error');
+                })
+            }
+            onIncrease={(itemId) =>
+                dispatch(
+                    updateItemQuantity({
+                        cartId: cartId!,
+                        itemId,
+                        quantity: (item.quantity ?? 1) + 1,
+                    })
+                )
+            }
+            onDecrease={(itemId) =>
+                item.quantity &&
+                item.quantity > 1 &&
+                dispatch(
+                    updateItemQuantity({
+                        cartId: cartId!,
+                        itemId,
+                        quantity: item.quantity - 1,
+                    })
+                )
+            }
+            onAddToFavorites={() => {
+                if (!wishlistId) {
+                    addNotification('Избранное не инициализировано', 'error');
+                    return;
+                }
+                const isInFavorites = favoriteProductIds.has(item.productId!);
+                dispatch(toggleWishlistItem({ wishlistId: Number(wishlistId), productId: item.productId! }))
+                    .unwrap()
+                    .then(() => addNotification(
+                        isInFavorites ? 'Товар убран из избранного' : 'Товар добавлен в избранное',
+                        'success'
+                    ))
+                    .catch(() => addNotification(
+                        isInFavorites ? 'Не удалось убрать из избранного' : 'Не удалось добавить в избранное',
+                        'error'
+                    ));
+            }}
+        />
+    );
 
     if (!cartId || loading) {
         return (
@@ -177,7 +249,29 @@ export function CartPage() {
                         className="flex flex-col gap-6"
                     >
                         <AnimatePresence mode="popLayout">
-                            {items.map((item) => (
+                            {/* Grouped set items */}
+                            {setGroups.map(([groupId, groupItems]) => (
+                                <motion.div
+                                    key={`set-${groupId}`}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 20 },
+                                        visible: { opacity: 1, y: 0 },
+                                    }}
+                                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                                    className="border border-[#F8C6D7] rounded-md p-3 md:p-4"
+                                >
+                                    <div className="text-[11px] md:text-[12px] text-[#F895B7] uppercase font-medium mb-3">
+                                        Комплект Mix'n'Match
+                                    </div>
+                                    <div className="flex flex-col gap-4">
+                                        {groupItems.map((item) => renderCartItem(item))}
+                                    </div>
+                                </motion.div>
+                            ))}
+
+                            {/* Ungrouped items */}
+                            {ungroupedItems.map((item) => (
                                 <motion.div
                                     key={item.itemId}
                                     variants={{
@@ -187,58 +281,7 @@ export function CartPage() {
                                     exit={{ opacity: 0, y: -20, scale: 0.95 }}
                                     transition={{ duration: 0.3, ease: 'easeOut' }}
                                 >
-                                    <CartItem
-                                        item={item}
-                                        isRemoving={removingItemIds.includes(item.itemId!)}
-                                        isUpdating={updatingItemIds.includes(item.itemId!)}
-                                        isSelected={selectedItems.has(item.itemId!)}
-                                        isFavorite={favoriteProductIds.has(item.productId!)}
-                                        onToggleSelect={toggleItemSelect}
-                                        onRemove={(itemId) =>
-                                            dispatch(
-                                                removeItemFromCart({ cartId: cartId!, itemId })
-                                            ).unwrap().catch(() => {
-                                                addNotification('Не удалось удалить товар из корзины', 'error');
-                                            })
-                                        }
-                                        onIncrease={(itemId) =>
-                                            dispatch(
-                                                updateItemQuantity({
-                                                    cartId: cartId!,
-                                                    itemId,
-                                                    quantity: (item.quantity ?? 1) + 1,
-                                                })
-                                            )
-                                        }
-                                        onDecrease={(itemId) =>
-                                            item.quantity &&
-                                            item.quantity > 1 &&
-                                            dispatch(
-                                                updateItemQuantity({
-                                                    cartId: cartId!,
-                                                    itemId,
-                                                    quantity: item.quantity - 1,
-                                                })
-                                            )
-                                        }
-                                        onAddToFavorites={() => {
-                                            if (!wishlistId) {
-                                                addNotification('Избранное не инициализировано', 'error');
-                                                return;
-                                            }
-                                            const isInFavorites = favoriteProductIds.has(item.productId!);
-                                            dispatch(toggleWishlistItem({ wishlistId: Number(wishlistId), productId: item.productId! }))
-                                                .unwrap()
-                                                .then(() => addNotification(
-                                                    isInFavorites ? 'Товар убран из избранного' : 'Товар добавлен в избранное',
-                                                    'success'
-                                                ))
-                                                .catch(() => addNotification(
-                                                    isInFavorites ? 'Не удалось убрать из избранного' : 'Не удалось добавить в избранное',
-                                                    'error'
-                                                ));
-                                        }}
-                                    />
+                                    {renderCartItem(item)}
                                 </motion.div>
                             ))}
                         </AnimatePresence>

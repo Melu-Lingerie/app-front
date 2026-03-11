@@ -10,7 +10,7 @@ interface FilterTopBarProps {
     filterChanges: number;
     onReset: () => void;
     selectedTypes: string[];
-    toggleFn: (key: 'types' | 'sizes' | 'colors', value: string) => void;
+    toggleFn: (key: 'types' | 'sizes' | 'braSizes' | 'colors', value: string) => void;
     options: SortOption[];
     selectedOption: SortOption;
     onSelectChange: (val: SortOption) => void;
@@ -21,8 +21,10 @@ interface FilterTopBarProps {
     priceMax?: number;
     categories?: CategoryOption[];
     availableSizes?: string[];
+    availableBraSizes?: string[];
     availableColors?: string[];
     selectedSizes?: string[];
+    selectedBraSizes?: string[];
     selectedColors?: string[];
     setMinVal?: (val: number) => void;
     setMaxVal?: (val: number) => void;
@@ -44,8 +46,10 @@ export const FilterTopBar = ({
                                  priceMax = 90000,
                                  categories = [],
                                  availableSizes = [],
+                                 availableBraSizes = [],
                                  availableColors = [],
                                  selectedSizes = [],
+                                 selectedBraSizes = [],
                                  selectedColors = [],
                                  setMinVal,
                                  setMaxVal,
@@ -59,6 +63,7 @@ export const FilterTopBar = ({
     const [isPriceOpen, setIsPriceOpen] = useState(true);
     const [isTypeOpen, setIsTypeOpen] = useState(false);
     const [isSizeOpen, setIsSizeOpen] = useState(false);
+    const [isBraSizeOpen, setIsBraSizeOpen] = useState(false);
     const [isColorOpen, setIsColorOpen] = useState(false);
 
     const handleSelect = (option: 'Все' | 'Новинки' | 'Скоро в продаже') => {
@@ -290,6 +295,29 @@ export const FilterTopBar = ({
                                     ))}
                                 </div>
                             </FilterAccordion>
+
+                            {/* Размер бра */}
+                            {availableBraSizes.length > 0 && (
+                                <FilterAccordion
+                                    title="РАЗМЕР БРА"
+                                    isOpen={isBraSizeOpen}
+                                    onToggle={() => setIsBraSizeOpen(!isBraSizeOpen)}
+                                >
+                                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
+                                        {availableBraSizes.map((size) => (
+                                            <label key={size} className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedBraSizes.includes(size)}
+                                                    onChange={() => toggleFn('braSizes', size)}
+                                                    className="accent-[#2A2A2B]"
+                                                />
+                                                {size}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </FilterAccordion>
+                            )}
 
                             {/* Цвета */}
                             <FilterAccordion

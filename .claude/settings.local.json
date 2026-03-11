@@ -36,7 +36,14 @@
       "WebFetch(domain:yandex.cloud)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:cloud.yandex.com)"
+      "WebFetch(domain:cloud.yandex.com)",
+      "Bash(npx tsc:*)",
+      "Bash(xxd:*)",
+      "Bash(node -e:*)",
+      "Bash(npx -y bcryptjs \"NJX9AnnBtSWY4y4B\")",
+      "Bash(find:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\IVA-PC\\\\app-front\\\\.claude\\\\\" 2>&1 || echo \"Directory not found or error\")",
+      "Bash(grep -r \"CREATE TABLE products\" \"C:\\\\Users\\\\IVA-PC\\\\IdeaProjects\\\\app-backend.git\" --include=\"*.sql\" 2>/dev/null | head -20)"
     ],
     "deny": [],
     "ask": []

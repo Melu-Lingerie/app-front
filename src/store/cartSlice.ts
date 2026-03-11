@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import {CartService, type CartGetFacadeResponseDto, type CartItemDetailsFacadeResponseDto} from '@/api';
+import api from '@/axios/api';
 
 // ---- Thunks ----
 
@@ -39,6 +40,16 @@ export const clearCartApi = createAsyncThunk<void, number>(
         await CartService.clearCart(cartId);
     }
 );
+
+// Добавить комплект Mix'n'Match
+export const addSetToCart = createAsyncThunk<
+    void,
+    { cartId: number; items: Array<{ productId: number; variantId: number }> }
+>('cart/addSetToCart', async ({ cartId, items }) => {
+    await api.post(`/cart/${cartId}/sets`, {
+        items: items.map(i => ({ ...i, quantity: 1 })),
+    });
+});
 
 // Обновить количество
 export const updateItemQuantity = createAsyncThunk<

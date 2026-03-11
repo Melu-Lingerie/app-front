@@ -11,6 +11,7 @@ export {BackstagePage} from './BackstagePage';
 export {SearchPage} from './SearchPage';
 export {ReviewsPage} from './ReviewsPage';
 export {HintPayPage} from './HintPayPage';
+export {MixAndMatchPage} from './MixAndMatchPage/MixAndMatchPage';
 
 // Admin
 export {

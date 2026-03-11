@@ -10,13 +10,15 @@ interface Props {
     priceMax: number;
     categories: CategoryOption[];
     availableSizes: string[];
+    availableBraSizes: string[];
     availableColors: string[];
     selectedTypes: string[];
     setMinVal: (val: number) => void;
     setMaxVal: (val: number) => void;
     selectedSizes: string[];
+    selectedBraSizes: string[];
     selectedColors: string[];
-    toggleFilterValue: (key: 'types' | 'sizes' | 'colors', value: string) => void;
+    toggleFilterValue: (key: 'types' | 'sizes' | 'braSizes' | 'colors', value: string) => void;
     onPriceCommit?: (values: { min: number; max: number }) => void;
 }
 
@@ -27,18 +29,21 @@ export const FilterSidebar = ({
                                   priceMax,
                                   categories,
                                   availableSizes,
+                                  availableBraSizes,
                                   availableColors,
                                   selectedTypes,
                                   setMinVal,
                                   setMaxVal,
                                   toggleFilterValue,
                                   selectedSizes,
+                                  selectedBraSizes,
                                   selectedColors,
                                   onPriceCommit,
                               }: Props) => {
     const [isPriceOpen, setIsPriceOpen] = useState(false);
     const [isTypeOpen, setIsTypeOpen] = useState(false);
     const [isSizeOpen, setIsSizeOpen] = useState(false);
+    const [isBraSizeOpen, setIsBraSizeOpen] = useState(false);
     const [isColorOpen, setIsColorOpen] = useState(false);
 
     return (
@@ -128,6 +133,29 @@ export const FilterSidebar = ({
                                         type="checkbox"
                                         checked={selectedSizes.includes(size)}
                                         onChange={() => toggleFilterValue('sizes', size)}
+                                        className="accent-[#2A2A2B]"
+                                    />
+                                    {size}
+                                </label>
+                            ))}
+                        </div>
+                    </FilterAccordion>
+                )}
+
+                {/* Размер бра */}
+                {availableBraSizes.length > 0 && (
+                    <FilterAccordion
+                        title="РАЗМЕР БРА"
+                        isOpen={isBraSizeOpen}
+                        onToggle={() => setIsBraSizeOpen(!isBraSizeOpen)}
+                    >
+                        <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
+                            {availableBraSizes.map((size) => (
+                                <label key={size} className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedBraSizes.includes(size)}
+                                        onChange={() => toggleFilterValue('braSizes', size)}
                                         className="accent-[#2A2A2B]"
                                     />
                                     {size}
