@@ -49,7 +49,6 @@ export const Carousel = <T,>({
                                  preloadOffset,
                              }: CarouselProps<T>) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const trackRef = useRef<HTMLDivElement | null>(null);
     const initialized = useSelector(selectAppInitialized);
 
     const [containerWidth, setContainerWidth] = useState(0);
@@ -121,7 +120,7 @@ export const Carousel = <T,>({
     );
 
     // --- Snap to nearest item ---
-    const snapTo = useCallback((targetX: number, animate = true) => {
+    const snapTo = useCallback((targetX: number) => {
         if (!stepSize) return;
         const snappedIndex = Math.round(clamp(targetX) / stepSize);
         const snapped = clamp(snappedIndex * stepSize);
