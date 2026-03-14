@@ -43,7 +43,17 @@
       "Bash(npx -y bcryptjs \"NJX9AnnBtSWY4y4B\")",
       "Bash(find:*)",
       "Bash(ls -la \"C:\\\\Users\\\\IVA-PC\\\\app-front\\\\.claude\\\\\" 2>&1 || echo \"Directory not found or error\")",
-      "Bash(grep -r \"CREATE TABLE products\" \"C:\\\\Users\\\\IVA-PC\\\\IdeaProjects\\\\app-backend.git\" --include=\"*.sql\" 2>/dev/null | head -20)"
+      "Bash(grep -r \"CREATE TABLE products\" \"C:\\\\Users\\\\IVA-PC\\\\IdeaProjects\\\\app-backend.git\" --include=\"*.sql\" 2>/dev/null | head -20)",
+      "Bash(cd /c/Users/IVA-PC/IdeaProjects/app-backend.git && find facade -type f -name \"*Order*\" -o -name \"*Payment*\" -o -name \"*Checkout*\" | grep \"\\\\.java$\")",
+      "WebFetch(domain:developer.evotor.ru)",
+      "WebFetch(domain:api.evotor.ru)",
+      "WebFetch(domain:evotor.cloud)",
+      "WebFetch(domain:help.digital.evotor.ru)",
+      "WebFetch(domain:wiki.lineris.ru)",
+      "WebFetch(domain:evotor.ru)",
+      "Read(//c/Users/IVA-PC/IdeaProjects/app-backend.git/src/main/**)",
+      "Read(//c/Users/IVA-PC/IdeaProjects/app-backend.git/**)",
+      "Bash(cd:*)"
     ],
     "deny": [],
     "ask": []

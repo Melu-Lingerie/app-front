@@ -4,11 +4,17 @@ type Props = {
     isComplete: boolean;
     onBuySet: () => void;
     loading: boolean;
+    missingSteps?: string[];
 };
 
-export function MixMatchSummary({ isComplete, onBuySet, loading }: Props) {
+export function MixMatchSummary({ isComplete, onBuySet, loading, missingSteps = [] }: Props) {
     return (
         <div className="border-t border-[#E5E5E5] dark:border-white/10 py-6 md:py-8 mt-6 md:mt-10">
+            {!isComplete && missingSteps.length > 0 && (
+                <p className="text-center text-[12px] text-[#999] mb-4">
+                    Выберите товар в: {missingSteps.join(', ')}
+                </p>
+            )}
             <div className="flex items-center justify-center gap-6 md:gap-10">
                 {/* Add to favorites */}
                 <button

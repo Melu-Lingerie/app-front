@@ -18,7 +18,7 @@ export function MixAndMatchPage() {
     const { addNotification } = useNotifications();
 
     const { steps, loading: stepsLoading } = useMixMatchSteps();
-    const { selections, select, deselect, isComplete, totalPrice, selectedItems } = useMixMatchState(steps);
+    const { selections, select, deselect, isComplete, totalPrice, selectedItems, missingSteps } = useMixMatchState(steps);
 
     const [submitting, setSubmitting] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -73,6 +73,7 @@ export function MixAndMatchPage() {
                     isComplete={isComplete}
                     onBuySet={handleBuySet}
                     loading={submitting}
+                    missingSteps={missingSteps}
                 />
             </div>
 

@@ -96,12 +96,40 @@ const validationRules = {
     ],
 };
 
+const DRAFT_STORAGE_KEY = 'admin_product_draft';
+
+function loadDraft(): FormData | null {
+    try {
+        const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+}
+
+function saveDraft(data: FormData) {
+    try {
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(data));
+    } catch { /* ignore quota errors */ }
+}
+
+function clearDraft() {
+    localStorage.removeItem(DRAFT_STORAGE_KEY);
+}
+
 export function ProductFormPage() {
     const navigate = useNavigate();
     const { id } = useParams();
     const isEditing = Boolean(id);
 
-    const [formData, setFormData] = useState<FormData>(defaultFormData);
+    const [formData, setFormData] = useState<FormData>(() => {
+        if (!id) {
+            const draft = loadDraft();
+            if (draft) return draft;
+        }
+        return defaultFormData;
+    });
+    const [draftRestored, setDraftRestored] = useState(() => !id && !!loadDraft());
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -127,6 +155,13 @@ export function ProductFormPage() {
     const [uploadingVariant, setUploadingVariant] = useState<number | null>(null);
     const mainPhotoInputRef = useRef<HTMLInputElement>(null);
     const variantPhotoInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+
+    // Auto-save draft for new products
+    useEffect(() => {
+        if (!isEditing) {
+            saveDraft(formData);
+        }
+    }, [formData, isEditing]);
 
     // Load categories
     useEffect(() => {
@@ -244,6 +279,7 @@ export function ProductFormPage() {
                 await AdminProductService.updateProduct(Number(id), requestData);
             } else {
                 await AdminProductService.createProduct(requestData as any);
+                clearDraft();
             }
 
             navigate('/admin/products');
@@ -353,6 +389,22 @@ export function ProductFormPage() {
                     </AdminButton>
                 }
             />
+
+            {draftRestored && (
+                <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 rounded-lg flex items-center justify-between">
+                    <span>Восстановлен черновик. Данные были сохранены автоматически.</span>
+                    <button
+                        onClick={() => {
+                            clearDraft();
+                            setFormData(defaultFormData);
+                            setDraftRestored(false);
+                        }}
+                        className="ml-4 underline hover:no-underline text-sm"
+                    >
+                        Очистить черновик
+                    </button>
+                </div>
+            )}
 
             {error && (
                 <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg">

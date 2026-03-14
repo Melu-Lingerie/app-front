@@ -34,6 +34,8 @@ export {
     ReviewsListPage,
     // MoySklad
     MoySkladPage,
+    // Newsletter
+    NewsletterPage,
     // Loyalty
     LoyaltyDashboardPage,
     LoyaltyAccountsPage,

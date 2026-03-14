@@ -66,6 +66,9 @@ export const FilterTopBar = ({
     const [isBraSizeOpen, setIsBraSizeOpen] = useState(false);
     const [isColorOpen, setIsColorOpen] = useState(false);
 
+    // Determine if bra category is selected
+    const hasBraSelected = selectedTypes.some(t => t.includes('бра'));
+
     const handleSelect = (option: 'Все' | 'Новинки' | 'Скоро в продаже') => {
         onSelectChange(option);
         setIsOpen(false);
@@ -275,29 +278,31 @@ export const FilterTopBar = ({
                                 </div>
                             </FilterAccordion>
 
-                            {/* Размер */}
-                            <FilterAccordion
-                                title="РАЗМЕР"
-                                isOpen={isSizeOpen}
-                                onToggle={() => setIsSizeOpen(!isSizeOpen)}
-                            >
-                                <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                                    {availableSizes.map((size) => (
-                                        <label key={size} className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedSizes.includes(size)}
-                                                onChange={() => toggleFn('sizes', size)}
-                                                className="accent-[#2A2A2B]"
-                                            />
-                                            {size}
-                                        </label>
-                                    ))}
-                                </div>
-                            </FilterAccordion>
+                            {/* Размер (скрыт если выбрана категория бра) */}
+                            {!hasBraSelected && (
+                                <FilterAccordion
+                                    title="РАЗМЕР"
+                                    isOpen={isSizeOpen}
+                                    onToggle={() => setIsSizeOpen(!isSizeOpen)}
+                                >
+                                    <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
+                                        {availableSizes.map((size) => (
+                                            <label key={size} className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedSizes.includes(size)}
+                                                    onChange={() => toggleFn('sizes', size)}
+                                                    className="accent-[#2A2A2B]"
+                                                />
+                                                {size}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </FilterAccordion>
+                            )}
 
-                            {/* Размер бра */}
-                            {availableBraSizes.length > 0 && (
+                            {/* Размер бра (показан если выбрана категория бра) */}
+                            {availableBraSizes.length > 0 && hasBraSelected && (
                                 <FilterAccordion
                                     title="РАЗМЕР БРА"
                                     isOpen={isBraSizeOpen}

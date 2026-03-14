@@ -15,6 +15,7 @@ import {
     HardDrive,
     Heart,
     Warehouse,
+    Mail,
     ChevronDown,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
@@ -45,6 +46,7 @@ const navItems: NavItem[] = [
     { to: '/admin/reviews', icon: <MessageSquare size={20} />, label: 'Отзывы' },
     { to: '/admin/loyalty', icon: <Heart size={20} />, label: 'Лояльность' },
     { to: '/admin/moysklad', icon: <Warehouse size={20} />, label: 'МойСклад' },
+    { to: '/admin/newsletter', icon: <Mail size={20} />, label: 'Рассылка' },
 ];
 
 export function AdminSidebar() {

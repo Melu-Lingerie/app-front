@@ -42,6 +42,12 @@ export const ProfileTab = () => {
     const initSetRef = useRef(false);
     const [loading, setLoading] = useState(false);
 
+    // Verification flow state
+    const [verificationPending, setVerificationPending] = useState(false);
+    const [verificationCode, setVerificationCode] = useState('');
+    const [verificationMessage, setVerificationMessage] = useState('');
+    const [confirmLoading, setConfirmLoading] = useState(false);
+
     const [addressesLoading, setAddressesLoading] = useState(false);
     const addressesLoadedRef = useRef(false);
     const [addAddressOpen, setAddAddressOpen] = useState(false);
@@ -246,8 +252,32 @@ export const ProfileTab = () => {
 
         setLoading(true);
         try {
-            const updated = await UserManagementService.updateCurrentUser(req);
+            // Step 1: Initiate update — sends verification code to email
+            const response = await UserManagementService.initiateProfileUpdate(req);
+            setVerificationMessage(response.message);
+            setVerificationPending(true);
+            setVerificationCode('');
+            addNotification(response.message, 'success');
+        } catch {
+            addNotification('Ошибка при обновлении данных', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleConfirmUpdate = async () => {
+        if (!verificationCode.trim() || verificationCode.length !== 6) {
+            addNotification('Введите 6-значный код подтверждения', 'error');
+            return;
+        }
+
+        setConfirmLoading(true);
+        try {
+            const updated = await UserManagementService.confirmProfileUpdate({ code: verificationCode.trim() });
             addNotification('Данные успешно обновлены', 'success');
+
+            const phoneDigits = phone.replace(/\D/g, '');
+            const parsedDob = parseRuDate(dobInput);
 
             // Update store with fresh data from backend
             dispatch(setUserData({
@@ -259,7 +289,7 @@ export const ProfileTab = () => {
                 birthDate: updated.birthDate ?? (parsedDob ? formatYMD(parsedDob) : null),
             }));
 
-            // Lock current values as initial snapshot so the Save button disables again
+            // Lock current values as initial snapshot
             initialRef.current = {
                 lastName: lastName,
                 firstName: firstName,
@@ -268,10 +298,15 @@ export const ProfileTab = () => {
                 phone: phone,
                 dobInput: dobInput,
             };
-        } catch {
-            addNotification('Ошибка при обновлении данных', 'error');
+
+            setVerificationPending(false);
+            setVerificationCode('');
+            setVerificationMessage('');
+        } catch (e: any) {
+            const msg = e?.body?.message || e?.message || 'Неверный код подтверждения';
+            addNotification(msg, 'error');
         } finally {
-            setLoading(false);
+            setConfirmLoading(false);
         }
     };
 
@@ -516,14 +551,50 @@ export const ProfileTab = () => {
             </div>
 
             <div className="mt-[60px]">
-                <button
-                    type="button"
-                    disabled={!initialized || !isDirty || loading || deletingAddress}
-                    onClick={handleSave}
-                    className={`w-[445px] h-[56px] border border-[#FFFBF5] rounded bg-[#F8C6D7] text-[14px] leading-[18px] uppercase ${initialized && isDirty && !loading && !deletingAddress ? 'cursor-pointer hover:shadow-md transition transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
-                >
-                    Сохранить данные
-                </button>
+                {!verificationPending ? (
+                    <button
+                        type="button"
+                        disabled={!initialized || !isDirty || loading || deletingAddress}
+                        onClick={handleSave}
+                        className={`w-[445px] h-[56px] border border-[#FFFBF5] rounded bg-[#F8C6D7] text-[14px] leading-[18px] uppercase ${initialized && isDirty && !loading && !deletingAddress ? 'cursor-pointer hover:shadow-md transition transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50 pointer-events-none'}`}
+                    >
+                        {loading ? 'Отправка кода...' : 'Сохранить данные'}
+                    </button>
+                ) : (
+                    <div className="flex flex-col gap-4">
+                        <p className="text-[14px] text-[#999]">{verificationMessage}</p>
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={6}
+                                placeholder="Введите код"
+                                value={verificationCode}
+                                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                className="w-[200px] h-[56px] border border-[#CCCCCC] rounded-[8px] px-4 text-center text-[20px] tracking-[8px]"
+                            />
+                            <button
+                                type="button"
+                                disabled={confirmLoading || verificationCode.length !== 6}
+                                onClick={handleConfirmUpdate}
+                                className={`h-[56px] px-8 border border-[#FFFBF5] rounded bg-[#F8C6D7] text-[14px] leading-[18px] uppercase ${!confirmLoading && verificationCode.length === 6 ? 'cursor-pointer hover:shadow-md transition transition-transform active:scale-95 active:opacity-90' : 'cursor-not-allowed opacity-50'}`}
+                            >
+                                {confirmLoading ? 'Проверка...' : 'Подтвердить'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setVerificationPending(false);
+                                    setVerificationCode('');
+                                    setVerificationMessage('');
+                                }}
+                                className="h-[56px] px-6 border border-[#CCCCCC] rounded text-[14px] leading-[18px] uppercase cursor-pointer hover:bg-gray-50"
+                            >
+                                Отмена
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
             <AnimatePresence>
               {addAddressOpen && (

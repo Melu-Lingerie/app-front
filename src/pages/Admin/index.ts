@@ -31,6 +31,9 @@ export { ReviewsListPage } from './Reviews';
 // MoySklad
 export { MoySkladPage } from './MoySklad';
 
+// Newsletter
+export { NewsletterPage } from './Newsletter';
+
 // Loyalty
 export {
     LoyaltyDashboardPage,

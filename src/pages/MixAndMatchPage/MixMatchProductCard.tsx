@@ -130,7 +130,7 @@ export function MixMatchProductCard({ product, isSelected, onSelect, onDeselect 
             <div className="flex items-center gap-2 mb-2">
                 <span className="text-[12px] md:text-sm">{String(numberFormat(product.price ?? 0))} ₽</span>
                 <div className="flex gap-0.5">
-                    {(product.colors ?? []).map((color, i) => (
+                    {[...new Set(product.colors ?? [])].map((color, i) => (
                         <span
                             key={i}
                             className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full"

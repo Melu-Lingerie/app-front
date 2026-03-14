@@ -231,7 +231,26 @@ export function ProductsListPage() {
         setCurrentPage(1);
     };
 
+    const handleBulkDelete = async () => {
+        if (selectedIds.size === 0) return;
+        if (!confirm(`Вы уверены, что хотите удалить ${selectedIds.size} товаров?`)) return;
+
+        try {
+            const ids = Array.from(selectedIds).map(Number);
+            await Promise.all(ids.map((id) => AdminProductService.deleteProduct(id)));
+            setSelectedIds(new Set());
+            fetchProducts();
+        } catch (err) {
+            console.error('Failed to bulk delete products:', err);
+            alert('Не удалось удалить некоторые товары');
+        }
+    };
+
     const handleBulkAction = (action: 'status' | 'category' | 'price' | 'delete') => {
+        if (action === 'delete') {
+            handleBulkDelete();
+            return;
+        }
         console.log('Bulk action:', action, 'for ids:', selectedIds);
     };
 
@@ -310,6 +329,14 @@ export function ProductsListPage() {
                                 onClick={() => handleBulkAction('price')}
                             >
                                 Изменить цену
+                            </AdminButton>
+                            <AdminButton
+                                variant="outline"
+                                size="sm"
+                                icon={<Trash2 size={16} />}
+                                onClick={() => handleBulkAction('delete')}
+                            >
+                                Удалить выбранные
                             </AdminButton>
                         </>
                     )}

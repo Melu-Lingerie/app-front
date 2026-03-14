@@ -38,5 +38,11 @@ export function useMixMatchState(steps: MixMatchStepDto[]) {
         return Object.values(selections).filter(Boolean) as SelectedItem[];
     }, [selections]);
 
-    return { selections, select, deselect, isComplete, totalPrice, selectedItems };
+    const missingSteps = useMemo(() => {
+        return steps
+            .filter(s => s.isRequired && selections[s.slug] == null)
+            .map(s => s.title);
+    }, [steps, selections]);
+
+    return { selections, select, deselect, isComplete, totalPrice, selectedItems, missingSteps };
 }

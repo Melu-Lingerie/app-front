@@ -46,6 +46,8 @@ import {
     MediaListPage,
     // MoySklad
     MoySkladPage,
+    // Newsletter
+    NewsletterPage,
     // Loyalty Admin
     LoyaltyDashboardPage,
     LoyaltyAccountsPage,
@@ -159,6 +161,8 @@ function App() {
                     <Route path="reviews" element={<ReviewsListPage />} />
                     {/* MoySklad */}
                     <Route path="moysklad" element={<MoySkladPage />} />
+                    {/* Newsletter */}
+                    <Route path="newsletter" element={<NewsletterPage />} />
                     {/* Loyalty */}
                     <Route path="loyalty" element={<LoyaltyDashboardPage />} />
                     <Route path="loyalty/accounts" element={<LoyaltyAccountsPage />} />

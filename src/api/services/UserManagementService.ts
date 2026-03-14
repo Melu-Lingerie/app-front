@@ -30,6 +30,32 @@ export class UserManagementService {
         });
     }
     /**
+     * Инициировать обновление профиля (с верификацией email)
+     */
+    public static initiateProfileUpdate(
+        requestBody: UserUpdateFacadeRequestDto,
+     options?: Partial<ApiRequestOptions>): CancelablePromise<{ message: string; verificationRequired: boolean }> {
+        return __request(OpenAPI, { ...options,
+            method: 'POST',
+            url: '/users/profile/update',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
+     * Подтвердить обновление профиля кодом из email
+     */
+    public static confirmProfileUpdate(
+        requestBody: { code: string },
+     options?: Partial<ApiRequestOptions>): CancelablePromise<UserUpdateFacadeResponseDto> {
+        return __request(OpenAPI, { ...options,
+            method: 'POST',
+            url: '/users/profile/confirm',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
      * Создать гостевого пользователя
      * Создает нового гостевого пользователя с уникальной сессией
      * @param sessionId

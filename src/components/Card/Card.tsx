@@ -139,7 +139,7 @@ export const Card = ({
                 <div className='w-full flex items-center'>
                     <p className='text-[12px] md:text-sm truncate mr-2'>{`${numberFormat(price)} ₽`}</p>
                     <ul className='flex'>
-                        {colors.map((color, index) => (
+                        {[...new Set(colors)].map((color, index) => (
                             <li
                                 key={index}
                                 className='w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full mr-0.5 md:mr-1 last:mr-0'

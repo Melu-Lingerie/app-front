@@ -230,10 +230,17 @@ export const Header = () => {
                     <button type="button" className={`${iconBtn} md:hidden`} onClick={() => navigate('/search')}>
                         <Search className="w-4 h-4" aria-hidden="true" />
                     </button>
+                    {/* Desktop nav links */}
+                    <Link to="/mix-and-match" className="hidden md:block text-sm cursor-pointer hover:opacity-70 transition-opacity">
+                        MIX'N'MATCH
+                    </Link>
+                    <Link to="/secret-box" className="hidden md:block text-sm cursor-pointer hover:opacity-70 transition-opacity">
+                        SECRET BOX
+                    </Link>
                 </div>
 
-                {/* Заголовок */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                {/* Заголовок — справа на десктопе, по центру на мобильном */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:static md:translate-x-0 md:translate-y-0 md:ml-auto md:mr-4">
                     <Link to="/">
                         <p className="m-0 text-[18px] md:text-[24px] font-semibold whitespace-nowrap">MELU LINGERIE</p>
                     </Link>

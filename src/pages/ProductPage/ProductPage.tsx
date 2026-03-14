@@ -256,6 +256,9 @@ export function ProductPage() {
         product.productVariants?.filter((v) => v.colorName === selectedColor) ?? [];
     const images = activeVariant?.productVariantMedia.slice(0, 4) ?? [];
 
+    // Detect bra product by size pattern (e.g. 70B, 75C, 80B)
+    const isBraProduct = sizes.some((v) => /^\d{2,3}[A-Za-zА-Яа-я]$/.test(v.size));
+
     return (
         <div className="w-full pt-4 md:pt-6">
             <div className="flex flex-col md:flex-row w-full gap-5 mb-10 md:mb-20">
@@ -391,32 +394,56 @@ export function ProductPage() {
                         {/* Размеры - Desktop */}
                         <div className="hidden md:block mt-6">
                             <h3 className="mb-2 font-medium">Размер</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {sizes.map((variant) => (
-                                    <button
-                                        key={`${variant.id}-${variant.size}`}
-                                        disabled={!variant.isAvailable}
-                                        onClick={() => {
-                                            if (variant.isAvailable) {
-                                                setActiveVariant(variant);
-                                            }
+                            {isBraProduct ? (
+                                <div className="relative w-48">
+                                    <select
+                                        value={activeVariant?.id || ''}
+                                        onChange={(e) => {
+                                            const variant = sizes.find(v => String(v.id) === e.target.value);
+                                            if (variant) setActiveVariant(variant);
                                         }}
-                                        className={`px-3 py-1 rounded-md border text-sm transition
-                                            ${
-                                            activeVariant?.id === variant.id
-                                                ? 'border-black font-semibold dark:border-gray-300'
-                                                : 'border-gray-300 text-gray-600 dark:border-black'
-                                        }
-                                            ${
-                                            !variant.isAvailable
-                                                ? 'opacity-30 cursor-not-allowed'
-                                                : 'hover:border-black'
-                                        }`}
+                                        className="w-full h-[44px] px-4 border border-gray-300 rounded-md text-sm appearance-none cursor-pointer hover:border-black transition bg-transparent"
                                     >
-                                        {variant.size}
-                                    </button>
-                                ))}
-                            </div>
+                                        {sizes.map((variant) => (
+                                            <option key={variant.id} value={variant.id} disabled={!variant.isAvailable}>
+                                                {variant.size}{!variant.isAvailable ? ' (нет в наличии)' : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                                            <path d="M8.49996 9.33027L12.0061 5.82422L13.0078 6.82595L8.49996 11.3338L3.99219 6.82595L4.99392 5.82422L8.49996 9.33027Z" fill="#999"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex flex-wrap gap-2">
+                                    {sizes.map((variant) => (
+                                        <button
+                                            key={`${variant.id}-${variant.size}`}
+                                            disabled={!variant.isAvailable}
+                                            onClick={() => {
+                                                if (variant.isAvailable) {
+                                                    setActiveVariant(variant);
+                                                }
+                                            }}
+                                            className={`px-3 py-1 rounded-md border text-sm transition
+                                                ${
+                                                activeVariant?.id === variant.id
+                                                    ? 'border-black font-semibold dark:border-gray-300'
+                                                    : 'border-gray-300 text-gray-600 dark:border-black'
+                                            }
+                                                ${
+                                                !variant.isAvailable
+                                                    ? 'opacity-30 cursor-not-allowed'
+                                                    : 'hover:border-black'
+                                            }`}
+                                        >
+                                            {variant.size}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* Кнопка Добавить в корзину */}
