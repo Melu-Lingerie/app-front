@@ -135,16 +135,8 @@ export const Catalog = () => {
             {/* Заголовок страницы */}
             <h1 className="ml-4 md:ml-10 mt-[30px] md:mt-[60px] mb-[20px] md:mb-[30px] text-[28px] md:text-[36px] leading-[32px] md:leading-[38px] uppercase shrink-0">Каталог</h1>
 
-            {/* Breadcrumb + фильтры — sticky блок под шапкой */}
-            <div className="shrink-0 sticky top-[50px] z-30 bg-[#FFFBF5] dark:bg-[#1a1a1a]">
-                {/* Breadcrumb */}
-                <div className="flex items-center h-[36px] px-4 md:px-10 border-b border-[#E8E4DF] dark:border-white/10">
-                    <nav className="flex items-center gap-1.5 text-[12px] leading-[18px] text-[#999]">
-                        <a href="/" className="hover:text-[#2A2A2B] dark:hover:text-white transition-colors">Главная</a>
-                        <span>/</span>
-                        <span className="text-[#2A2A2B] dark:text-white">Каталог</span>
-                    </nav>
-                </div>
+            {/* Фильтры — sticky блок под шапкой, border-top для разделения с хедером */}
+            <div className="shrink-0 sticky top-[50px] z-30 bg-[#F7F4EF] dark:bg-[#222] border-t border-[#E0DCD6] dark:border-white/10">
                 <FilterTopBar
                     filterChanges={filterChanges}
                     selectedTypes={filters.types}
@@ -175,7 +167,7 @@ export const Catalog = () => {
             <div className="flex flex-1">
                 {/* === Sidebar (скрыт на мобилке) — sticky === */}
                 <div className="hidden md:block w-1/4 shrink-0 border-r border-[#CCC] dark:border-white/10">
-                  <div className="sticky top-[144px] max-h-[calc(100vh-144px)] overflow-y-auto">
+                  <div className="sticky top-[108px] max-h-[calc(100vh-108px)] overflow-y-auto">
                     <FilterSidebar
                         minVal={localMinVal}
                         maxVal={localMaxVal}
