@@ -254,8 +254,8 @@ export function ProductPage() {
 
     const colors = Array.from(new Set(product.productVariants?.map((v) => v.colorName)));
 
-    // Sort sizes: letter sizes from largest to smallest, bra sizes numerically
-    const SIZE_ORDER: Record<string, number> = { 'XXL': 0, 'XL': 1, 'L': 2, 'M': 3, 'S': 4, 'XS': 5, 'XXS': 6 };
+    // Sort sizes: letter sizes from smallest to largest, bra sizes numerically
+    const SIZE_ORDER: Record<string, number> = { 'XXS': 0, 'XS': 1, 'S': 2, 'M': 3, 'L': 4, 'XL': 5, 'XXL': 6 };
     const sizes = (product.productVariants?.filter((v) => v.colorName === selectedColor) ?? [])
         .slice()
         .sort((a, b) => {
