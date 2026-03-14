@@ -53,7 +53,8 @@
       "WebFetch(domain:evotor.ru)",
       "Read(//c/Users/IVA-PC/IdeaProjects/app-backend.git/src/main/**)",
       "Read(//c/Users/IVA-PC/IdeaProjects/app-backend.git/**)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(ssh:*)"
     ],
     "deny": [],
     "ask": []

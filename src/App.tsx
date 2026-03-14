@@ -26,6 +26,9 @@ import {
     ReviewsPage,
     HintPayPage,
     MixAndMatchPage,
+} from './pages';
+import { SecretBoxPage } from './pages/SecretBoxPage';
+import {
     // Admin
     AdminLoginPage,
     AdminLayout,
@@ -132,6 +135,7 @@ function App() {
                     <Route path="about" element={<AboutPage />} />
                     <Route path="contacts" element={<ContactsPage />} />
                     <Route path="mix-and-match" element={<MixAndMatchPage />} />
+                    <Route path="secret-box" element={<SecretBoxPage />} />
                     <Route path="wish/:shareToken" element={<HintPayPage />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
