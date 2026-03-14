@@ -19,11 +19,9 @@ html, body {
     padding: 0;
 }
 
-/* Кастомный скроллбар — тонкий, тёплый */
-::-webkit-scrollbar { width: 2px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #C4A08A; border-radius: 1px; }
-html { scrollbar-width: thin; scrollbar-color: #C4A08A transparent; }
+/* Скрыть нативный скроллбар — заменён на floating React-компонент */
+body { scrollbar-width: none; -ms-overflow-style: none; }
+body::-webkit-scrollbar { display: none; }
 
 /* Serif font for product names */
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap');
