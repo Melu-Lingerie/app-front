@@ -1,7 +1,8 @@
-import {useState} from 'react';
+import {useState, useMemo} from 'react';
 import {DoubleSlider} from '@/components';
 import {FilterAccordion} from './FilterAccordion.tsx';
 import type {CategoryOption} from '@/pages/Catalog/hooks/useCatalogFilterOptions.ts';
+import {sortSizes} from '@/utils/colorMap';
 
 interface Props {
     minVal: number;
@@ -51,6 +52,9 @@ export const FilterSidebar = ({
     const hasNonBraSelected = selectedTypes.some(t => !t.includes('бра'));
     const showRegularSizes = !hasBraSelected || hasNonBraSelected;
     const showBraSizes = hasBraSelected;
+
+    const sortedSizes = useMemo(() => sortSizes(availableSizes), [availableSizes]);
+    const sortedBraSizes = useMemo(() => sortSizes(availableBraSizes), [availableBraSizes]);
 
     return (
         <div className="p-[20px] pl-[40px]">
@@ -133,7 +137,7 @@ export const FilterSidebar = ({
                         onToggle={() => setIsSizeOpen(!isSizeOpen)}
                     >
                         <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                            {availableSizes.map((size) => (
+                            {sortedSizes.map((size) => (
                                 <label key={size} className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -156,7 +160,7 @@ export const FilterSidebar = ({
                         onToggle={() => setIsBraSizeOpen(!isBraSizeOpen)}
                     >
                         <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                            {availableBraSizes.map((size) => (
+                            {sortedBraSizes.map((size) => (
                                 <label key={size} className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="checkbox"

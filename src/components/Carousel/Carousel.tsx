@@ -5,15 +5,11 @@ import {
     useState,
     type CSSProperties,
     type ReactNode,
-    type TouchEvent,
-    type MouseEvent,
 } from 'react';
 import { CarouselButton } from './CarouselButton';
 import { ProductSkeleton } from '@/pages/Catalog/ProductSkeleton';
 import { useSelector } from 'react-redux';
 import { selectAppInitialized } from '@/store/appSlice';
-
-const SWIPE_THRESHOLD = 50; // минимальное расстояние для свайпа
 
 type CarouselProps<T> = {
     items: T[];
@@ -32,9 +28,13 @@ type CarouselProps<T> = {
     hasMore?: boolean;
     loadingMore?: boolean;
     onLoadMore?: () => void;
-    /** За сколько элементов до конца начинать подгрузку (по умолчанию = visibleCount) */
     preloadOffset?: number;
 };
+
+// --- Momentum / inertial scrolling constants ---
+const FRICTION = 0.92;           // Deceleration factor per frame
+const MIN_VELOCITY = 0.5;        // Stop threshold (px/frame)
+const SWIPE_MULTIPLIER = 1.2;    // Velocity amplification
 
 export const Carousel = <T,>({
                                  items,
@@ -49,14 +49,26 @@ export const Carousel = <T,>({
                                  preloadOffset,
                              }: CarouselProps<T>) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const trackRef = useRef<HTMLDivElement | null>(null);
     const initialized = useSelector(selectAppInitialized);
 
-    const [index, setIndex] = useState(0);
     const [containerWidth, setContainerWidth] = useState(0);
     const [imageHeight, setImageHeight] = useState<number | null>(null);
     const [isMobile, setIsMobile] = useState(false);
 
-    // Check for mobile on mount and resize
+    // Continuous scroll position (px)
+    const [scrollX, setScrollX] = useState(0);
+    const scrollXRef = useRef(0);
+
+    // Dragging state
+    const dragStartX = useRef(0);
+    const dragStartScrollX = useRef(0);
+    const isDragging = useRef(false);
+    const lastMoveX = useRef(0);
+    const lastMoveTime = useRef(0);
+    const velocityRef = useRef(0);
+    const animFrameRef = useRef<number | null>(null);
+
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
@@ -65,131 +77,155 @@ export const Carousel = <T,>({
     }, []);
 
     const visibleCount = isMobile ? mobileVisibleCount : desktopVisibleCount;
-
-    const transitionMs = 400;
-    const itemWidth = (containerWidth - gap * (visibleCount - 1)) / visibleCount;
+    const itemWidth = containerWidth > 0
+        ? (containerWidth - gap * (visibleCount - 1)) / visibleCount
+        : 0;
     const stepSize = itemWidth + gap;
-    const translateX = -(index * stepSize);
 
     const preload = preloadOffset ?? visibleCount;
 
-    // ---- виртуальный хвост ВКЛ только после инициализации и когда есть товары ----
+    // Virtual tail for infinite loading
     const realMaxIndex = Math.max(0, items.length - visibleCount);
     const triggerFrom = Math.max(items.length - preload, 0);
-    const nearEnd = index + visibleCount - 1 >= triggerFrom;
-    const tailActive = initialized && items.length > 0 && (loadingMore || (hasMore && nearEnd));
-    const tailCount = tailActive
-        ? Math.max(visibleCount, Math.min(visibleCount * 2, 8))
-        : 0;
-
+    const tailActive = initialized && items.length > 0 && (loadingMore || (hasMore && true));
+    const tailCount = tailActive ? Math.max(visibleCount, Math.min(visibleCount * 2, 8)) : 0;
     const virtualLength = items.length + tailCount;
-    const virtualMaxIndex = Math.max(0, virtualLength - visibleCount);
 
+    const maxScrollX = Math.max(0, (virtualLength - visibleCount) * stepSize);
     const isScrollable = items.length > visibleCount;
-    const atStart = index === 0;
-    const atEndVirtual = index >= virtualMaxIndex;
 
+    // Current "index" derived from scrollX
+    const currentIndex = stepSize > 0 ? Math.round(scrollXRef.current / stepSize) : 0;
+
+    // Clamp scrollX
+    const clamp = useCallback((val: number) => Math.max(0, Math.min(val, maxScrollX)), [maxScrollX]);
+
+    const setScrollXClamped = useCallback((val: number) => {
+        const clamped = Math.max(0, Math.min(val, maxScrollX));
+        scrollXRef.current = clamped;
+        setScrollX(clamped);
+    }, [maxScrollX]);
+
+    // --- Load more trigger ---
     const triggerLoadMore = useCallback(
-        (nextIndex: number) => {
-            if (!initialized || loading) return; // нельзя триггерить до инициализации/первичной загрузки
-            const closeToEnd = nextIndex + visibleCount - 1 >= triggerFrom;
-            const reachedRealEnd = nextIndex >= realMaxIndex;
+        (sx: number) => {
+            if (!initialized || loading || !stepSize) return;
+            const idx = Math.round(sx / stepSize);
+            const closeToEnd = idx + visibleCount - 1 >= triggerFrom;
+            const reachedRealEnd = idx >= realMaxIndex;
             if (hasMore && onLoadMore && !loadingMore && (closeToEnd || reachedRealEnd)) {
                 onLoadMore();
             }
         },
-        [initialized, loading, hasMore, onLoadMore, loadingMore, visibleCount, triggerFrom, realMaxIndex]
+        [initialized, loading, stepSize, hasMore, onLoadMore, loadingMore, visibleCount, triggerFrom, realMaxIndex]
     );
 
+    // --- Snap to nearest item ---
+    const snapTo = useCallback((targetX: number, animate = true) => {
+        if (!stepSize) return;
+        const snappedIndex = Math.round(clamp(targetX) / stepSize);
+        const snapped = clamp(snappedIndex * stepSize);
+        scrollXRef.current = snapped;
+        setScrollX(snapped);
+        triggerLoadMore(snapped);
+    }, [stepSize, clamp, triggerLoadMore]);
+
+    // --- Momentum animation ---
+    const startMomentum = useCallback((velocity: number) => {
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+
+        let v = velocity * SWIPE_MULTIPLIER;
+        const animate = () => {
+            if (Math.abs(v) < MIN_VELOCITY) {
+                snapTo(scrollXRef.current);
+                return;
+            }
+            const nextX = clamp(scrollXRef.current + v);
+            scrollXRef.current = nextX;
+            setScrollX(nextX);
+            v *= FRICTION;
+
+            // Stop at boundaries
+            if (nextX <= 0 || nextX >= maxScrollX) {
+                snapTo(nextX);
+                return;
+            }
+
+            animFrameRef.current = requestAnimationFrame(animate);
+        };
+        animFrameRef.current = requestAnimationFrame(animate);
+    }, [clamp, maxScrollX, snapTo]);
+
+    // --- Pointer handlers (unified touch + mouse) ---
+    const handleDragStart = useCallback((clientX: number) => {
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+        isDragging.current = true;
+        dragStartX.current = clientX;
+        dragStartScrollX.current = scrollXRef.current;
+        lastMoveX.current = clientX;
+        lastMoveTime.current = performance.now();
+        velocityRef.current = 0;
+    }, []);
+
+    const handleDragMove = useCallback((clientX: number) => {
+        if (!isDragging.current) return;
+        const dx = dragStartX.current - clientX;
+        const nextX = clamp(dragStartScrollX.current + dx);
+        scrollXRef.current = nextX;
+        setScrollX(nextX);
+
+        // Track velocity
+        const now = performance.now();
+        const dt = now - lastMoveTime.current;
+        if (dt > 0) {
+            velocityRef.current = (lastMoveX.current - clientX) / dt * 16; // normalize to ~60fps
+        }
+        lastMoveX.current = clientX;
+        lastMoveTime.current = now;
+    }, [clamp]);
+
+    const handleDragEnd = useCallback(() => {
+        if (!isDragging.current) return;
+        isDragging.current = false;
+
+        const v = velocityRef.current;
+        if (Math.abs(v) > 1) {
+            startMomentum(v);
+        } else {
+            snapTo(scrollXRef.current);
+        }
+    }, [startMomentum, snapTo]);
+
+    // Touch events
+    const onTouchStart = useCallback((e: React.TouchEvent) => handleDragStart(e.touches[0].clientX), [handleDragStart]);
+    const onTouchMove = useCallback((e: React.TouchEvent) => handleDragMove(e.touches[0].clientX), [handleDragMove]);
+    const onTouchEnd = useCallback(() => handleDragEnd(), [handleDragEnd]);
+
+    // Mouse events
+    const onMouseDown = useCallback((e: React.MouseEvent) => { e.preventDefault(); handleDragStart(e.clientX); }, [handleDragStart]);
+    const onMouseMove = useCallback((e: React.MouseEvent) => { if (isDragging.current) { e.preventDefault(); handleDragMove(e.clientX); } }, [handleDragMove]);
+    const onMouseUp = useCallback(() => handleDragEnd(), [handleDragEnd]);
+    const onMouseLeave = useCallback(() => { if (isDragging.current) handleDragEnd(); }, [handleDragEnd]);
+
+    // --- Button handlers ---
     const handleNext = useCallback(() => {
-        const next = Math.min(index + 1, virtualMaxIndex);
-        setIndex(next);
-        triggerLoadMore(next);
-    }, [index, virtualMaxIndex, triggerLoadMore]);
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+        const nextIdx = Math.min(currentIndex + 1, Math.max(0, virtualLength - visibleCount));
+        const target = clamp(nextIdx * stepSize);
+        scrollXRef.current = target;
+        setScrollX(target);
+        triggerLoadMore(target);
+    }, [currentIndex, virtualLength, visibleCount, stepSize, clamp, triggerLoadMore]);
 
     const handlePrev = useCallback(() => {
-        setIndex((i) => Math.max(i - 1, 0));
-    }, []);
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+        const prevIdx = Math.max(currentIndex - 1, 0);
+        const target = prevIdx * stepSize;
+        scrollXRef.current = target;
+        setScrollX(target);
+    }, [currentIndex, stepSize]);
 
-    // ===== Touch/Swipe support =====
-    const touchStartX = useRef<number | null>(null);
-    const touchEndX = useRef<number | null>(null);
-    const isDragging = useRef(false);
-
-    const handleTouchStart = useCallback((e: TouchEvent<HTMLDivElement>) => {
-        touchStartX.current = e.touches[0].clientX;
-        touchEndX.current = null;
-        isDragging.current = true;
-    }, []);
-
-    const handleTouchMove = useCallback((e: TouchEvent<HTMLDivElement>) => {
-        if (!isDragging.current) return;
-        touchEndX.current = e.touches[0].clientX;
-    }, []);
-
-    const handleTouchEnd = useCallback(() => {
-        if (!isDragging.current || touchStartX.current === null || touchEndX.current === null) {
-            isDragging.current = false;
-            return;
-        }
-
-        const diff = touchStartX.current - touchEndX.current;
-
-        if (Math.abs(diff) > SWIPE_THRESHOLD) {
-            if (diff > 0) {
-                // свайп влево → следующий
-                handleNext();
-            } else {
-                // свайп вправо → предыдущий
-                handlePrev();
-            }
-        }
-
-        touchStartX.current = null;
-        touchEndX.current = null;
-        isDragging.current = false;
-    }, [handleNext, handlePrev]);
-
-    // Mouse drag support (for desktop trackpad/mouse)
-    const mouseStartX = useRef<number | null>(null);
-    const isMouseDragging = useRef(false);
-
-    const handleMouseDown = useCallback((e: MouseEvent<HTMLDivElement>) => {
-        mouseStartX.current = e.clientX;
-        isMouseDragging.current = true;
-    }, []);
-
-    const handleMouseMove = useCallback((e: MouseEvent<HTMLDivElement>) => {
-        if (!isMouseDragging.current || mouseStartX.current === null) return;
-        e.preventDefault();
-    }, []);
-
-    const handleMouseUp = useCallback((e: MouseEvent<HTMLDivElement>) => {
-        if (!isMouseDragging.current || mouseStartX.current === null) {
-            isMouseDragging.current = false;
-            return;
-        }
-
-        const diff = mouseStartX.current - e.clientX;
-
-        if (Math.abs(diff) > SWIPE_THRESHOLD) {
-            if (diff > 0) {
-                handleNext();
-            } else {
-                handlePrev();
-            }
-        }
-
-        mouseStartX.current = null;
-        isMouseDragging.current = false;
-    }, [handleNext, handlePrev]);
-
-    const handleMouseLeave = useCallback(() => {
-        mouseStartX.current = null;
-        isMouseDragging.current = false;
-    }, []);
-
-    // ширина контейнера
+    // Container width
     useEffect(() => {
         setImageHeight(0);
         const el = containerRef.current;
@@ -200,13 +236,25 @@ export const Carousel = <T,>({
         return () => ro.disconnect();
     }, []);
 
-    // подтягиваем индекс в валидные рамки
+    // Clamp scroll on resize
     useEffect(() => {
-        if (index > virtualMaxIndex) setIndex(virtualMaxIndex);
-    }, [virtualMaxIndex, index]);
+        if (scrollXRef.current > maxScrollX) {
+            setScrollXClamped(maxScrollX);
+        }
+    }, [maxScrollX, setScrollXClamped]);
+
+    // Cleanup animation on unmount
+    useEffect(() => {
+        return () => { if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current); };
+    }, []);
+
+    const atStart = scrollX <= 0;
+    const atEnd = scrollX >= maxScrollX;
+
+    // Use CSS transition only when NOT dragging (for button clicks)
+    const transitionStyle = isDragging.current ? 'none' : 'transform 400ms ease';
 
     const renderContent = () => {
-        // ⚠️ до инициализации и при первичной загрузке — только фиксированное число скелетонов
         if (loading || !initialized) {
             return Array.from({ length: visibleCount }).map((_, idx) => (
                 <div key={`skeleton-${idx}`} style={{ width: `${itemWidth}px`, flex: '0 0 auto' }}>
@@ -223,7 +271,6 @@ export const Carousel = <T,>({
             })
         );
 
-        // хвост из скелетонов — только после инициализации
         for (let i = 0; i < tailCount; i++) {
             nodes.push(
                 <div key={`tail-skel-${i}`} style={{ width: `${itemWidth}px`, flex: '0 0 auto' }}>
@@ -235,24 +282,28 @@ export const Carousel = <T,>({
         return nodes;
     };
 
+    // Center items if fewer than visibleCount
+    const shouldCenter = items.length > 0 && items.length < visibleCount && !loading && initialized;
+
     return (
         <div ref={containerRef} className="relative my-[30px] md:my-[60px] mb-10">
             <div
                 className="w-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseLeave}
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+                onMouseDown={onMouseDown}
+                onMouseMove={onMouseMove}
+                onMouseUp={onMouseUp}
+                onMouseLeave={onMouseLeave}
             >
                 <div
-                    className="flex transition-transform ease"
+                    className={`flex ${shouldCenter ? 'justify-center' : ''}`}
                     style={{
                         gap,
-                        transform: `translateX(${translateX}px)`,
-                        transitionDuration: `${transitionMs}ms`,
+                        transform: shouldCenter ? undefined : `translateX(${-scrollX}px)`,
+                        transition: transitionStyle,
+                        willChange: 'transform',
                     }}
                 >
                     {renderContent()}
@@ -270,7 +321,7 @@ export const Carousel = <T,>({
                     <CarouselButton
                         direction="right"
                         onClick={handleNext}
-                        disabled={(loading || !initialized) || (atEndVirtual && !hasMore && !loadingMore)}
+                        disabled={(loading || !initialized) || (atEnd && !hasMore && !loadingMore)}
                         containerHeight={imageHeight}
                     />
                 </>

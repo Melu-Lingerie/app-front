@@ -1,9 +1,7 @@
 import { type CSSProperties, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { numberFormat } from '@/utils/utils.ts';
-import { useIsTruncated } from '@/hooks/useIsTruncated';
-import EmptyWishList from '@/assets/EmptyWishList.svg';
-import FillWishList from '@/assets/FillWishList.svg';
+import { Heart } from 'lucide-react';
 
 // redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,8 +26,8 @@ export const Card = ({
                          widthStyle,
                          reportImageHeight,
                      }: Props) => {
-    const { ref: textRef, isTruncated } = useIsTruncated<HTMLParagraphElement>();
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate();
 
     const dispatch = useDispatch<AppDispatch>();
@@ -55,12 +53,14 @@ export const Card = ({
         <div
             style={widthStyle}
             onClick={handleClick}
-            className='cursor-pointer transition-transform hover:scale-[1.01]'
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className='cursor-pointer'
         >
             {/* Image block */}
-            <div className='relative w-full aspect-[2/3]'>
+            <div className='relative w-full aspect-[2/3] overflow-hidden'>
                 {!isLoaded && (
-                    <div className='w-full h-full bg-gray-200 animate-pulse rounded-md' />
+                    <div className='w-full h-full bg-[#F0EDE8] animate-pulse' />
                 )}
 
                 <img
@@ -72,11 +72,11 @@ export const Card = ({
                             }
                         }
                     }}
-                    className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-300 ${
+                    className={`absolute top-0 left-0 w-full h-full object-cover transition-all duration-500 ${
                         isLoaded ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    } ${isHovered ? 'scale-[1.03]' : 'scale-100'}`}
                     src={s3url}
-                    alt='Фото товара'
+                    alt={name}
                     onLoad={(e) => {
                         setIsLoaded(true);
                         if (reportImageHeight) {
@@ -86,74 +86,98 @@ export const Card = ({
                     loading='lazy'
                 />
 
-                {/* Иконка избранного */}
-                <div
-                    className={`absolute top-[10px] right-[10px] transition ${
-                        wishlistLoading
-                            ? 'opacity-50 cursor-not-allowed'
-                            : 'cursor-pointer hover:opacity-80 active:scale-95'
-                    }`}
-                    onClick={handleWishlistClick}
-                >
-                    <img
-                        src={inWishlist ? FillWishList : EmptyWishList}
-                        alt='Избранное'
-                    />
-                </div>
-
-                {/* Плашка "Скоро в продаже" */}
-                {productStatus === 'SOON' && (
+                {/* NEW badge — top-left */}
+                {productStatus === 'NEW' && (
                     <div
-                        className='absolute bottom-[10px] right-[10px] px-3 py-1 text-xs uppercase
-                           rounded-lg border border-[var(--Active-Main-Button-Stroke,#FFFBF5)]
-                           bg-[rgba(245,245,245,0.70)] backdrop-blur-[12px]
-                           text-[#141414] leading-[18px]'
+                        className='absolute top-[10px] left-[10px] px-[7px] py-[3px] text-[9px] uppercase tracking-[0.15em]'
+                        style={{ background: '#1C1A18', color: '#FAF8F4' }}
                     >
-                        скоро в продаже
+                        new
                     </div>
                 )}
+
+                {/* SOON badge */}
+                {productStatus === 'SOON' && (
+                    <div
+                        className='absolute top-[10px] left-[10px] px-[7px] py-[3px] text-[9px] uppercase tracking-[0.15em]'
+                        style={{ background: '#1C1A18', color: '#FAF8F4' }}
+                    >
+                        скоро
+                    </div>
+                )}
+
+                {/* Wishlist heart — top-right */}
+                <button
+                    type="button"
+                    className={`absolute top-[10px] right-[10px] transition-opacity duration-200 ${
+                        wishlistLoading ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'
+                    }`}
+                    onClick={handleWishlistClick}
+                    style={{ opacity: inWishlist ? 1 : isHovered ? 0.7 : 0.4 }}
+                >
+                    <Heart
+                        size={18}
+                        fill={inWishlist ? '#8B2E2E' : 'none'}
+                        stroke={inWishlist ? '#8B2E2E' : '#8B2E2E'}
+                        strokeWidth={1.5}
+                    />
+                </button>
+
+                {/* Hover overlay — "Смотреть" button */}
+                <div
+                    className={`absolute bottom-0 left-0 right-0 h-[36px] flex items-center justify-center transition-all duration-300 ${
+                        isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+                    }`}
+                    style={{ background: 'rgba(28,26,24,0.75)' }}
+                >
+                    <span className='text-white text-[10px] uppercase tracking-[0.14em]'>
+                        Смотреть
+                    </span>
+                </div>
             </div>
 
             {/* Info */}
-            <div className='w-full mt-3 md:mt-5'>
-                <div className='w-full mb-1 md:mb-1.5 flex items-center justify-between'>
-                    <span className='relative group max-w-[80%]'>
-                        <p ref={textRef} className='w-full text-[12px] md:text-sm truncate uppercase'>
-                            {name}
-                        </p>
-                        {isTruncated && (
-                            <span
-                                className='absolute left-0 top-full mt-1 px-2 py-1 bg-black text-white text-xs rounded-md z-10
-                                   opacity-0 invisible translate-y-1 transition-all duration-200 ease-in-out
-                                   group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
-                                   max-w-[250px] whitespace-normal'
-                            >
-                                {name}
-                            </span>
-                        )}
-                    </span>
-                    {productStatus === 'NEW' && (
-                        <p className='text-[#F895B7] text-[12px] md:text-sm'>NEW</p>
-                    )}
-                </div>
+            <div style={{ padding: '14px 0 0', minHeight: '70px' }}>
+                {/* Name — serif, lowercase */}
+                <p
+                    className='truncate mb-1'
+                    style={{
+                        fontFamily: "'Cormorant Garamond', Georgia, serif",
+                        fontWeight: 300,
+                        fontSize: '15px',
+                        letterSpacing: '0.03em',
+                        color: '#2A2A2B',
+                    }}
+                >
+                    {name.toLowerCase()}
+                </p>
 
-                <div className='w-full flex items-center'>
-                    <p className='text-[12px] md:text-sm truncate mr-2'>{`${numberFormat(price)} ₽`}</p>
-                    <ul className='flex'>
+                {/* Color dots */}
+                {colors.length > 0 && (
+                    <div className='flex gap-[5px] mb-[6px]'>
                         {[...new Set(colors)].map((color, index) => (
-                            <li
+                            <span
                                 key={index}
-                                className='w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full mr-0.5 md:mr-1 last:mr-0'
+                                className='w-[10px] h-[10px] rounded-full inline-block'
                                 style={{
                                     backgroundColor: resolveColor(color),
-                                    border: '1px solid #BFBFBF',
+                                    border: '0.5px solid rgba(0,0,0,0.15)',
                                 }}
-                                aria-label={`Цвет: ${color}`}
                             />
                         ))}
-                    </ul>
-                </div>
+                    </div>
+                )}
 
+                {/* Price */}
+                <p
+                    style={{
+                        fontSize: '13px',
+                        fontWeight: 300,
+                        color: '#3a3a3a',
+                    }}
+                >
+                    {`${numberFormat(price)} \u20BD`}
+                </p>
             </div>
         </div>
     );

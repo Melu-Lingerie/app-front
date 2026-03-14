@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CloseIcon from '@/assets/CloseIcon.svg';
 import type {SortOption} from '@/pages/Catalog/constants';
 import {ChevronDown, SlidersHorizontal, X} from 'lucide-react';
 import { DoubleSlider } from '@/components';
 import { FilterAccordion } from '../FilterSidebar/FilterAccordion.tsx';
 import type {CategoryOption} from '@/pages/Catalog/hooks/useCatalogFilterOptions.ts';
+import {sortSizes} from '@/utils/colorMap';
 
 interface FilterTopBarProps {
     filterChanges: number;
@@ -71,6 +72,9 @@ export const FilterTopBar = ({
     const hasNonBraSelected = selectedTypes.some(t => !t.includes('бра'));
     const showRegularSizes = !hasBraSelected || hasNonBraSelected;
     const showBraSizes = hasBraSelected;
+
+    const sortedSizes = useMemo(() => sortSizes(availableSizes), [availableSizes]);
+    const sortedBraSizes = useMemo(() => sortSizes(availableBraSizes), [availableBraSizes]);
 
     const handleSelect = (option: 'Все' | 'Новинки' | 'Скоро в продаже') => {
         onSelectChange(option);
@@ -289,7 +293,7 @@ export const FilterTopBar = ({
                                     onToggle={() => setIsSizeOpen(!isSizeOpen)}
                                 >
                                     <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                                        {availableSizes.map((size) => (
+                                        {sortedSizes.map((size) => (
                                             <label key={size} className="flex items-center gap-2 cursor-pointer">
                                                 <input
                                                     type="checkbox"
@@ -312,7 +316,7 @@ export const FilterTopBar = ({
                                     onToggle={() => setIsBraSizeOpen(!isBraSizeOpen)}
                                 >
                                     <div className="p-4 space-y-2 text-[14px] leading-[18px] text-gray-800 dark:text-white">
-                                        {availableBraSizes.map((size) => (
+                                        {sortedBraSizes.map((size) => (
                                             <label key={size} className="flex items-center gap-2 cursor-pointer">
                                                 <input
                                                     type="checkbox"

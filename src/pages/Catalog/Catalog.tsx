@@ -121,22 +121,22 @@ export const Catalog = () => {
 
     const productScrollRef = useRef<HTMLDivElement>(null);
 
-    // Переопределяем scrollTo для пагинации — скроллим контейнер карточек, а не window
+    // Скроллим к верху карточек при переключении страницы
     const handlePageChangeLocal = useCallback(
         (page: number) => {
             updateQuery({ page });
-            productScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+            productScrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         },
         [updateQuery],
     );
 
     return (
-        <div className="h-[calc(100vh-50px)] flex flex-col overflow-hidden">
+        <div className="min-h-[calc(100vh-50px)] flex flex-col">
             {/* Заголовок страницы */}
             <h1 className="ml-4 md:ml-10 mt-[30px] md:mt-[60px] mb-[20px] md:mb-[30px] text-[28px] md:text-[36px] leading-[32px] md:leading-[38px] uppercase shrink-0">Каталог</h1>
 
-            {/* Верхняя панель фильтров — статичная */}
-            <div className="shrink-0">
+            {/* Верхняя панель фильтров — sticky */}
+            <div className="shrink-0 sticky top-[50px] z-30 bg-[#FFFBF5] dark:bg-[#1a1a1a]">
                 <FilterTopBar
                     filterChanges={filterChanges}
                     selectedTypes={filters.types}
@@ -164,9 +164,10 @@ export const Catalog = () => {
             </div>
 
             {/* Контент: sidebar + карточки */}
-            <div className="flex flex-1 min-h-0">
-                {/* === Sidebar (скрыт на мобилке) — статичный, свой скролл === */}
-                <div className="hidden md:block w-1/4 shrink-0 overflow-y-auto border-r border-[#CCC] dark:border-white/10">
+            <div className="flex flex-1">
+                {/* === Sidebar (скрыт на мобилке) — sticky === */}
+                <div className="hidden md:block w-1/4 shrink-0 border-r border-[#CCC] dark:border-white/10">
+                  <div className="sticky top-[108px] max-h-[calc(100vh-108px)] overflow-y-auto">
                     <FilterSidebar
                         minVal={localMinVal}
                         maxVal={localMaxVal}
@@ -185,15 +186,18 @@ export const Catalog = () => {
                         setMaxVal={setLocalMaxVal}
                         onPriceCommit={flushPrice}
                     />
+                  </div>
                 </div>
 
-                {/* === Карточки — единственная скроллируемая область === */}
-                <div ref={productScrollRef} className="flex-1 overflow-y-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-3">
+                {/* === Карточки === */}
+                <div ref={productScrollRef} className="flex-1">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-[1px] bg-[#E8E4DF] dark:bg-white/5">
                         {/* === Контент === */}
                         {loading || !initialized
                             ? Array.from({ length: filters.pageSize }).map((_, i) => (
-                                <ProductSkeleton withBorder key={`skeleton-${i}`} />
+                                <div key={`skeleton-${i}`} className="bg-[#FFFBF5] dark:bg-[#1a1a1a]">
+                                    <ProductSkeleton />
+                                </div>
                             ))
                             : goods.map((item, index) => (
                                 <motion.div
@@ -204,7 +208,7 @@ export const Catalog = () => {
                                         duration: 0.4,
                                         delay: Math.min(index * 0.02, 0.3),
                                     }}
-                                    className="p-1 md:p-2 border-r border-b border-[#CCC] dark:border-white/10"
+                                    className="bg-[#FFFBF5] dark:bg-[#1a1a1a] p-2 md:p-3"
                                 >
                                     <Card card={item} />
                                 </motion.div>

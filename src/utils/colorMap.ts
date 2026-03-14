@@ -122,6 +122,23 @@ const COLOR_MAP: Record<string, string> = {
 };
 
 /**
+ * Sort size strings: letter sizes from smallest to largest (XXS→XS→S→M→L→XL→XXL),
+ * numeric/bra sizes numerically.
+ */
+const SIZE_ORDER: Record<string, number> = { 'XXS': 0, 'XS': 1, 'S': 2, 'M': 3, 'L': 4, 'XL': 5, 'XXL': 6, 'XXXL': 7 };
+
+export function sortSizes(sizes: string[]): string[] {
+    return [...sizes].sort((a, b) => {
+        const aOrder = SIZE_ORDER[a.toUpperCase()];
+        const bOrder = SIZE_ORDER[b.toUpperCase()];
+        if (aOrder !== undefined && bOrder !== undefined) return aOrder - bOrder;
+        if (aOrder !== undefined) return -1;
+        if (bOrder !== undefined) return 1;
+        return a.localeCompare(b, undefined, { numeric: true });
+    });
+}
+
+/**
  * Resolves a color name (Russian or CSS-valid) to a CSS color value.
  * Returns the original string if it looks like a hex/rgb value already.
  */

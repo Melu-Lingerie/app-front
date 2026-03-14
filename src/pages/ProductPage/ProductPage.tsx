@@ -12,7 +12,7 @@ import { ProductImages } from './ProductImages.tsx';
 import { useNotifications } from '@/hooks/useNotifications.ts';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed.ts';
 import { numberFormat } from '@/utils/utils.ts';
-import { resolveColor } from '@/utils/colorMap';
+import { resolveColor, sortSizes } from '@/utils/colorMap';
 import WishListInCard from '@/assets/WishListInCard.svg';
 import FillWishList from '@/assets/FillWishList.svg';
 import ArrowRightInCard from '@/assets/ArrowRightInCard.svg';
@@ -255,17 +255,9 @@ export function ProductPage() {
     const colors = Array.from(new Set(product.productVariants?.map((v) => v.colorName)));
 
     // Sort sizes: letter sizes from smallest to largest, bra sizes numerically
-    const SIZE_ORDER: Record<string, number> = { 'XXS': 0, 'XS': 1, 'S': 2, 'M': 3, 'L': 4, 'XL': 5, 'XXL': 6 };
-    const sizes = (product.productVariants?.filter((v) => v.colorName === selectedColor) ?? [])
-        .slice()
-        .sort((a, b) => {
-            const aOrder = SIZE_ORDER[a.size.toUpperCase()];
-            const bOrder = SIZE_ORDER[b.size.toUpperCase()];
-            if (aOrder !== undefined && bOrder !== undefined) return aOrder - bOrder;
-            if (aOrder !== undefined) return -1;
-            if (bOrder !== undefined) return 1;
-            return a.size.localeCompare(b.size, undefined, { numeric: true });
-        });
+    const unsortedSizes = product.productVariants?.filter((v) => v.colorName === selectedColor) ?? [];
+    const sizeOrder = Object.fromEntries(sortSizes(unsortedSizes.map(v => v.size)).map((s, i) => [s, i]));
+    const sizes = [...unsortedSizes].sort((a, b) => (sizeOrder[a.size] ?? 0) - (sizeOrder[b.size] ?? 0));
 
     const images = activeVariant?.productVariantMedia.slice(0, 4) ?? [];
 

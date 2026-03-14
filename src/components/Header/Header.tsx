@@ -239,8 +239,8 @@ export const Header = () => {
                     </Link>
                 </div>
 
-                {/* Заголовок — справа на десктопе, по центру на мобильном */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:static md:translate-x-0 md:translate-y-0 md:ml-auto md:mr-4">
+                {/* Заголовок — всегда по центру */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <Link to="/">
                         <p className="m-0 text-[18px] md:text-[24px] font-semibold whitespace-nowrap">MELU LINGERIE</p>
                     </Link>
