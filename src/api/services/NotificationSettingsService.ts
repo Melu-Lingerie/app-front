@@ -9,6 +9,7 @@ export type NotificationSettingsDto = {
     pushSale: boolean;
     pushPersonalOffers: boolean;
     pushDeliveryStatus: boolean;
+    emailNewsletter: boolean;
 };
 
 export class NotificationSettingsService {

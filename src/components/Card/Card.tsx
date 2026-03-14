@@ -15,6 +15,7 @@ import {
     selectTogglingProductIds,
 } from '@/store/wishlistSlice';
 import type { ProductCatalogResponseDto } from '@/api';
+import { resolveColor } from '@/utils/colorMap';
 
 type Props = {
     card: Required<ProductCatalogResponseDto>;
@@ -144,7 +145,7 @@ export const Card = ({
                                 key={index}
                                 className='w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full mr-0.5 md:mr-1 last:mr-0'
                                 style={{
-                                    backgroundColor: color,
+                                    backgroundColor: resolveColor(color),
                                     border: '1px solid #BFBFBF',
                                 }}
                                 aria-label={`Цвет: ${color}`}

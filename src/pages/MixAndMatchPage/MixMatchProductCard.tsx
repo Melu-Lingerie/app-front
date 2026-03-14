@@ -1,5 +1,6 @@
 import { type CSSProperties, useCallback, useEffect, useState } from 'react';
 import { numberFormat } from '@/utils/utils';
+import { resolveColor } from '@/utils/colorMap';
 import { ProductsService, type ProductCardResponse, type ProductVariantCardDto } from '@/api';
 import type { ProductCatalogResponseDto } from '@/api';
 import type { SelectedItem } from './useMixMatchState';
@@ -134,7 +135,7 @@ export function MixMatchProductCard({ product, isSelected, onSelect, onDeselect 
                         <span
                             key={i}
                             className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full"
-                            style={{ backgroundColor: color, border: '1px solid #BFBFBF' }}
+                            style={{ backgroundColor: resolveColor(color), border: '1px solid #BFBFBF' }}
                         />
                     ))}
                 </div>

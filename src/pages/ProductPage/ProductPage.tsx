@@ -12,6 +12,7 @@ import { ProductImages } from './ProductImages.tsx';
 import { useNotifications } from '@/hooks/useNotifications.ts';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed.ts';
 import { numberFormat } from '@/utils/utils.ts';
+import { resolveColor } from '@/utils/colorMap';
 import WishListInCard from '@/assets/WishListInCard.svg';
 import FillWishList from '@/assets/FillWishList.svg';
 import ArrowRightInCard from '@/assets/ArrowRightInCard.svg';
@@ -252,8 +253,20 @@ export function ProductPage() {
     }
 
     const colors = Array.from(new Set(product.productVariants?.map((v) => v.colorName)));
-    const sizes =
-        product.productVariants?.filter((v) => v.colorName === selectedColor) ?? [];
+
+    // Sort sizes: letter sizes from largest to smallest, bra sizes numerically
+    const SIZE_ORDER: Record<string, number> = { 'XXL': 0, 'XL': 1, 'L': 2, 'M': 3, 'S': 4, 'XS': 5, 'XXS': 6 };
+    const sizes = (product.productVariants?.filter((v) => v.colorName === selectedColor) ?? [])
+        .slice()
+        .sort((a, b) => {
+            const aOrder = SIZE_ORDER[a.size.toUpperCase()];
+            const bOrder = SIZE_ORDER[b.size.toUpperCase()];
+            if (aOrder !== undefined && bOrder !== undefined) return aOrder - bOrder;
+            if (aOrder !== undefined) return -1;
+            if (bOrder !== undefined) return 1;
+            return a.size.localeCompare(b.size, undefined, { numeric: true });
+        });
+
     const images = activeVariant?.productVariantMedia.slice(0, 4) ?? [];
 
     // Detect bra product by size pattern (e.g. 70B, 75C, 80B)
@@ -380,7 +393,7 @@ export function ProductPage() {
                                                 style={{
                                                     width: '17px',
                                                     height: '17px',
-                                                    backgroundColor: color,
+                                                    backgroundColor: resolveColor(color),
                                                     border: '1px solid #ccc',
                                                 }}
                                             />

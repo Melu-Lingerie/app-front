@@ -18,7 +18,7 @@ export function NewsletterPage() {
     useEffect(() => {
         api.get('/admin/newsletter/subscribers/count')
             .then(res => setSubscriberCount(res.data.count))
-            .catch(() => setSubscriberCount(null));
+            .catch(() => setSubscriberCount(0));
     }, []);
 
     const handleSend = async () => {
@@ -41,7 +41,7 @@ export function NewsletterPage() {
         <div>
             <AdminHeader
                 title="Email рассылка"
-                subtitle={subscriberCount != null ? `Активных подписчиков: ${subscriberCount}` : 'Загрузка...'}
+                subtitle={`Активных подписчиков: ${subscriberCount ?? 0}`}
             />
 
             <div className="space-y-6">

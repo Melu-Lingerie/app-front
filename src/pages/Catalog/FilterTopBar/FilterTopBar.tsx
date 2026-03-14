@@ -66,8 +66,11 @@ export const FilterTopBar = ({
     const [isBraSizeOpen, setIsBraSizeOpen] = useState(false);
     const [isColorOpen, setIsColorOpen] = useState(false);
 
-    // Determine if bra category is selected
+    // Determine if bra category is selected (and if ONLY bra is selected)
     const hasBraSelected = selectedTypes.some(t => t.includes('бра'));
+    const hasNonBraSelected = selectedTypes.some(t => !t.includes('бра'));
+    const showRegularSizes = !hasBraSelected || hasNonBraSelected;
+    const showBraSizes = hasBraSelected;
 
     const handleSelect = (option: 'Все' | 'Новинки' | 'Скоро в продаже') => {
         onSelectChange(option);
@@ -278,8 +281,8 @@ export const FilterTopBar = ({
                                 </div>
                             </FilterAccordion>
 
-                            {/* Размер (скрыт если выбрана категория бра) */}
-                            {!hasBraSelected && (
+                            {/* Размер (скрыт если выбрана ТОЛЬКО категория бра) */}
+                            {showRegularSizes && (
                                 <FilterAccordion
                                     title="РАЗМЕР"
                                     isOpen={isSizeOpen}
@@ -302,7 +305,7 @@ export const FilterTopBar = ({
                             )}
 
                             {/* Размер бра (показан если выбрана категория бра) */}
-                            {availableBraSizes.length > 0 && hasBraSelected && (
+                            {availableBraSizes.length > 0 && showBraSizes && (
                                 <FilterAccordion
                                     title="РАЗМЕР БРА"
                                     isOpen={isBraSizeOpen}

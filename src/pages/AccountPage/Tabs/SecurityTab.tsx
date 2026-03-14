@@ -245,6 +245,19 @@ export const SecurityTab = () => {
                                     </div>
                                 ))}
                             </div>
+
+                            <h4 className="text-[14px] leading-[18px] uppercase text-[#999999] mb-[16px] mt-[30px]">
+                                Email-рассылка
+                            </h4>
+                            <div className="space-y-[16px]">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[14px] leading-[18px]">Подписка на новости и акции</span>
+                                    <Toggle
+                                        checked={settings.emailNewsletter}
+                                        onChange={() => toggleSetting('emailNewsletter')}
+                                    />
+                                </div>
+                            </div>
                         </>
                     ) : (
                         <p className="text-[14px] text-[#999999]">Не удалось загрузить настройки</p>

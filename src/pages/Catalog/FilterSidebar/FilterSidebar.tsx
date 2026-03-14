@@ -46,8 +46,11 @@ export const FilterSidebar = ({
     const [isBraSizeOpen, setIsBraSizeOpen] = useState(false);
     const [isColorOpen, setIsColorOpen] = useState(false);
 
-    // Determine if bra category is selected
+    // Determine if bra category is selected (and if ONLY bra is selected)
     const hasBraSelected = selectedTypes.some(t => t.includes('бра'));
+    const hasNonBraSelected = selectedTypes.some(t => !t.includes('бра'));
+    const showRegularSizes = !hasBraSelected || hasNonBraSelected;
+    const showBraSizes = hasBraSelected;
 
     return (
         <div className="p-[20px] pl-[40px]">
@@ -122,8 +125,8 @@ export const FilterSidebar = ({
                     </FilterAccordion>
                 )}
 
-                {/* Размер (скрыт если выбрана категория бра) */}
-                {availableSizes.length > 0 && !hasBraSelected && (
+                {/* Размер (скрыт если выбрана ТОЛЬКО категория бра) */}
+                {availableSizes.length > 0 && showRegularSizes && (
                     <FilterAccordion
                         title="РАЗМЕР"
                         isOpen={isSizeOpen}
@@ -146,7 +149,7 @@ export const FilterSidebar = ({
                 )}
 
                 {/* Размер бра (показан если выбрана категория бра) */}
-                {availableBraSizes.length > 0 && hasBraSelected && (
+                {availableBraSizes.length > 0 && showBraSizes && (
                     <FilterAccordion
                         title="РАЗМЕР БРА"
                         isOpen={isBraSizeOpen}

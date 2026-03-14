@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductsService, type ProductCatalogResponseDto, type ProductCardResponse, type ProductVariantCardDto } from '@/api';
+import { resolveColor } from '@/utils/colorMap';
 import type { SelectedItem } from './useMixMatchState';
 
 type Props = {
@@ -177,7 +178,7 @@ export function MixMatchCarouselStep({ products, loading, onSelect }: Props) {
                             className={`w-5 h-5 md:w-6 md:h-6 rounded-full border-2 cursor-pointer transition-transform ${
                                 selectedColor === color ? 'border-[#F8C6D7] scale-110' : 'border-[#BFBFBF]'
                             }`}
-                            style={{ backgroundColor: color }}
+                            style={{ backgroundColor: resolveColor(color) }}
                             title={color}
                         />
                     ))}
