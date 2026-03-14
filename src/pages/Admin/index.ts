@@ -34,6 +34,12 @@ export { MoySkladPage } from './MoySklad';
 // Newsletter
 export { NewsletterPage } from './Newsletter';
 
+// Secret Box
+export { SecretBoxAdminPage } from './SecretBox';
+
+// Mix & Match
+export { MixMatchAdminPage } from './MixMatch';
+
 // Loyalty
 export {
     LoyaltyDashboardPage,

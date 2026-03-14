@@ -36,6 +36,10 @@ export {
     MoySkladPage,
     // Newsletter
     NewsletterPage,
+    // Secret Box Admin
+    SecretBoxAdminPage,
+    // Mix & Match Admin
+    MixMatchAdminPage,
     // Loyalty
     LoyaltyDashboardPage,
     LoyaltyAccountsPage,

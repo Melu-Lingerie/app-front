@@ -51,6 +51,10 @@ import {
     MoySkladPage,
     // Newsletter
     NewsletterPage,
+    // Secret Box Admin
+    SecretBoxAdminPage,
+    // Mix & Match Admin
+    MixMatchAdminPage,
     // Loyalty Admin
     LoyaltyDashboardPage,
     LoyaltyAccountsPage,
@@ -167,6 +171,10 @@ function App() {
                     <Route path="moysklad" element={<MoySkladPage />} />
                     {/* Newsletter */}
                     <Route path="newsletter" element={<NewsletterPage />} />
+                    {/* Secret Box */}
+                    <Route path="secret-box" element={<SecretBoxAdminPage />} />
+                    {/* Mix & Match */}
+                    <Route path="mix-match" element={<MixMatchAdminPage />} />
                     {/* Loyalty */}
                     <Route path="loyalty" element={<LoyaltyDashboardPage />} />
                     <Route path="loyalty/accounts" element={<LoyaltyAccountsPage />} />

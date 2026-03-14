@@ -16,6 +16,8 @@ import {
     Heart,
     Warehouse,
     Mail,
+    Gift,
+    Shuffle,
     ChevronDown,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
@@ -47,6 +49,8 @@ const navItems: NavItem[] = [
     { to: '/admin/loyalty', icon: <Heart size={20} />, label: 'Лояльность' },
     { to: '/admin/moysklad', icon: <Warehouse size={20} />, label: 'МойСклад' },
     { to: '/admin/newsletter', icon: <Mail size={20} />, label: 'Рассылка' },
+    { to: '/admin/secret-box', icon: <Gift size={20} />, label: 'Secret Box' },
+    { to: '/admin/mix-match', icon: <Shuffle size={20} />, label: 'Mix & Match' },
 ];
 
 export function AdminSidebar() {

@@ -147,8 +147,8 @@ export function SecretBoxPage() {
                 size: selectedSize,
                 frequency: selectedFrequency,
             });
-            addNotification('Подписка Secret Box оформлена!', 'success');
-            navigate('/account/orders');
+            addNotification('Подписка Secret Box добавлена в корзину!', 'success');
+            navigate('/cart');
         } catch (e: any) {
             const msg = e?.response?.data?.message || 'Не удалось оформить подписку';
             addNotification(msg, 'error');
@@ -179,10 +179,10 @@ export function SecretBoxPage() {
     return (
         <div className="pb-[60px]">
             {/* Hero + Form — full width, two columns */}
-            <div className="flex flex-col md:flex-row w-full min-h-[600px] md:min-h-[700px]">
+            <div className="flex flex-col md:flex-row w-full min-h-[600px] md:min-h-[85vh]">
 
                 {/* Left — Hero image with overlay text */}
-                <div className="w-full md:w-1/2 relative bg-[#E8D5C4]">
+                <div className="w-full md:w-[55%] relative bg-[#E8D5C4]">
                     {plan.heroImageUrl ? (
                         <img
                             src={plan.heroImageUrl}
@@ -195,24 +195,24 @@ export function SecretBoxPage() {
 
                     {/* Text overlay — top-left */}
                     <div className="relative z-10 p-6 md:p-10 flex flex-col justify-start h-full">
-                        <p className="text-[11px] uppercase tracking-widest text-[#2A2A2B] mb-4">
+                        <p className="text-[12px] uppercase tracking-widest text-[#2A2A2B] mb-5">
                             Подписка SECRET BOX
                         </p>
-                        <h1 className="text-[22px] md:text-[28px] leading-[26px] md:leading-[34px] font-bold uppercase max-w-[400px]">
+                        <h1 className="text-[26px] md:text-[36px] leading-[30px] md:leading-[42px] font-bold uppercase max-w-[500px]">
                             {plan.heroTitle || 'ОФОРМИ ПОДПИСКУ НА SECRET BOX. УДИВИ СЕБЯ НЕОЖИДАННЫМ ПОДАРКОМ.'}
                         </h1>
                     </div>
                 </div>
 
                 {/* Right — Form */}
-                <div className="w-full md:w-1/2 px-4 md:px-10 py-6 md:py-8">
-                    <div className="md:max-w-[440px]">
+                <div className="w-full md:w-[45%] px-4 md:px-10 lg:px-14 py-6 md:py-10">
+                    <div>
                         {/* Title */}
-                        <h2 className="text-[18px] md:text-[20px] leading-[22px] uppercase font-semibold mb-1">
+                        <h2 className="text-[22px] md:text-[26px] leading-[26px] md:leading-[30px] uppercase font-semibold mb-1">
                             Подписка «{plan.name}»
                         </h2>
-                        <p className="text-[11px] text-[#999] mb-2">ID: {plan.articleNumber}</p>
-                        <p className="text-[18px] md:text-[20px] mb-6">{String(numberFormat(plan.price))} ₽</p>
+                        <p className="text-[12px] text-[#999] mb-3">ID: {plan.articleNumber}</p>
+                        <p className="text-[22px] md:text-[26px] mb-8">{String(numberFormat(plan.price))} ₽</p>
 
                         {/* Style */}
                         <div className="mb-5">
