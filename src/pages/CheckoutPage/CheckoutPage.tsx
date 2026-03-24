@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { type RootState, type AppDispatch } from '@/store';
 import { motion } from 'framer-motion';
 import { OrderService } from '@/api/services/OrderService';
@@ -38,16 +38,6 @@ const DolyamiLogo = () => (
     <span className="text-[14px] font-bold tracking-tight">llll ДОЛЯМИ</span>
 );
 
-// Логотип Яндекс Доставка
-const YandexDeliveryLogo = () => (
-    <div className="flex items-center gap-1">
-        <div className="w-5 h-5 bg-[#FC3F1D] rounded-full flex items-center justify-center">
-            <span className="text-white text-xs font-bold">Я</span>
-        </div>
-        <span className="text-sm">Доставка</span>
-    </div>
-);
-
 type DeliveryType = 'pickup' | 'courier';
 type PaymentMethodUI = 'sbp' | 'card' | 'installments';
 
@@ -61,8 +51,19 @@ const AVERAGE_ITEM_WEIGHT = 300;
 
 export function CheckoutPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch<AppDispatch>();
-    const { items, itemsCount, cartId } = useSelector((state: RootState) => state.cart);
+    const { items: allItems, itemsCount, cartId } = useSelector((state: RootState) => state.cart);
+
+    // Filter items by selection from CartPage
+    const selectedItemIds = useMemo<number[] | null>(
+        () => (location.state as any)?.selectedItemIds ?? null,
+        [location.state]
+    );
+    const items = useMemo(() => {
+        if (!selectedItemIds || selectedItemIds.length === 0) return allItems;
+        return allItems.filter(item => selectedItemIds.includes(item.itemId!));
+    }, [allItems, selectedItemIds]);
     const { isAuthenticated } = useSelector((state: RootState) => state.user);
     const crumbsBalance = useSelector(selectLoyaltyBalance);
 
@@ -189,12 +190,22 @@ export function CheckoutPage() {
         return () => clearTimeout(timer);
     }, [city, loadDeliveryPoints]);
 
-    // Расчет тарифов после выбора ПВЗ
+    // Сброс тарифов при смене типа доставки
     useEffect(() => {
-        if (selectedPoint && city.length >= 2) {
-            calculateDelivery(city, 136);
-        }
-    }, [selectedPoint, city, calculateDelivery]);
+        setTariffs([]);
+        setSelectedTariff(null);
+    }, [deliveryType]);
+
+    // Расчет тарифов по городу (для обоих типов доставки)
+    useEffect(() => {
+        if (city.length < 2) return;
+
+        // Для pickup — ждём выбора ПВЗ, для courier — сразу по городу
+        if (deliveryType === 'pickup' && !selectedPoint) return;
+
+        const timer = setTimeout(() => calculateDelivery(city), 600);
+        return () => clearTimeout(timer);
+    }, [city, deliveryType, selectedPoint, calculateDelivery]);
 
     // Валидация формы
     const isFormValid = useMemo(() => {
@@ -235,6 +246,7 @@ export function CheckoutPage() {
                 customerComment: comment || undefined,
                 tariffCode: selectedTariff.tariffCode,
                 useCrumbsDiscount: useCrumbsDiscount || undefined,
+                itemIds: selectedItemIds || undefined,
             });
 
             // Если есть URL для оплаты - редиректим
@@ -541,19 +553,6 @@ export function CheckoutPage() {
                             )}
                         </div>
 
-                        {/* Яндекс доставка - неактивна */}
-                        <div className="mt-4">
-                            <button
-                                type="button"
-                                disabled
-                                className="w-96 h-14 flex items-center px-3 border border-[rgba(23,23,23,0.3)] dark:border-white/10 bg-[rgba(250,250,250,0.3)] text-[rgba(23,23,23,0.3)] cursor-not-allowed"
-                            >
-                                <div className="w-32 h-9 bg-[rgba(245,245,245,0.3)] dark:bg-white/5 flex items-center justify-center mr-3">
-                                    <YandexDeliveryLogo />
-                                </div>
-                                <span className="text-sm font-medium uppercase">Скоро</span>
-                            </button>
-                        </div>
                     </section>
 
                     {/* Разделитель */}
@@ -729,9 +728,9 @@ export function CheckoutPage() {
                         <p className="text-xs font-medium text-[#999] underline cursor-pointer" onClick={() => navigate('/account')}>
                             Войти в личный кабинет
                         </p>
-                        <p className="text-xs font-medium text-[#999] underline cursor-pointer">Условия доставки</p>
-                        <p className="text-xs font-medium text-[#999] underline cursor-pointer">Условия обмена и возврата</p>
-                        <p className="text-xs font-medium text-[#999] underline cursor-pointer">Информация об оплате</p>
+                        <p className="text-xs font-medium text-[#999] underline cursor-pointer" onClick={() => navigate('/delivery')}>Условия доставки</p>
+                        <p className="text-xs font-medium text-[#999] underline cursor-pointer" onClick={() => navigate('/exchange')}>Условия обмена и возврата</p>
+                        <p className="text-xs font-medium text-[#999] underline cursor-pointer" onClick={() => navigate('/payment')}>Информация об оплате</p>
                     </div>
                 </motion.div>
             </div>

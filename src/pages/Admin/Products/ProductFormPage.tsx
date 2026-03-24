@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Plus, X, Upload, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plus, X, Upload, Trash2, Loader2, ImageIcon } from 'lucide-react';
 import {
     AdminHeader,
     AdminButton,
@@ -14,6 +14,7 @@ import { AdminCategoryService } from '@/api/services/AdminCategoryService';
 import type { CategoryAdminResponseDto } from '@/api/services/AdminCategoryService';
 import { MediaService } from '@/api';
 import type { ProductAdminResponseDto, ProductStatus, ProductType } from '@/api/services/AdminProductService';
+import { MediaPickerModal } from './MediaPickerModal';
 
 interface VariantFormData {
     id?: number;
@@ -25,6 +26,8 @@ interface VariantFormData {
     sortOrder: number;
     mediaIds: number[];
     mediaUrls: string[];
+    description: string;
+    articleNumber: string;
 }
 
 interface FormData {
@@ -151,6 +154,7 @@ export function ProductFormPage() {
 
     const [newColor, setNewColor] = useState('');
     const [newSize, setNewSize] = useState('');
+    const [mediaPickerVariantIndex, setMediaPickerVariantIndex] = useState<number | null>(null);
     const [uploadingMain, setUploadingMain] = useState(false);
     const [uploadingVariant, setUploadingVariant] = useState<number | null>(null);
     const mainPhotoInputRef = useRef<HTMLInputElement>(null);
@@ -224,6 +228,8 @@ export function ProductFormPage() {
                 sortOrder: v.sortOrder || 0,
                 mediaIds: v.media?.map(m => m.mediaId) || [],
                 mediaUrls: v.media?.map(m => m.mediaUrl).filter(Boolean) as string[] || [],
+                description: v.description || '',
+                articleNumber: v.articleNumber || '',
             })) || [],
         };
     };
@@ -272,6 +278,8 @@ export function ProductFormPage() {
                     price: v.price,
                     sortOrder: v.sortOrder,
                     mediaIds: v.mediaIds,
+                    description: v.description || undefined,
+                    articleNumber: v.articleNumber || undefined,
                 })),
             };
 
@@ -302,6 +310,8 @@ export function ProductFormPage() {
             sortOrder: formData.variants.length,
             mediaIds: [],
             mediaUrls: [],
+            description: formData.description,
+            articleNumber: formData.articleNumber,
         };
         updateField('variants', [...formData.variants, newVariant]);
         setNewColor('');
@@ -363,6 +373,30 @@ export function ProductFormPage() {
         updateVariant(variantIndex, {
             mediaIds: variant.mediaIds.filter((_, i) => i !== mediaIndex),
             mediaUrls: variant.mediaUrls.filter((_, i) => i !== mediaIndex),
+        });
+    };
+
+    const getOtherVariantMedia = (currentIndex: number) => {
+        const seen = new Set<number>();
+        const result: { mediaId: number; url: string }[] = [];
+        formData.variants.forEach((v, i) => {
+            if (i === currentIndex) return;
+            v.mediaIds.forEach((mediaId, mi) => {
+                if (!seen.has(mediaId)) {
+                    seen.add(mediaId);
+                    result.push({ mediaId, url: v.mediaUrls[mi] });
+                }
+            });
+        });
+        return result;
+    };
+
+    const handleMediaPickerSelect = (items: { mediaId: number; url: string }[]) => {
+        if (mediaPickerVariantIndex === null) return;
+        const variant = formData.variants[mediaPickerVariantIndex];
+        updateVariant(mediaPickerVariantIndex, {
+            mediaIds: [...variant.mediaIds, ...items.map(m => m.mediaId)],
+            mediaUrls: [...variant.mediaUrls, ...items.map(m => m.url)],
         });
     };
 
@@ -655,6 +689,23 @@ export function ProductFormPage() {
                                     />
                                 </div>
 
+                                {/* Variant article + description */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                                    <AdminInput
+                                        label="Артикул варианта"
+                                        placeholder="Артикул"
+                                        value={variant.articleNumber}
+                                        onChange={(e) => updateVariant(index, { articleNumber: e.target.value })}
+                                    />
+                                    <AdminTextarea
+                                        label="Описание варианта"
+                                        placeholder="Описание"
+                                        value={variant.description}
+                                        onChange={(e) => updateVariant(index, { description: e.target.value })}
+                                        rows={2}
+                                    />
+                                </div>
+
                                 {/* Variant photos */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -693,6 +744,13 @@ export function ProductFormPage() {
                                                     <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">Добавить</span>
                                                 </>
                                             )}
+                                        </div>
+                                        <div
+                                            onClick={() => setMediaPickerVariantIndex(index)}
+                                            className="w-20 h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 dark:hover:border-gray-500"
+                                        >
+                                            <ImageIcon size={16} className="text-gray-400 dark:text-gray-500" />
+                                            <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 text-center">Выбрать</span>
                                         </div>
                                         <input
                                             ref={(el) => { variantPhotoInputRefs.current[index] = el; }}
@@ -781,6 +839,15 @@ export function ProductFormPage() {
                     </AdminButton>
                 </div>
             </div>
+
+            {/* Media Picker */}
+            <MediaPickerModal
+                open={mediaPickerVariantIndex !== null}
+                onClose={() => setMediaPickerVariantIndex(null)}
+                onSelect={handleMediaPickerSelect}
+                existingMediaIds={mediaPickerVariantIndex !== null ? formData.variants[mediaPickerVariantIndex]?.mediaIds ?? [] : []}
+                productMedia={mediaPickerVariantIndex !== null ? getOtherVariantMedia(mediaPickerVariantIndex) : []}
+            />
 
             {/* Lightbox */}
             {lightboxUrl && (

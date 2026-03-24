@@ -11,6 +11,9 @@
       "Bash(dir \"C:\\Users\\IVA-PC\\app-front\" /B)",
       "Bash(xargs cat:*)",
       "Bash(wc:*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
       "Bash(npm run build:*)",
       "Bash(npx tsc --noEmit)",
       "Bash(./node_modules/.bin/tsc:*)",
@@ -54,7 +57,9 @@
       "Read(//c/Users/IVA-PC/IdeaProjects/app-backend.git/src/main/**)",
       "Read(//c/Users/IVA-PC/IdeaProjects/app-backend.git/**)",
       "Bash(cd:*)",
-      "Bash(ssh:*)"
+      "Bash(ssh:*)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
+      "Bash(find C:UsersIVA-PCapp-front/src -type f \\\\\\(-name *.tsx -o -name *.ts -o -name *.jsx -o -name *.js \\\\\\))"
     ],
     "deny": [],
     "ask": []

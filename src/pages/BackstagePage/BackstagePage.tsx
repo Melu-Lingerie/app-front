@@ -71,15 +71,16 @@ export const BackstagePage = () => {
                                 loop
                                 muted
                                 playsInline
-                                className="w-full aspect-[4/5] object-cover rounded-lg"
+                                className="w-full aspect-[4/5] md:aspect-[4/5] object-cover rounded-lg"
                             />
                         ) : (
-                            <div
-                                className="relative w-full aspect-[3/4] bg-gray-100 dark:bg-gray-800 flex items-end"
-                                style={{
-                                    background: `url(${item.mediaUrl}) center/cover no-repeat`,
-                                }}
-                            >
+                            <div className="relative w-full aspect-[4/5] md:aspect-[3/4] bg-gray-100 dark:bg-gray-800 flex items-end overflow-hidden">
+                                <img
+                                    src={item.mediaUrl}
+                                    alt={item.title}
+                                    loading="lazy"
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                                 <div className="relative p-4 md:p-6 text-white">
                                     <h3 className="text-sm md:text-base uppercase font-medium">

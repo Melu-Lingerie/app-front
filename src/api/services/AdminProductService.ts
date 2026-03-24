@@ -37,6 +37,8 @@ export type ProductVariantAdminResponseDto = {
     price?: number;
     sortOrder: number;
     media: ProductVariantMediaDto[];
+    description?: string;
+    articleNumber?: string;
 };
 
 export type ProductAdminResponseDto = {
@@ -82,6 +84,8 @@ export type ProductVariantCreateRequestDto = {
     priceId?: number;
     sortOrder?: number;
     mediaIds?: number[];
+    description?: string;
+    articleNumber?: string;
 };
 
 export type ProductAdminCreateRequestDto = {
@@ -110,6 +114,8 @@ export type ProductVariantUpdateRequestDto = {
     priceId?: number;
     sortOrder?: number;
     mediaIds?: number[];
+    description?: string;
+    articleNumber?: string;
 };
 
 export type ProductAdminUpdateRequestDto = {

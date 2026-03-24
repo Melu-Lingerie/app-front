@@ -314,7 +314,7 @@ export function CartPage() {
                     </div>
                     <button
                         disabled={selectedCount === 0}
-                        onClick={() => navigate('/checkout')}
+                        onClick={() => navigate('/checkout', { state: { selectedItemIds: Array.from(selectedItems) } })}
                         className="w-full h-[48px] md:h-[56px] rounded-[8px] border border-[#FFFBF5] dark:border-white/10 bg-[#F8C6D7] text-[13px] md:text-[14px] leading-[18px] uppercase font-medium cursor-pointer hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Оформить заказ

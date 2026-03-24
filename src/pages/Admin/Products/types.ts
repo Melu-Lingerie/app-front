@@ -17,6 +17,8 @@ export interface ProductVariant {
     price?: number;
     sortOrder: number;
     media: ProductVariantMedia[];
+    description?: string;
+    articleNumber?: string;
 }
 
 export interface Product {
@@ -76,6 +78,8 @@ export interface ProductVariantFormData {
     sortOrder: number;
     mediaIds: number[];
     mediaUrls: string[];
+    description?: string;
+    articleNumber?: string;
 }
 
 export interface ProductFilters {

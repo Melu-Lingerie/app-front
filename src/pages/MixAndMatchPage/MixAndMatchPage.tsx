@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { type RootState, type AppDispatch } from '@/store';
 import { fetchCart } from '@/store/cartSlice';
 import { Spinner } from '@/components/Spinner';
@@ -14,6 +15,7 @@ import { MixMatchCompletionModal } from './MixMatchCompletionModal';
 
 export function MixAndMatchPage() {
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
     const cartId = useSelector((state: RootState) => state.cart.cartId);
     const { addNotification } = useNotifications();
 
@@ -54,6 +56,18 @@ export function MixAndMatchPage() {
 
     return (
         <div className="min-h-screen pb-[60px]">
+            {/* Navigation */}
+            <div className="px-4 md:px-[195px] pt-[20px] md:pt-[40px] mb-[20px] md:mb-[30px] flex items-center gap-4">
+                <span
+                    className="text-[#999] text-[12px] md:text-[14px] cursor-pointer hover:underline"
+                    onClick={() => navigate('/catalog')}
+                >
+                    Каталог
+                </span>
+                <span className="text-[#CCC]">/</span>
+                <span className="text-[12px] md:text-[14px]">Mix & Match</span>
+            </div>
+
             {/* Steps */}
             <div className="px-4 md:px-[195px]">
                 {steps.map((step) => (

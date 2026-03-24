@@ -297,7 +297,7 @@ export const Carousel = <T,>({
                 onMouseLeave={onMouseLeave}
             >
                 <div
-                    className={`flex ${shouldCenter ? 'justify-center' : ''}`}
+                    className="flex"
                     style={{
                         gap,
                         transform: shouldCenter ? undefined : `translateX(${-scrollX}px)`,
