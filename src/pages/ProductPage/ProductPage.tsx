@@ -281,7 +281,7 @@ export function ProductPage() {
                                 {product.name}
                             </h1>
                             <p className="text-[#999] text-[14px] md:text-[16px] leading-[18px]">
-                                {product.articleNumber}
+                                {activeVariant?.articleNumber || product.articleNumber}
                             </p>
                             {activeVariant ? (
                                 <p className="text-[20px] md:text-[24px] leading-[24px] md:leading-[26px]">
@@ -551,7 +551,7 @@ export function ProductPage() {
                                 onToggle={() => setIsDescriptionOpen(!isDescriptionOpen)}
                             >
                                 <p className="text-[#999] leading-[22px] text-[14px] mt-[22px]">
-                                    {product.description || 'Описание отсутствует'}
+                                    {activeVariant?.description || product.description || 'Описание отсутствует'}
                                 </p>
                             </FilterAccordion>
 

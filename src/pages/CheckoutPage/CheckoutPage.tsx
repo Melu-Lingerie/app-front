@@ -85,6 +85,7 @@ export function CheckoutPage() {
     const [comment, setComment] = useState('');
 
     // Пункты выдачи
+    const [pvzSearch, setPvzSearch] = useState('');
     const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointResponseDto[]>([]);
     const [selectedPoint, setSelectedPoint] = useState<DeliveryPointResponseDto | null>(null);
     const [isLoadingPoints, setIsLoadingPoints] = useState(false);
@@ -383,12 +384,12 @@ export function CheckoutPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[75px] gap-y-4">
                             <div>
-                                <label className="block text-sm font-medium uppercase mb-2">Адрес</label>
+                                <label className="block text-sm font-medium uppercase mb-2">Город</label>
                                 <input
                                     type="text"
                                     value={city}
                                     onChange={(e) => setCity(e.target.value)}
-                                    placeholder="Город, улица"
+                                    placeholder="Введите город"
                                     className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-sm font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                 />
                             </div>
@@ -427,26 +428,41 @@ export function CheckoutPage() {
                                     {isLoadingPoints ? (
                                         <div className="text-sm text-[#999]">Загрузка пунктов выдачи...</div>
                                     ) : deliveryPoints.length > 0 ? (
-                                        <div className="max-h-60 overflow-y-auto border border-[#CCC] dark:border-white/10">
-                                            {deliveryPoints.map((point) => (
-                                                <button
-                                                    key={point.code}
-                                                    type="button"
-                                                    onClick={() => setSelectedPoint(point)}
-                                                    className={`w-full p-4 text-left border-b border-[#CCC] dark:border-white/10 last:border-b-0 transition-colors ${
-                                                        selectedPoint?.code === point.code
-                                                            ? 'bg-[#F8C6D7]/20'
-                                                            : 'hover:bg-[#F7F7F7] dark:hover:bg-white/5'
-                                                    }`}
-                                                >
-                                                    <div className="text-sm font-medium">{point.name}</div>
-                                                    <div className="text-xs text-[#999] mt-1">{point.address}</div>
-                                                    {point.workTime && (
-                                                        <div className="text-xs text-[#999] mt-1">{point.workTime}</div>
-                                                    )}
-                                                </button>
-                                            ))}
-                                        </div>
+                                        <>
+                                            <input
+                                                type="text"
+                                                value={pvzSearch}
+                                                onChange={(e) => setPvzSearch(e.target.value)}
+                                                placeholder="Поиск по адресу или названию ПВЗ"
+                                                className="w-full h-12 px-5 mb-2 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-sm font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
+                                            />
+                                            <div className="max-h-60 overflow-y-auto border border-[#CCC] dark:border-white/10">
+                                                {deliveryPoints
+                                                    .filter((p) => {
+                                                        if (!pvzSearch) return true;
+                                                        const q = pvzSearch.toLowerCase();
+                                                        return (p.name?.toLowerCase().includes(q) || p.address?.toLowerCase().includes(q));
+                                                    })
+                                                    .map((point) => (
+                                                    <button
+                                                        key={point.code}
+                                                        type="button"
+                                                        onClick={() => setSelectedPoint(point)}
+                                                        className={`w-full p-4 text-left border-b border-[#CCC] dark:border-white/10 last:border-b-0 transition-colors ${
+                                                            selectedPoint?.code === point.code
+                                                                ? 'bg-[#F8C6D7]/20'
+                                                                : 'hover:bg-[#F7F7F7] dark:hover:bg-white/5'
+                                                        }`}
+                                                    >
+                                                        <div className="text-sm font-medium">{point.name}</div>
+                                                        <div className="text-xs text-[#999] mt-1">{point.address}</div>
+                                                        {point.workTime && (
+                                                            <div className="text-xs text-[#999] mt-1">{point.workTime}</div>
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </>
                                     ) : city.length >= 2 ? (
                                         <div className="text-sm text-[#999]">Пункты выдачи не найдены</div>
                                     ) : (
@@ -455,7 +471,7 @@ export function CheckoutPage() {
                                 </div>
                             )}
 
-                            {/* Адрес для курьера */}
+                            {/* Адрес доставки курьером */}
                             {deliveryType === 'courier' && (
                                 <>
                                     <div>
@@ -469,12 +485,12 @@ export function CheckoutPage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium uppercase mb-2">Адрес</label>
+                                        <label className="block text-sm font-medium uppercase mb-2">Улица, дом, квартира</label>
                                         <input
                                             type="text"
                                             value={address}
                                             onChange={(e) => setAddress(e.target.value)}
-                                            placeholder="Введите вашу улицу, дом, квартиру"
+                                            placeholder="ул. Примерная, д. 1, кв. 10"
                                             className="w-full h-14 px-5 bg-[#F7F7F7] dark:bg-white/5 border border-transparent text-sm font-medium outline-none focus:border-[#F8C6D7] placeholder:text-[#999]"
                                         />
                                     </div>

@@ -58,15 +58,22 @@ export function MixMatchCompletionModal({ open, onClose, items, totalPrice }: Pr
                         <div className="flex flex-col gap-3">
                             <button
                                 type="button"
-                                onClick={() => { onClose(); navigate('/cart'); }}
+                                onClick={() => navigate('/cart')}
                                 className="w-full h-[48px] md:h-[56px] bg-[#F8C6D7] text-[13px] md:text-[14px] uppercase font-medium rounded-[8px] cursor-pointer hover:bg-[#f0b4c7] transition-colors"
                             >
                                 В корзину
                             </button>
                             <button
                                 type="button"
-                                onClick={() => { onClose(); navigate('/'); }}
+                                onClick={() => navigate('/catalog')}
                                 className="w-full h-[48px] md:h-[56px] border border-[#CCC] dark:border-white/10 text-[13px] md:text-[14px] uppercase font-medium rounded-[8px] cursor-pointer hover:opacity-80 transition-colors"
+                            >
+                                Продолжить покупки
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => navigate('/')}
+                                className="w-full h-[48px] md:h-[56px] text-[#999] text-[13px] md:text-[14px] uppercase font-medium rounded-[8px] cursor-pointer hover:opacity-80 transition-colors"
                             >
                                 На главную
                             </button>

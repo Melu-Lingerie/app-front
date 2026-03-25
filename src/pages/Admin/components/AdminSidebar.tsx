@@ -18,6 +18,7 @@ import {
     Mail,
     Gift,
     Shuffle,
+    RotateCcw,
     ChevronDown,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
@@ -32,6 +33,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     { to: '/admin/products', icon: <Package size={20} />, label: 'Товары' },
     { to: '/admin/orders', icon: <ShoppingCart size={20} />, label: 'Заказы' },
+    { to: '/admin/returns', icon: <RotateCcw size={20} />, label: 'Возвраты' },
     { to: '/admin/customers', icon: <Users size={20} />, label: 'Клиенты' },
     { to: '/admin/promotions', icon: <Tag size={20} />, label: 'Акции и скидки' },
     {

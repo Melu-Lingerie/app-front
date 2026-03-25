@@ -32,17 +32,17 @@ export const AccountPage = () => {
 
     return (
         <>
-        <div className="flex min-h-180">
-            {/* Левая часть */}
-            <div className="w-1/4 border-r border-[#CCCCCC] dark:border-white/10 pt-[40px]">
+        <div className="flex flex-col md:flex-row min-h-180">
+            {/* Левая часть / верхняя на мобилке */}
+            <div className="w-full md:w-1/4 md:border-r border-b md:border-b-0 border-[#CCCCCC] dark:border-white/10 pt-[20px] md:pt-[40px] pb-[20px] md:pb-0">
                 {/* Блок с аватаром и именем */}
-                <div className="flex items-center mb-[70px] pl-[40px]">
+                <div className="flex items-center mb-[20px] md:mb-[70px] pl-[16px] md:pl-[40px]">
                     <img
                         src={GuestIcon}
                         alt="Пользователь"
-                        className="w-[82px] h-[82px] rounded-full object-cover"
+                        className="w-[48px] h-[48px] md:w-[82px] md:h-[82px] rounded-full object-cover"
                     />
-                    <div className="ml-[20px] text-[14px] leading-[18px] uppercase">
+                    <div className="ml-[12px] md:ml-[20px] text-[13px] md:text-[14px] leading-[18px] uppercase">
                         {(!initialized) ? (
                             <div className="w-[120px] h-[18px] bg-gray-300 animate-pulse rounded" />
                         ) : (
@@ -56,17 +56,17 @@ export const AccountPage = () => {
                 </div>
 
                 {/* Навигация по вкладкам */}
-                <nav>
-                    <div className="border-b border-[#CCCCCC] dark:border-white/10" />
+                <nav className="flex md:flex-col overflow-x-auto md:overflow-x-visible">
+                    <div className="hidden md:block border-b border-[#CCCCCC] dark:border-white/10" />
                     {tabs.map((tab) => {
                         const isActive = location.pathname === tab.path;
                         const disabled = !initialized || (isGuest && tab.label !== 'Избранное' && tab.label !== 'Программа лояльности');
                         return (
-                            <div key={tab.path}>
+                            <div key={tab.path} className="flex-shrink-0 md:flex-shrink">
                                 <button
                                     disabled={disabled}
                                     onClick={() => handleTabClick(tab.path, disabled)}
-                                    className={`w-full text-left h-[56px] flex items-center pl-[40px] text-[16px] leading-[18px] uppercase transition-colors ${
+                                    className={`w-full text-left h-[44px] md:h-[56px] flex items-center px-[16px] md:pl-[40px] md:pr-0 text-[12px] md:text-[16px] leading-[18px] uppercase whitespace-nowrap transition-colors ${
                                         disabled
                                             ? 'text-gray-400 cursor-not-allowed'
                                             : isActive
@@ -76,15 +76,15 @@ export const AccountPage = () => {
                                 >
                                     {tab.label}
                                 </button>
-                                <div className="border-b border-[#CCCCCC] dark:border-white/10" />
+                                <div className="hidden md:block border-b border-[#CCCCCC] dark:border-white/10" />
                             </div>
                         );
                     })}
                 </nav>
             </div>
 
-            {/* Правая часть */}
-            <div className="w-3/4 p-10">
+            {/* Правая часть / нижняя на мобилке */}
+            <div className="w-full md:w-3/4 p-4 md:p-10">
                 <AnimatePresence mode="wait">
                     {!initialized ? (
                         <Routes location={location} key={location.pathname}>

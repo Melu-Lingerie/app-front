@@ -59,7 +59,11 @@
       "Bash(cd:*)",
       "Bash(ssh:*)",
       "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
-      "Bash(find C:UsersIVA-PCapp-front/src -type f \\\\\\(-name *.tsx -o -name *.ts -o -name *.jsx -o -name *.js \\\\\\))"
+      "Bash(find C:UsersIVA-PCapp-front/src -type f \\\\\\(-name *.tsx -o -name *.ts -o -name *.jsx -o -name *.js \\\\\\))",
+      "Bash(mkdir -p \"C:/Users/IVA-PC/IdeaProjects/app-backend.git/facade/src/main/java/ru/melulingerie/facade/returns/dto/request\")",
+      "Bash(mkdir -p \"C:/Users/IVA-PC/IdeaProjects/app-backend.git/facade/src/main/java/ru/melulingerie/facade/returns/dto/response\")",
+      "Bash(mkdir -p \"C:/Users/IVA-PC/IdeaProjects/app-backend.git/facade/src/main/java/ru/melulingerie/facade/returns/mapper\")",
+      "Bash(mkdir -p \"C:/Users/IVA-PC/IdeaProjects/app-backend.git/facade/src/main/java/ru/melulingerie/facade/returns/service/impl\")"
     ],
     "deny": [],
     "ask": []

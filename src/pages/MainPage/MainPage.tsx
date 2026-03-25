@@ -150,13 +150,11 @@ export const MainPage = () => {
                             {backstages.slice(0, isMobile ? 1 : 4).map((item) => (
                                 <div
                                     key={item.id}
-                                    className="relative flex justify-center items-end text-white text-center pb-[30px] text-sm md:text-base uppercase"
+                                    className="relative flex justify-center items-end text-white text-center pb-[30px] text-sm md:text-base uppercase overflow-hidden rounded-lg"
                                     style={{
                                         flex: isMobile ? '1' : '0 0 calc((100% - (20px * (4 - 1))) / 4)',
-                                        background: item.mediaType === 'VIDEO'
-                                            ? '#1a1a1a'
-                                            : `url(${item.mediaUrl}) center/cover no-repeat`,
-                                        height: isMobile ? 400 : 666,
+                                        aspectRatio: isMobile ? '3/4' : undefined,
+                                        height: isMobile ? undefined : 666,
                                     }}
                                 >
                                     {item.mediaType === 'VIDEO' ? (
@@ -168,7 +166,15 @@ export const MainPage = () => {
                                             playsInline
                                             className="absolute inset-0 w-full h-full object-cover"
                                         />
-                                    ) : null}
+                                    ) : (
+                                        <img
+                                            src={item.mediaUrl}
+                                            alt={item.title}
+                                            loading="lazy"
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                        />
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                                     <span className="relative">{item.title}</span>
                                 </div>
                             ))}

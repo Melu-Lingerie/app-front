@@ -7,6 +7,7 @@ import { selectAppInitialized } from '@/store/appSlice';
 import { addItemToCart, fetchCart } from '@/store/cartSlice';
 import { OrderService } from '@/api/services/OrderService';
 import { useNotifications } from '@/hooks/useNotifications';
+import { ReturnFormModal } from './ReturnFormModal';
 import type { OrderListResponseDto, OrderResponseDto, OrderItemDto } from '@/api/models/OrderResponseDto';
 import type { OrderStatus } from '@/api/models/CheckoutResponseDto';
 import type { PaymentMethod, DeliveryMethod } from '@/api/models/CheckoutRequestDto';
@@ -86,6 +87,7 @@ const OrderCard = ({ order }: { order: OrderListResponseDto }) => {
     const [expanded, setExpanded] = useState(false);
     const [details, setDetails] = useState<OrderResponseDto | null>(null);
     const [detailsLoading, setDetailsLoading] = useState(false);
+    const [returnModalOpen, setReturnModalOpen] = useState(false);
 
     const handleExpand = async () => {
         if (expanded) {
@@ -206,12 +208,32 @@ const OrderCard = ({ order }: { order: OrderListResponseDto }) => {
                                         {details.discountAmount > 0 && <span>Скидка: -{formatPrice(details.discountAmount)}</span>}
                                         <span className="font-semibold">Итого: {formatPrice(details.totalAmount)}</span>
                                     </div>
+                                    {order.status === 'DELIVERED' && (
+                                        <div className="mt-[16px] pt-[16px] border-t border-[#EEEEEE]">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); setReturnModalOpen(true); }}
+                                                className="h-[40px] px-[20px] rounded-[8px] border border-[#F8C6D7] text-[13px] uppercase cursor-pointer hover:bg-[#F8C6D7]/20 transition"
+                                            >
+                                                Оформить возврат
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             ) : null}
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {details && (
+                <ReturnFormModal
+                    open={returnModalOpen}
+                    onClose={() => setReturnModalOpen(false)}
+                    onSuccess={() => addNotification('Возврат успешно оформлен', 'success')}
+                    orderId={order.id}
+                    items={details.items}
+                />
+            )}
         </motion.div>
     );
 };

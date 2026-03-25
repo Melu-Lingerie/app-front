@@ -36,5 +36,7 @@ export type ProductVariantCardDto = {
      */
     sortOrder: number;
     productVariantMedia: Array<ProductVariantMediaCardDto>;
+    description?: string;
+    articleNumber?: string;
 };
 

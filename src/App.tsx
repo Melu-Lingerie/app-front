@@ -65,6 +65,8 @@ import {
     TasteDaysPage,
     LoyaltySettingsPage,
 } from '@/pages';
+import { ReturnsListPage } from '@/pages/Admin/Returns/ReturnsListPage';
+import { ReturnDetailPage } from '@/pages/Admin/Returns/ReturnDetailPage';
 
 function App() {
     useEffect(() => {
@@ -153,6 +155,8 @@ function App() {
                     <Route path="products/:id/edit" element={<ProductFormPage />} />
                     <Route path="orders" element={<OrdersListPage />} />
                     <Route path="orders/:id" element={<OrderDetailPage />} />
+                    <Route path="returns" element={<ReturnsListPage />} />
+                    <Route path="returns/:id" element={<ReturnDetailPage />} />
                     <Route path="customers" element={<CustomersListPage />} />
                     <Route path="customers/:id" element={<CustomerDetailPage />} />
                     <Route path="promotions" element={<PromotionsListPage />} />
